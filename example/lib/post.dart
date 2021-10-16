@@ -1,16 +1,17 @@
 import 'dart:collection';
-import 'package:darq/darq.dart';
 
+import 'package:darq/darq.dart';
 import 'package:faker/faker.dart';
 
 class Post {
   final int id;
-  final String author;
-  final String content;
-  final DateTime createdAt;
-  final bool isEnabled;
+  String author;
+  String content;
+  DateTime createdAt;
+  bool isEnabled;
+  int number;
 
-  Post({required this.id, required this.author, required this.content, required this.createdAt, required this.isEnabled});
+  Post({required this.id, required this.author, required this.content, required this.createdAt, required this.isEnabled, required this.number});
 
   static final Faker _faker = Faker();
   factory Post.random({required int id}) {
@@ -19,13 +20,14 @@ class Post {
       author: _faker.person.name(),
       content: _faker.lorem.sentences(10).join(". "),
       createdAt: _faker.date.dateTime(minYear: 2019, maxYear: 2021),
-      isEnabled: _faker.randomGenerator.boolean()
+      isEnabled: _faker.randomGenerator.boolean(),
+      number: faker.randomGenerator.integer(9999)
     );  
   }
 }
 
-class PostsProvider {
-  PostsProvider._();
+class PostsRepository {
+  PostsRepository._();
 
   static final List<Post> _backend = [];
 

@@ -12,6 +12,7 @@ dependencies:
   faker: any
   darq: any
   intl: any
+  equatable: any
   flutter:
     sdk: flutter
 

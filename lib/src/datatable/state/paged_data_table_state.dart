@@ -19,15 +19,15 @@ class PagedDataTableState<T> extends ChangeNotifier {
   late List<int> _pageSizes;
   late TablePage<T> _currentPage;
   late String _initialPageToken;
-  bool _isLoading = false;
   Object? _currentError;
   DateTime? _lastSyncDate;
   Map<T, bool>? _selectedRows;
   bool? _selectedAllRows = false;
   StreamSubscription? _filterUpdatedListener;
+  TableState _tableState = TableState.unknown;
 
-  bool get isLoading => _isLoading;
-  bool get hasError => _currentError != null;
+  bool get isLoading => _tableState == TableState.loading;
+  bool get hasError => _tableState == TableState.error;
   Object get error => _currentError!;
   int get currentPageSize => _pageSize;
   List<int> get pageSizes => UnmodifiableListView(_pageSizes);
@@ -40,6 +40,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
   List<BaseTableColumn<T>> get columns => UnmodifiableListView(_columns);
   PagedDataTableFilterState? get filterState => _filterState;
   bool get hasFilters => _filterState != null;
+  TableState get tableState => _tableState;
 
   PagedDataTableState({
     required int currentPageSize, 
@@ -114,7 +115,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
   }
 
   Future resolvePage({required TablePageType pageType, required bool skipCache}) async {
-    _isLoading = true;
+    _tableState = TableState.loading;
     notifyListeners();
 
     String? fetchToken;
@@ -177,14 +178,14 @@ class PagedDataTableState<T> extends ChangeNotifier {
       debugPrint("ERROR: $err");
       debugPrint("STACK: $stack");
 
-      _isLoading = false;
+      _tableState = TableState.error;
       _currentError = err;
       notifyListeners();
       return;
     }
 
     _currentPage = newPage;
-    _isLoading = false;
+    _tableState = TableState.displaying;
     _currentError = null;
     _lastSyncDate = DateTime.now();
 
@@ -210,6 +211,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
 
   @override
   void dispose() {
+    _filterUpdatedListener?.cancel();
     _eventNotifier.close();
     super.dispose();
   }
@@ -242,4 +244,8 @@ class TablePage<T> {
 
 enum TablePageType {
   previous, current, next
+}
+
+enum TableState {
+  unknown, loading, error, displaying
 }

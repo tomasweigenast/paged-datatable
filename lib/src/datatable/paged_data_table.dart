@@ -5,15 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/column/checkbox_table_column.dart';
 import 'package:paged_datatable/src/datatable/column/table_column.dart';
+import 'package:paged_datatable/src/datatable/configuration/paged_datatable_configuration.dart';
 import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
 import 'package:paged_datatable/src/datatable/page_indicator.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_event.dart';
+import 'package:paged_datatable/src/datatable/paged_data_table_footer.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_header.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_state.dart';
-import 'package:paged_datatable/src/helpers/date_format.dart';
-import 'package:paged_datatable/src/helpers/timer_builder.dart';
+import 'package:paged_datatable/src/helpers/nil.dart';
 import 'package:provider/provider.dart';
 
+import 'configuration/paged_datatable_configuration_data.dart';
+
+/// Function that resolves a page.
 typedef PageResolver<T> = Future<PageIndicator<T>> Function(String? pageToken, int pageSize, FilterCollection filters);
 
 class PagedDataTable<T extends Object> extends StatefulWidget {
@@ -23,12 +27,24 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
   final int? defaultPageSize;
   final String initialPageToken;
   final PageResolver<T> resolvePage;
-  final PagedDataTableTheme? theme;
   final void Function(T item, bool selected)? onRowSelected;
   final PagedTableRowTapped<T>? onRowTap;
   final List<BasePagedDataTableFilter>? filters;
+  final PagedDataTableConfigurationData? configuration;
+  final Object? Function(T item)? itemIdEvaluator;
 
-  const PagedDataTable({required this.columns, required this.resolvePage, this.filters, this.onRowSelected, this.theme, this.onRowTap, String? initialPageToken, this.pageSizes, this.defaultPageSize, Key? key }) 
+  const PagedDataTable({
+    required this.columns, 
+    required this.resolvePage, 
+    this.filters, 
+    this.onRowSelected,
+    this.onRowTap, 
+    String? initialPageToken, 
+    this.pageSizes, 
+    this.defaultPageSize,
+    this.configuration,
+    this.itemIdEvaluator,
+    Key? key}) 
     : initialPageToken = initialPageToken ?? "", super(key: key);
 
   @override
@@ -98,9 +114,13 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
 
   @override
   Widget build(BuildContext context) {
+    var configuration = widget.configuration ?? PagedDataTableConfiguration.maybeOf(context) ?? _kDefaultDataTableConfiguration;
+
     return ChangeNotifierProvider<PagedDataTableState<T>>.value(
       value: _state,
       child: Card(
+        clipBehavior: Clip.antiAlias,
+        shape: configuration.theme?.shape,
         elevation: 5,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -114,130 +134,59 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
             ),
             const Divider(height: 1),
             Expanded(
-              child: Consumer<PagedDataTableState<T>>(
-                builder: (context, model, child) => _buildResultSet(context),
+              child: Container(
+                color: configuration.theme?.rowColors?[0],
+                child: Consumer<PagedDataTableState<T>>(
+                  builder: (context, model, child) {
+                    if(configuration.enableTransitions) {
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        child: _buildResultSet(context, configuration),
+                        switchInCurve: Curves.easeIn,
+                      );
+                    } else {
+                      return _buildResultSet(context, configuration);
+                    }
+                  }
+                ),
               ),
             ),
             const Divider(height: 1),
-            _buildFooter()
+            PagedDataTableFooter<T>(
+              theme: configuration.theme?.footerTheme,
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFooter() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      height: 42,
-      color: Colors.grey[200],
-      child: Consumer<PagedDataTableState<T>>(
-        builder: (context, state, _) {
-          return Row(
-            children: [
-              if(kDebugMode)
-                ...[
-                  TextButton(
-                    child: const Text("Fire event"),
-                    onPressed: () {
-                      _state.fireEvent(const DataTableCacheResetEvent(reason: DataTableCacheResetReason.previosPageNotFoundInCache));
-                    },
-                  )
-                ],
-              const Spacer(),
-              TimerBuilder(
-                duration: const Duration(minutes: 1),
-                builder: (context, child) => IconButton(
-                  icon: const Icon(Icons.refresh),
-                  splashRadius: 20,
-                  tooltip: "Refresh. Refreshed ${VerboseDateFormat.format(_state.lastSyncDate)}",
-                  color: widget.theme?.paginationButtonsColor,
-                  onPressed: _state.lastSyncDate == null || _state.lastSyncDate!.difference(DateTime.now()).abs().inMinutes >= 1 ? () {
-                    _state.refresh(clearCache: false, skipCache: true);
-                  } : null,
-                ) 
-              ),
-              const SizedBox(width: 12),
-              const VerticalDivider(width: 1),
-              const SizedBox(width: 12),
-
-              const SelectableText("Rows per page"),
-              const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                width: 80,
-                child: DropdownButtonFormField<int>(
-                  isExpanded: false,
-                  value: _state.currentPageSize,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.zero),
-                    contentPadding: EdgeInsets.only(left: 10),
-                  ),
-                  style: const TextStyle(fontSize: 14),
-                  items: _state.pageSizes.map((e) => DropdownMenuItem(child: Text(e.toString()), value: e)).toList(),
-                  onChanged: _state.isLoading ? null : (newPageSize) {
-                    if(newPageSize != null) {
-                      _state.setPageSize(newPageSize);
-                      _state.refresh(clearCache: true, skipCache: true);
-                    }
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 12),
-              const VerticalDivider(width: 1),
-              const SizedBox(width: 20),
-
-              SelectableText("Page ${_state.currentPage.index+1}"),
-
-              const SizedBox(width: 20),
-              const VerticalDivider(width: 1),
-              const SizedBox(width: 12),
-              IconButton(
-                icon: const Icon(Icons.navigate_before),
-                splashRadius: 20,
-                tooltip: "Previous page",
-                color: widget.theme?.paginationButtonsColor,
-                onPressed: _state.currentPage.hasPreviousPage ? () {
-                  _state.resolvePage(pageType: TablePageType.previous, skipCache: false);
-                } : null,
-              ),
-              IconButton(
-                icon: const Icon(Icons.navigate_next),
-                splashRadius: 20,
-                tooltip: "Next page",
-                color: widget.theme?.paginationButtonsColor,
-                onPressed: _state.currentPage.hasNextPage ? () {
-                  _state.resolvePage(pageType: TablePageType.next, skipCache: false);
-                } : null,
-              )
-            ],
-          );
-        }
-      ),
-    );
-  }
-
-  Widget _buildResultSet(BuildContext context) {
+  Widget _buildResultSet(BuildContext context, PagedDataTableConfigurationData configuration) {
     if(_state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return SizedBox(
+        key: ValueKey(_state.tableState),
+        child: configuration.loader.child,
+      );
     }
 
     if(_state.hasError) {
-      return Center(child: Text("An error has ocurred.\n${_state.error}"));
+      return Center(child: Text("An error has ocurred.\n${_state.error}"), key: ValueKey(_state.tableState));
     }
 
     if(_state.currentPage.items.isEmpty) {
-      return const Center(child: Text("No items have been found."));
+      return Center(child: const Text("No items have been found."), key: ValueKey(_state.tableState));
     }
 
-    return ListView.builder(
+    return ListView.separated(
+      key: ValueKey(_state.tableState),
+      separatorBuilder: (_, __) => configuration.theme?.rowColors != null ? const Nil() : const Divider(height: 0, thickness: 1),
       itemCount: _state.currentPage.items.length,
       itemBuilder: (context, index) {
         var item = _state.currentPage.items[index];
         return Material(
-          color: Colors.white,
+          color: configuration.theme?.rowColors == null ? _state.isRowSelected(item) ? configuration.theme?.selectedRowColor ?? Theme.of(context).colorScheme.primary.withOpacity(.1) : Colors.white : (configuration.theme!.rowColors!.length == 1 ? configuration.theme!.rowColors![0] : index % 2 == 0 ? configuration.theme!.rowColors![0] : configuration.theme!.rowColors![1]),
           child: InkWell(
+            mouseCursor: SystemMouseCursors.basic,
             onTap: () {
               _state.onRowTapped(item);
             },
@@ -251,63 +200,67 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
   }
 
   List<Widget> _buildRow(BuildContext context, T item) {
-    var items = <Widget>[
-      const SizedBox(width: 12)
-    ];
+    var items = <Widget>[];
+
     for(var column in _state.columns) {
       if(column is TableColumnBuilder<T>) {
         items.add(_buildCell(context, column, item));
-      } else if(column.flex != null) {
+      } else {
         items.add(Expanded(
-          flex: column.flex!,
+          flex: column.flex ?? 1,
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: column.alignment ?? Alignment.centerLeft,
             child: _buildCell(context, column, item),
           ),
         ));
-      } else {
-        items.add(Align(
-          alignment: column.alignment ?? Alignment.centerLeft,
-          child: _buildCell(context, column, item),
-        ));
       }
-
-      items.add(const SizedBox(width: 20));
     }
-
-    items.add(const SizedBox(width: 12));
 
     return items;
   }
 
   Widget _buildCell(BuildContext context, BaseTableColumn<T> column, T item) {
     if(column is TableColumn<T>) {
-      return column.rowFormatter(context, item);
+      return Padding(
+        key: ValueKey(widget.itemIdEvaluator?.call(item) ?? item),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: column.rowFormatter(context, item),
+      );
     } else if(column is CheckboxTableColumn<T>) {
-      return CheckboxTableColumnWidget(
-        onChange: column.onChange,
-        initialValue: column.forField(item),
+      return Padding(
+        key: ValueKey(widget.itemIdEvaluator?.call(item) ?? item),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: CheckboxTableColumnWidget(
+          onChange: column.onChange == null ? null : (newValue) => column.onChange!.call(item, newValue),
+          initialValue: column.forField(item),
+        ),
       );
     } else if(column is TableColumnBuilder<T>) {
-      return column.rowFormatter(context, item);
+      return Padding(
+        key: ValueKey(widget.itemIdEvaluator?.call(item) ?? item),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: column.rowFormatter(context, item),
+      );
     } else {
       return const SizedBox();
     }
   }
 
   void _onEvent(PagedDataTableEvent event) {
+    var configuration = PagedDataTableConfiguration.maybeOf(context) ?? _kDefaultDataTableConfiguration;
+
     if(event is DataTableCacheResetEvent) {
       // TODO: Add message translation
       String message = event.reason == DataTableCacheResetReason.previosPageNotFoundInCache ? "Table has been reset because previous page has expired." : "Table has been reset because cache has been expired";
 
-      if(widget.theme?.messageEventNotifier == null) {
+      if(configuration.messageEventNotifier == null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(message),
           duration: const Duration(seconds: 3),
         ));
       } else {
-        if(widget.theme!.messageEventNotifier!.function != null) {
-          widget.theme!.messageEventNotifier!.function!.call(message);
+        if(configuration.messageEventNotifier!.function != null) {
+          configuration.messageEventNotifier!.function!.call(message);
         }
       }
     }
@@ -319,3 +272,8 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
     super.dispose();
   }
 }
+
+const PagedDataTableConfigurationData _kDefaultDataTableConfiguration = PagedDataTableConfigurationData(
+  enableTransitions: false,
+  loader: PagedDataTableLoader.linear()
+);

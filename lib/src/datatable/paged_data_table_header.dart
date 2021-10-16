@@ -21,18 +21,14 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   @override
-  void initState() {
-    super.initState();
-
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 35),
-      color: Colors.grey[200],
+    var theme = PagedDataTableConfiguration.maybeOf(context)?.theme;
+
+    return Material(
+      elevation: theme?.headerTheme?.backgroundColor != null ? 3 : 0,
+      color: theme?.headerTheme?.backgroundColor ?? Colors.grey[200],
       child: DefaultTextStyle(
-        style: const TextStyle(fontWeight: FontWeight.w500),
+        style: TextStyle(fontWeight: FontWeight.w500, color: theme?.headerTheme?.columnNameColor),
         textAlign: TextAlign.left,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -41,63 +37,58 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
               ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: _buildFilters(),
+                  child: _buildFilters(theme?.headerTheme),
                 ),
-                const Divider(),
+                const Divider(height: 1),
               ],
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(  
-                children: _buildColumnHeaders()
+            SizedBox(
+              height: 40,
+              child: DefaultTextStyle(
+                style: TextStyle(fontWeight: FontWeight.w600, color: theme?.headerTheme?.columnNameColor),
+                overflow: TextOverflow.ellipsis,
+                child: Row(  
+                  children: _buildColumnHeaders(theme?.headerTheme)
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildColumnHeaders() {
+  List<Widget> _buildColumnHeaders(PagedDataTableHeaderTheme? theme) {
     List<Widget> items = [];
     for(var column in widget.columns) {
       if(column is TableColumnBuilder<T>) {
-        items.addAll([
-          column.title,
-          const SizedBox(width: 20)
-        ]);
+        items.add(Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: column.title
+        ));
       } else {
-        items.addAll([
-          if(column.flex != null)
-            Expanded(
-              flex: column.flex!,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: column.title,
-              ),
-            )
-          else
-            Align(
-              alignment: column.alignment ?? Alignment.centerLeft,
-              child: column.title,
-            ),
-
-          const SizedBox(width: 20)
-        ]);
+        items.add(Expanded(
+          flex: column.flex ?? 1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            alignment: column.alignment ?? Alignment.centerLeft,
+            child: column.title,
+          ),
+        ));
       }
     }
 
     return items;
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(PagedDataTableHeaderTheme? theme) {
     return Consumer<PagedDataTableFilterState>(
       builder: (context, state, child) {
         return Row(
           children: [
             PopupMenuButton(
               tooltip: "Show filter menu",
-              icon: const Icon(Icons.filter_list_rounded),
+              icon: Icon(Icons.filter_list_rounded, color: theme?.columnNameColor),
               itemBuilder: (context) => <PopupMenuEntry>[
                 const PopupMenuItem(
                   enabled: false,
@@ -110,7 +101,10 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
                     key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: widget.filters!.map((filter) => _buildFilter(filter, state)).toList()
+                      children: [
+                        ...widget.filters!.map((filter) => _buildFilter(filter, state)),
+                        const SizedBox(height: 10)
+                      ]
                     ),
                   ),
                 ),

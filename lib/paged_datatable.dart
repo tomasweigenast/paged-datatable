@@ -7,3 +7,5 @@ export 'src/datatable/paged_table_row_tapped.dart';
 export 'src/datatable/column/table_column.dart';
 export 'src/datatable/filter/paged_datatable_filter.dart';
 export 'src/datatable/filter/filter_collection.dart';
+export 'src/datatable/configuration/paged_datatable_configuration.dart';
+export 'src/datatable/configuration/paged_datatable_configuration_data.dart';
