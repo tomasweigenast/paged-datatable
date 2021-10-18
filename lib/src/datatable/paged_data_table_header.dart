@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
+import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
 import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
+import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter_popup.dart';
+import 'package:paged_datatable/src/datatable/options_menu/paged_data_table_options_menu.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_filter_state.dart';
-import 'package:paged_datatable/src/helpers/popup_menu_widget.dart';
 import 'package:provider/provider.dart';
 
 class PagedDataTableHeader<T> extends StatefulWidget{
 
   final List<BaseTableColumn<T>> columns;
   final List<BasePagedDataTableFilter>? filters;
+  final Widget? additional;
+  final PagedDataTableConfigurationData configuration;
+  final PagedDataTableOptionsMenu? optionsMenu;
 
-  const PagedDataTableHeader({required this.columns, required this.filters, Key? key }) : super(key: key);
+  const PagedDataTableHeader({required this.columns, required this.filters, required this.additional, required this.configuration, required this.optionsMenu, Key? key }) : super(key: key);
 
   @override
   _PagedDataTableHeaderState createState() => _PagedDataTableHeaderState();
@@ -18,17 +23,16 @@ class PagedDataTableHeader<T> extends StatefulWidget{
 
 class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
 
-  final GlobalKey<FormState> _formKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
-    var theme = PagedDataTableConfiguration.maybeOf(context)?.theme;
+    var theme = widget.configuration.theme?.headerTheme ?? PagedDataTableConfiguration.maybeOf(context)?.theme?.headerTheme;
+    var intl = PagedDataTableLocalization.maybeOf(context) ?? PagedDataTableCodedIntl.maybeFrom(widget.configuration);
 
     return Material(
-      elevation: theme?.headerTheme?.backgroundColor != null ? 3 : 0,
-      color: theme?.headerTheme?.backgroundColor ?? Colors.grey[200],
+      elevation: theme?.backgroundColor != null ? 3 : 0,
+      color: theme?.backgroundColor ?? Colors.grey[200],
       child: DefaultTextStyle(
-        style: TextStyle(fontWeight: FontWeight.w500, color: theme?.headerTheme?.columnNameColor),
+        style: TextStyle(fontWeight: FontWeight.w500, color: theme?.columnNameColor),
         textAlign: TextAlign.left,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +41,7 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
               ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: _buildFilters(theme?.headerTheme),
+                  child: _buildFilters(theme, intl),
                 ),
                 const Divider(height: 1),
               ],
@@ -45,10 +49,10 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
             SizedBox(
               height: 40,
               child: DefaultTextStyle(
-                style: TextStyle(fontWeight: FontWeight.w600, color: theme?.headerTheme?.columnNameColor),
+                style: TextStyle(fontWeight: FontWeight.w600, color: theme?.columnNameColor),
                 overflow: TextOverflow.ellipsis,
-                child: Row(  
-                  children: _buildColumnHeaders(theme?.headerTheme)
+                child: Row(
+                  children: _buildColumnHeaders(theme)
                 ),
               ),
             ),
@@ -81,74 +85,52 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
     return items;
   }
 
-  Widget _buildFilters(PagedDataTableHeaderTheme? theme) {
+  Widget _buildFilters(PagedDataTableHeaderTheme? theme, PagedDataTableLocalization? intl) {
     return Consumer<PagedDataTableFilterState>(
       builder: (context, state, child) {
         return Row(
           children: [
-            PopupMenuButton(
-              tooltip: "Show filter menu",
+            IconButton(
+              splashRadius: 20,
+              tooltip: intl?.showFilterMenuTooltip ?? "Show filter menu",
               icon: Icon(Icons.filter_list_rounded, color: theme?.columnNameColor),
-              itemBuilder: (context) => <PopupMenuEntry>[
-                const PopupMenuItem(
-                  enabled: false,
-                  height: 22,
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-                  child: SelectableText("Filter by", style: TextStyle(color: Colors.black)),
-                ),
-                PopupMenuWidget(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ...widget.filters!.map((filter) => _buildFilter(filter, state)),
-                        const SizedBox(height: 10)
-                      ]
-                    ),
-                  ),
-                ),
-                const PopupMenuDivider(height: 1),
-                PopupMenuItem(
-                  enabled: false,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.all(20)
-                          ),
-                          child: const Text("Cancel"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
+              onPressed: () async {
+                final RenderBox renderBox = context.findRenderObject() as RenderBox;
+                var offset = renderBox.localToGlobal(Offset.zero);
+                var size = renderBox.size;
+
+                RelativeRect rect = RelativeRect.fromLTRB(offset.dx, offset.dy+size.height, 0, 0);
+
+                await showDialog(
+                  barrierDismissible: true,
+                  barrierColor: Colors.transparent,
+                  useSafeArea: true,
+                  context: context, 
+                  builder: (context) => Stack(
+                    fit: StackFit.loose,
+                    children: [
+                      Positioned(
+                        top: rect.top,
+                        left: rect.left,
+                        child: PagedDataTableFilterPopup(
+                          state: state,
+                          clearAllButtonEnabled: state.activeFilters.isNotEmpty,
+                          widgets: widget.filters!.map((filter) => _buildFilter(filter, state)),
+                          intl: intl,
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(20)
-                          ),
-                          child: const Text("Apply"),
-                          onPressed: () {
-                            _formKey.currentState!.save();
-                            if(_formKey.currentState!.validate()) {
-                              state.applyFilters();
-                              Navigator.pop(context);
-                            }
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                  value: null,
-                )
-              ],
-              elevation: 8,
-              offset: const Offset(20, 35),
-              enableFeedback: false,
+                      )
+                    ],
+                  )
+                );
+              }
             ),
-            _buildSelectedFilterChips()
+            _buildSelectedFilterChips(intl),
+            const Spacer(),
+            if(widget.additional != null)
+              widget.additional!,
+
+            if(widget.optionsMenu != null)
+              widget.optionsMenu!
           ],
         );
       }
@@ -168,9 +150,9 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
   Widget _buildTextFilter(PagedDataTableTextFieldFilter filter, PagedDataTableFilterState state) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-      constraints: const BoxConstraints(
-        minWidth: 600
-      ),
+      // constraints: const BoxConstraints(
+      //   minWidth: 600
+      // ),
       child: TextFormField(
         decoration: InputDecoration(
           labelText: filter.text,
@@ -203,12 +185,12 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
   Widget _buildDropdownFilter(PagedDataTableDropdownFilter filter, PagedDataTableFilterState state) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-      constraints: const BoxConstraints(
-        minWidth: 600
-      ),
+      // constraints: const BoxConstraints(
+      //   minWidth: 600
+      // ),
       child: DropdownButtonFormField<dynamic>(
         items: filter.items,
-        isExpanded: true,
+        isExpanded: false,
         value: state.getFilterValue(filter.filterId),
         decoration: InputDecoration(
           labelText: filter.text,
@@ -235,11 +217,11 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
     );
   }
 
-  Widget _buildSelectedFilterChips() {
+  Widget _buildSelectedFilterChips(PagedDataTableLocalization? intl){
     return Consumer<PagedDataTableFilterState>(
       builder: (context, state, _) {
         return Row(
-          children: state.activeFilters.map((filter) => Padding(
+          children: state.activeFilters.where((element) => (element.filter as dynamic).chipFormatter != null).map((filter) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3.0),
             child: InputChip(
               label: Text((filter.filter as dynamic).chipFormatter.call(filter.currentValue!)),
@@ -247,7 +229,7 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
                 child: Icon(Icons.close, size: 16),
                 cursor: SystemMouseCursors.click,
               ),
-              deleteButtonTooltipMessage: "Remove this filter",
+              deleteButtonTooltipMessage: intl?.removeFilterButtonText ?? "Remove this filter",
               isEnabled: true,
               onDeleted: () {
                 state.removeFilter(filter.filterId);
@@ -257,5 +239,5 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
         );
       }
     );
-  }  
+  }
 }

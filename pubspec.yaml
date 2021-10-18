@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   provider: ^6.0.1
   intl: ^0.17.0
   stream_transform: ^2.0.0
@@ -20,3 +22,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+
+flutter:
+  generate: true
+
+flutter_intl:
+  enabled: true
+  class_name: PagedDataTableLocalization 
+  main_locale: en 
+  arb_dir: lib/l10n 
+  output_dir: lib/l10n/generated
+  use_deferred_loading: false

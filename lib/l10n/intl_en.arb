@@ -1,0 +1,48 @@
+{
+    "showFilterMenuTooltip": "Show filter menu",
+    "filterByTitle": "Filter by",
+    "applyFilterButtonText": "Apply",
+    "cancelFilteringButtonText": "Cancel",
+    "removeAllFiltersButtonText": "Remove",
+    "removeFilterButtonText": "Remove this filter",
+    "refreshButtonText": "Refresh. Refreshed {time}",
+    "@refreshButtonText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPagePageText": "Rows per page",
+    "pageIndicatorText": "Page {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "nextPageButtonText": "Next page",
+    "previousPageButtonText": "Previous page",
+    "refreshTimeFormattingNever": "never",
+    "refreshTimeFormattingJustNow": "just now",
+    "refreshTimeFormattingAMinuteAgo": "a minute ago",
+    "refreshTimeFormattingAFewMinutesAgo": "a few minutes ago",
+    "refreshTimeFormattingAnHourAgo": "an hour ago",
+    "refreshTimeFormattingTodayAt": "today at {time}",
+    "@refreshTimeFormattingTodayAt": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "refreshTimeFormattingYesterdayAt": "yesterday at {time}",
+    "@refreshTimeFormattingYesterdayAt": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "refreshTimeFormattingAnotherTime": "on {time}",
+    "@refreshTimeFormattingAnotherTime": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "tableResetDueCacheReset": "Table has been reset because local cache has expired.",
+    "tableResetDuePreviousPageNotFound": "Table has been reset because the requested page was not found in cache."
+}

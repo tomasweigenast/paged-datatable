@@ -41,10 +41,11 @@ class PagedDataTableState<T> extends ChangeNotifier {
   PagedDataTableFilterState? get filterState => _filterState;
   bool get hasFilters => _filterState != null;
   TableState get tableState => _tableState;
+  bool get isRowsPerPageAvailable => _pageSizes.isNotEmpty;
 
   PagedDataTableState({
     required int currentPageSize, 
-    required List<int> pageSizes, 
+    required List<int>? pageSizes, 
     required String initialPageToken, 
     required PageResolver<T> pageResolver, 
     required bool isSelectable, 
@@ -58,7 +59,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
       _onRowSelected = onRowSelected,
       _filterState = filters == null ? null : PagedDataTableFilterState(filters: filters) {
     _pageSize = currentPageSize;
-    _pageSizes = pageSizes;
+    _pageSizes = pageSizes ?? const [];
     _initialPageToken = initialPageToken;
     _currentPage = TablePage.initial(currentPageToken: initialPageToken);
 
@@ -137,7 +138,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
         break;
     }
 
-    String? previousPageToken = newPageIndex == 0 ? null : _currentPage.currentPageToken;
+    String? previousPageToken = newPageIndex == 0 ? null : (pageType == TablePageType.current ? _currentPage.previousPageToken : _currentPage.currentPageToken);
     TablePage<T>? newPage;
 
     try {
@@ -146,7 +147,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
       newPage = _pageCache[fetchToken];
 
       // If not found, resolve new page
-      if(newPage == null) {
+      if(newPage == null || skipCache) {
         if(pageType == TablePageType.previous) {
           fetchToken = _initialPageToken;
           _pageCache.clear();

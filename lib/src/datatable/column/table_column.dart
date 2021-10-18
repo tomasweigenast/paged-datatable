@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:paged_datatable/paged_datatable.dart';
+import 'package:paged_datatable/src/datatable/column/dropdown_table_column.dart';
 import 'package:paged_datatable/src/datatable/column/editable_text_field.dart';
 
 class BaseTableColumn<T> {
@@ -15,7 +16,7 @@ class TableColumn<T> extends BaseTableColumn<T> {
   final Widget Function(BuildContext context, T item) rowFormatter;
 
   TableColumn({required String title, required this.rowFormatter, int? flex, Alignment? alignment}) 
-    : super(title: SelectableText(title), flex: alignment == null ? flex ?? 1 : null, alignment: alignment);
+    : super(title: Tooltip(child: SelectableText(title), message: title,), flex: alignment == null ? flex ?? 1 : null, alignment: alignment);
 }
 
 class EditableTableColumn<T> extends TableColumn<T> {
@@ -50,12 +51,39 @@ class EditableTableColumn<T> extends TableColumn<T> {
       );
 }
 
+class DropdownTableColumn<TableType, ItemType> extends TableColumn<TableType> {
+  DropdownTableColumn({
+    required String title, 
+    required Future Function(TableType item, ItemType newValue) onChange, 
+    required String Function(ItemType value) valueFormatter,
+    required List<ItemType> items,
+    required ItemType Function(TableType value) forField,
+    int? flex, 
+    Alignment? alignment,
+  }) 
+    : super(
+        title: title, 
+        flex: alignment == null ? flex ?? 1 : null, 
+        alignment: alignment,
+        rowFormatter: (context, value) {
+          return DropdownTableColumnWidget<ItemType>(
+            onChange: (newValue) => onChange(value, newValue),
+            valueFormatter: valueFormatter,
+            items: items,
+            initialValue: forField(value),
+            // label: title,
+            key: ValueKey(value),
+          );
+        }
+      );
+}
+
 class CheckboxTableColumn<T> extends BaseTableColumn<T> {
   final Future Function(T item, bool newValue)? onChange;
   final bool Function(T item) forField;
 
   CheckboxTableColumn({required String title, required this.forField, this.onChange, int? flex, Alignment? alignment}) 
-    : super(title: SelectableText(title), flex: alignment == null ? flex ?? 1 : null, alignment: alignment);
+    : super(title: Tooltip(child: SelectableText(title), message: title), flex: alignment == null ? flex ?? 1 : null, alignment: alignment);
 }
 
 class TableColumnBuilder<T> extends BaseTableColumn<T> {

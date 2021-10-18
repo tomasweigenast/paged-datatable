@@ -6,6 +6,7 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
+
 dependencies:
   paged_datatable:
     path: ../
@@ -14,6 +15,8 @@ dependencies:
   intl: any
   equatable: any
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
 dev_dependencies:

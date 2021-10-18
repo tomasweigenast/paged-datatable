@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 abstract class BasePagedDataTableFilter<T> {
   final String filterId;
   final T? initialValue;
-  final String Function(T selectedItem) chipFormatter;
+  final String Function(T selectedItem)? chipFormatter;
 
   const BasePagedDataTableFilter({required this.filterId, required this.initialValue, required this.chipFormatter});
 }

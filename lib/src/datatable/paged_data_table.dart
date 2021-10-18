@@ -1,37 +1,77 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/column/checkbox_table_column.dart';
 import 'package:paged_datatable/src/datatable/column/table_column.dart';
+import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_datatable_configuration.dart';
 import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
 import 'package:paged_datatable/src/datatable/page_indicator.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_event.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_footer.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_header.dart';
+import 'package:paged_datatable/src/datatable/options_menu/paged_data_table_options_menu.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_state.dart';
 import 'package:paged_datatable/src/helpers/nil.dart';
 import 'package:provider/provider.dart';
 
 import 'configuration/paged_datatable_configuration_data.dart';
 
+part 'paged_data_table_controller.dart';
+
 /// Function that resolves a page.
 typedef PageResolver<T> = Future<PageIndicator<T>> Function(String? pageToken, int pageSize, FilterCollection filters);
 
 class PagedDataTable<T extends Object> extends StatefulWidget {
 
+  /// The list of columns.
   final List<BaseTableColumn<T>> columns;
+
+  /// The list of page sizes that can be selected. If no or single value is provided,
+  /// "Rows per page" dropdown won't be shown.
   final List<int>? pageSizes;
+
+  /// The default page size to use.
   final int? defaultPageSize;
+
+  /// The initial page token to use.
   final String initialPageToken;
+
+  /// A function that resolves a page.
   final PageResolver<T> resolvePage;
+
+  /// A function that gets called when a row is selected.
   final void Function(T item, bool selected)? onRowSelected;
+
+  /// Defines how rows behave when tapped.
   final PagedTableRowTapped<T>? onRowTap;
+
+  /// The list of filters that are available for this [PagedDataTable]
   final List<BasePagedDataTableFilter>? filters;
+
+  /// Configures this [PagedDataTable].
   final PagedDataTableConfigurationData? configuration;
+
+  /// A function that returns a property of [T], which will be used for comparison. 
+  /// If not set, a simple equality comparison will be made on [T].
   final Object? Function(T item)? itemIdEvaluator;
+  
+  /// A custom [PagedDataTableController] can be set to have more control of the table.
+  final PagedDataTableController<T>? controller;
+  
+  /// Any additional widget to add to the footer row.
+  /// This property is not recommended due to design guidelines, a more apropiate way if to use [dataTableOptions].
+  /// If you still want to use this property, try to not overhead with many items, it will cause a Scrollbar to be shown.
+  final Widget? footer;
+
+  /// Any Additional widget to add to the header row.
+  final Widget? header;
+
+  /// Sets an Options menu at the top right corner of the table.
+  final PagedDataTableOptionsMenu? optionsMenu;
 
   const PagedDataTable({
     required this.columns, 
@@ -44,6 +84,10 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
     this.defaultPageSize,
     this.configuration,
     this.itemIdEvaluator,
+    this.footer,
+    this.header,
+    this.controller,
+    this.optionsMenu,
     Key? key}) 
     : initialPageToken = initialPageToken ?? "", super(key: key);
 
@@ -54,7 +98,7 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
 class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
 
   late final PagedDataTableState<T> _state;
-  StreamSubscription? _onEventReceivedListener;
+  StreamSubscription? _onEventReceivedListener, _onControllerEventReceivedListener;
 
   @override
   void initState() {
@@ -99,7 +143,7 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
       columns: widget.columns,
       pageResolver: widget.resolvePage,
       currentPageSize: widget.defaultPageSize ?? 20, 
-      pageSizes: widget.pageSizes ?? [20, 50, 70],
+      pageSizes: widget.pageSizes,
       initialPageToken: widget.initialPageToken,
       isSelectable: widget.onRowSelected != null,
       onRowTapped: widget.onRowTap,
@@ -108,8 +152,12 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
     );
 
     _onEventReceivedListener = _state.eventStream.listen(_onEvent);
-
     _state.resolvePage(pageType: TablePageType.current, skipCache: false);
+
+    if(widget.controller != null) {
+      widget.controller!._state = _state;
+      _onControllerEventReceivedListener = widget.controller!._onEvent.listen(_onControllerEvent);
+    }
   }
 
   @override
@@ -118,44 +166,60 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
 
     return ChangeNotifierProvider<PagedDataTableState<T>>.value(
       value: _state,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: configuration.theme?.shape,
-        elevation: 5,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ChangeNotifierProvider.value(
-              value: _state.filterState,
-              child: PagedDataTableHeader(
-                columns: _state.columns,
-                filters: widget.filters
-              ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: Container(
-                color: configuration.theme?.rowColors?[0],
-                child: Consumer<PagedDataTableState<T>>(
-                  builder: (context, model, child) {
-                    if(configuration.enableTransitions) {
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        child: _buildResultSet(context, configuration),
-                        switchInCurve: Curves.easeIn,
-                      );
-                    } else {
-                      return _buildResultSet(context, configuration);
-                    }
-                  }
+      child: ProxyProvider<PagedDataTableState<T>, PagedDataTableController?>(
+        create: (context) {
+          debugPrint("ProxyProvider created.");
+          return widget.controller;
+        },
+        update: (context, state, controller) {
+          if(controller != null) {
+            controller._state = state;
+            debugPrint("Controller received table state.");
+          }
+        },
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          shape: configuration.theme?.shape,
+          elevation: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ChangeNotifierProvider.value(
+                value: _state.filterState,
+                child: PagedDataTableHeader(
+                  configuration: configuration,
+                  additional: widget.header,
+                  columns: _state.columns,
+                  filters: widget.filters,
+                  optionsMenu: widget.optionsMenu,
                 ),
               ),
-            ),
-            const Divider(height: 1),
-            PagedDataTableFooter<T>(
-              theme: configuration.theme?.footerTheme,
-            )
-          ],
+              const Divider(height: 1),
+              Expanded(
+                child: Container(
+                  color: configuration.theme?.rowColors?[0],
+                  child: Consumer<PagedDataTableState<T>>(
+                    builder: (context, model, child) {
+                      if(configuration.enableTransitions) {
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          child: _buildResultSet(context, configuration),
+                          switchInCurve: Curves.easeIn,
+                        );
+                      } else {
+                        return _buildResultSet(context, configuration);
+                      }
+                    }
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              PagedDataTableFooter<T>(
+                additional: widget.footer,
+                configuration: configuration,
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -248,10 +312,12 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
 
   void _onEvent(PagedDataTableEvent event) {
     var configuration = PagedDataTableConfiguration.maybeOf(context) ?? _kDefaultDataTableConfiguration;
+    var intl = PagedDataTableLocalization.maybeOf(context) ?? PagedDataTableCodedIntl.maybeFrom(widget.configuration);
 
     if(event is DataTableCacheResetEvent) {
-      // TODO: Add message translation
-      String message = event.reason == DataTableCacheResetReason.previosPageNotFoundInCache ? "Table has been reset because previous page has expired." : "Table has been reset because cache has been expired";
+      String message = event.reason == DataTableCacheResetReason.previosPageNotFoundInCache 
+        ? intl?.previousPageButtonText ?? "Table has been reset because previous page has expired." 
+        : intl?.tableResetDueCacheReset ?? "Table has been reset because cache has been expired";
 
       if(configuration.messageEventNotifier == null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -266,9 +332,17 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
     }
   }
 
+  void _onControllerEvent(dynamic event) {
+    if(event is _PagedDataTableControllerResetEvent) {
+      _state.refresh(clearCache: event.clearCache, skipCache: true);
+    }
+  }
+
   @override
   void dispose() {
+    _state.dispose();
     _onEventReceivedListener?.cancel();
+    _onControllerEventReceivedListener?.cancel();
     super.dispose();
   }
 }

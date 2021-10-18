@@ -23,14 +23,29 @@ class PagedDataTableFilterState extends ChangeNotifier {
     return _filters[filterId]!.filter;
   } 
 
-  void setFilterValue(String filterId, Object? newValue, {bool notify = false}) {
-    if(_filters.containsKey(filterId)) {
-      _filters[filterId]!._currentValue = newValue;
+  void setFilterValue<T extends Object>(String filterId, T? newValue, {bool notify = false, bool create = false, bool apply = false}) {
+    var filterState = _filters[filterId];
+    if(filterState == null && create) {
+      filterState = _FilterState<T>(
+        filter: _CustomFilter<T>(filterId, newValue),
+        currentValue: newValue
+      );
+
+      _filters[filterId] = filterState;
+      debugPrint("A new filter was registered with id '$filterId'");
+    }
+
+    if(filterState != null){
+      filterState._currentValue = newValue;
       if(notify) {
         notifyListeners();
       }
 
       debugPrint("Filter '$filterId' changed its value to '$newValue'");
+    }
+
+    if(apply) {
+      applyFilters();
     }
   }
 
@@ -43,15 +58,26 @@ class PagedDataTableFilterState extends ChangeNotifier {
     _filterUpdateNotifier.add(FilterUpdateEvent._(filterId: filterId, currentValue: null));
   }
 
-  void clearFilters() {
-    for(var activeFilter in activeFilters){
+  void clearFilters({bool notify = true}) {
+    if(activeFilters.isEmpty) {
+      return;
+    }
+
+    for(var activeFilter in _filters.values.where((element) => element._currentValue != null).toList()){
       _filters[activeFilter.filterId]!._currentValue = null;
     }
     notifyListeners();
-    _filterUpdateNotifier.add(FilterUpdateEvent._(filterId: "*", currentValue: null));
+
+    if(notify) {
+      _filterUpdateNotifier.add(FilterUpdateEvent._(filterId: "*", currentValue: null));
+    }
   }
 
   void applyFilters() {
+    if(activeFilters.isEmpty) {
+      return;
+    }
+
     notifyListeners();
 
     for(var activeFilter in activeFilters){
@@ -66,15 +92,19 @@ class PagedDataTableFilterState extends ChangeNotifier {
   }
 }
 
-class _FilterState {
+class _FilterState<T extends Object> {
   final String filterId;
   final BasePagedDataTableFilter filter;
   
-  Object? _currentValue;
+  T? _currentValue;
 
-  Object? get currentValue => _currentValue;
+  T? get currentValue => _currentValue;
 
-  _FilterState({required this.filter, Object? currentValue}) : filterId = filter.filterId, _currentValue = currentValue;
+  _FilterState({required this.filter, T? currentValue}) : filterId = filter.filterId, _currentValue = currentValue;
+}
+
+class _CustomFilter<T> extends BasePagedDataTableFilter<T> {
+  const _CustomFilter(String filterId, T? initialValue) : super(filterId: filterId, initialValue: initialValue, chipFormatter: null);
 }
 
 class FilterUpdateEvent {

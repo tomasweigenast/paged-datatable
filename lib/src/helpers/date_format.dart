@@ -1,26 +1,30 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:paged_datatable/paged_datatable.dart';
 
 class VerboseDateFormat {
-  static String format(DateTime? dateTime) {
+  static String format(BuildContext context, DateTime? dateTime) {
+    var intl = PagedDataTableLocalization.maybeOf(context);
+
     if(dateTime == null) {
-      return "never";
+      return intl?.refreshTimeFormattingNever ?? "never";
     }
 
     var diff = DateTime.now().difference(dateTime).abs();
     if(diff.inMinutes <= 1) {
-      return "just now";
+      return intl?.refreshTimeFormattingJustNow ?? "just now";
     } else if(diff.inMinutes > 1 && diff.inMinutes < 3) {
-      return "a minute ago.";
+      return intl?.refreshTimeFormattingAMinuteAgo ?? "a minute ago.";
     } else if(diff.inMinutes > 3 && diff.inMinutes < 59) {
-      return "a few minutes ago.";
+      return intl?.refreshTimeFormattingAFewMinutesAgo ?? "a few minutes ago.";
     } else if(diff.inHours <= 1) {
-      return "an hour ago.";
+      return intl?.refreshTimeFormattingAnHourAgo ?? "an hour ago.";
     } else if(diff.inHours > 1 && diff.inDays < 1) {
-      return "today at ${DateFormat.jm().format(dateTime)}";
+      return intl?.refreshTimeFormattingTodayAt(DateFormat.jm().format(dateTime)) ?? "today at ${DateFormat.jm().format(dateTime)}";
     } else if(diff.inDays >= 1 && diff.inDays < 2) {
-      return "yesterday"; 
+      return intl?.refreshTimeFormattingYesterdayAt(DateFormat.jm().format(dateTime)) ?? "yesterday at ${DateFormat.jm().format(dateTime)}"; 
     } else {
-      return DateFormat.yMMMd().format(dateTime);
+      return intl?.refreshTimeFormattingAnotherTime(DateFormat.yMMMd().format(dateTime)) ?? "on ${DateFormat.yMMMd().format(dateTime)}";
     }
   }
 }

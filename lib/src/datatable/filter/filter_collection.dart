@@ -18,4 +18,7 @@ class FilterCollection {
   T? filterAsOrNull<T>(String filterId) {
     return _filters[filterId] as T?;
   }
+
+  @override
+  String toString() => _filters.keys.toString();
 }

@@ -1,0 +1,48 @@
+{
+    "showFilterMenuTooltip": "Mostrar filtros",
+    "filterByTitle": "Filtrar por",
+    "applyFilterButtonText": "Aplicar",
+    "cancelFilteringButtonText": "Cancelar",
+    "removeAllFiltersButtonText": "Borrar",
+    "removeFilterButtonText": "Quitar este filtro",
+    "refreshButtonText": "Actualizar. Actualizado {time}",
+    "@refreshButtonText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPagePageText": "Filas por página",
+    "pageIndicatorText": "Página {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "nextPageButtonText": "Siguiente página",
+    "previousPageButtonText": "Página anterior",
+    "refreshTimeFormattingNever": "nunca",
+    "refreshTimeFormattingJustNow": "justo ahora",
+    "refreshTimeFormattingAMinuteAgo": "hace un minuto",
+    "refreshTimeFormattingAFewMinutesAgo": "hace unos minutos",
+    "refreshTimeFormattingAnHourAgo": "hace una hora",
+    "refreshTimeFormattingTodayAt": "hoy a las {time}",
+    "@refreshTimeFormattingTodayAt": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "refreshTimeFormattingYesterdayAt": "ayer a las {time}",
+    "@refreshTimeFormattingYesterdayAt": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "refreshTimeFormattingAnotherTime": "el {time}",
+    "@refreshTimeFormattingAnotherTime": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "tableResetDueCacheReset": "La table ha sido reestablecida desde el inicio debido a que caché expiró.",
+    "tableResetDuePreviousPageNotFound": "La table ha sido reestablecida desde el inicio debido a que la página solicitada no se encontró en caché."
+}

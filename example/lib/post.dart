@@ -10,8 +10,9 @@ class Post {
   DateTime createdAt;
   bool isEnabled;
   int number;
+  Gender authorGender;
 
-  Post({required this.id, required this.author, required this.content, required this.createdAt, required this.isEnabled, required this.number});
+  Post({required this.id, required this.author, required this.content, required this.createdAt, required this.isEnabled, required this.number, required this.authorGender});
 
   static final Faker _faker = Faker();
   factory Post.random({required int id}) {
@@ -21,8 +22,21 @@ class Post {
       content: _faker.lorem.sentences(10).join(". "),
       createdAt: _faker.date.dateTime(minYear: 2019, maxYear: 2021),
       isEnabled: _faker.randomGenerator.boolean(),
-      number: faker.randomGenerator.integer(9999)
+      number: faker.randomGenerator.integer(9999),
+      authorGender: Gender.values[_faker.randomGenerator.integer(3)]
     );  
+  }
+}
+
+enum Gender {
+  male, female, unespecified
+}
+
+String formatGender(Gender gender) {
+  switch(gender) {
+    case Gender.male: return "Male";
+    case Gender.female: return "Female";
+    case Gender.unespecified: return "Unspecified";
   }
 }
 
