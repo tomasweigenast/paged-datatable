@@ -29,6 +29,12 @@ class PagedDataTableTheme {
   /// The shape of the entire table.
   final ShapeBorder? shape;
 
+  /// A widget that is shown when an error is caught.
+  final Widget Function(BuildContext context, Object? error)? onErrorBuilder; 
+
+  /// A widget that is shown when no items are found.
+  final Widget Function(BuildContext context)? onNoItemsFound;
+
   const PagedDataTableTheme({
     this.editableColumnTheme,
     this.rowColors,
@@ -37,6 +43,8 @@ class PagedDataTableTheme {
     this.backgroundColor,
     this.textColor,
     this.selectedRowColor,
+    this.onErrorBuilder,
+    this.onNoItemsFound,
     this.shape}) : 
       assert(textColor == null || (headerTheme == null || footerTheme == null), "Cannot provide both textColor and headerTheme or footerTheme"),
       assert(backgroundColor == null || (headerTheme == null || footerTheme == null), "Cannot provide both textColor and headerTheme or footerTheme");

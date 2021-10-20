@@ -202,6 +202,7 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
                     builder: (context, model, child) {
                       if(configuration.enableTransitions) {
                         return AnimatedSwitcher(
+                          transitionBuilder: configuration.transitionBuilder ?? AnimatedSwitcher.defaultTransitionBuilder,
                           duration: const Duration(milliseconds: 500),
                           child: _buildResultSet(context, configuration),
                           switchInCurve: Curves.easeIn,
@@ -234,10 +235,24 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
     }
 
     if(_state.hasError) {
+      if(configuration.theme?.onErrorBuilder != null) {
+        return SizedBox(
+          key: ValueKey(_state.tableState),
+          child: configuration.theme!.onErrorBuilder!.call(context, _state.error),
+        );
+      }
+
       return Center(child: Text("An error has ocurred.\n${_state.error}"), key: ValueKey(_state.tableState));
     }
 
     if(_state.currentPage.items.isEmpty) {
+      if(configuration.theme?.onNoItemsFound != null) {
+        return SizedBox(
+          key: ValueKey(_state.tableState),
+          child: configuration.theme!.onNoItemsFound!.call(context),
+        );
+      }
+      
       return Center(child: const Text("No items have been found."), key: ValueKey(_state.tableState));
     }
 

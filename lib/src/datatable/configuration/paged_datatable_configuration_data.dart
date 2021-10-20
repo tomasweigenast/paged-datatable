@@ -13,6 +13,9 @@ class PagedDataTableConfigurationData extends Equatable {
   
   /// If true, it will enable transition animations.
   final bool enableTransitions;
+
+  /// A function that returns a widget depending on an animation when [enableTransitions] is true.
+  final Widget Function(Widget, Animation<double>)? transitionBuilder;
   
   /// The configuration theme.
   final PagedDataTableTheme? theme;
@@ -32,6 +35,7 @@ class PagedDataTableConfigurationData extends Equatable {
   const PagedDataTableConfigurationData({
     this.loader = const PagedDataTableLoader.linear(),
     this.enableTransitions = false,
+    this.transitionBuilder,
     this.theme,
     this.messageEventNotifier,
     this.refreshButtonDateFormatting = VerboseDateFormat.format,
