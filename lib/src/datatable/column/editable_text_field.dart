@@ -60,7 +60,7 @@ class _EditableTextFieldState extends State<EditableTextField> {
         String? newText = await showDialog(
           context: context,
           useSafeArea: true,
-          barrierColor: (widget.theme?.obscureBackground ?? true) ? Colors.black.withOpacity(.3),
+          barrierColor: (widget.theme?.obscureBackground ?? true) ? Colors.black.withOpacity(.3) : null,
           builder: (context) => _EditableTextFieldOverlay(
             position: rect,
             theme: widget.theme,

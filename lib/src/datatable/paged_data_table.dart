@@ -1,24 +1,16 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/column/checkbox_table_column.dart';
-import 'package:paged_datatable/src/datatable/column/table_column.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
-import 'package:paged_datatable/src/datatable/configuration/paged_datatable_configuration.dart';
-import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
-import 'package:paged_datatable/src/datatable/page_indicator.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_event.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_footer.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_header.dart';
-import 'package:paged_datatable/src/datatable/options_menu/paged_data_table_options_menu.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_state.dart';
 import 'package:paged_datatable/src/helpers/nil.dart';
 import 'package:provider/provider.dart';
-
-import 'configuration/paged_datatable_configuration_data.dart';
 
 part 'paged_data_table_controller.dart';
 
@@ -176,6 +168,8 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
             controller._state = state;
             debugPrint("Controller received table state.");
           }
+
+          return null;
         },
         child: Card(
           clipBehavior: Clip.antiAlias,

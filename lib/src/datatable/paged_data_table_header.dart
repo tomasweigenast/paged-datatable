@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
-import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
 import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter_popup.dart';
-import 'package:paged_datatable/src/datatable/options_menu/paged_data_table_options_menu.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_filter_state.dart';
 import 'package:provider/provider.dart';
 

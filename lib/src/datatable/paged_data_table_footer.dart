@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
@@ -44,7 +43,7 @@ class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
                         maxWidth: MediaQuery.of(context).size.width / 2
                       ),
                       child: Scrollbar(
-                        isAlwaysShown: true,
+                        thumbVisibility: true,
                         controller: _additionalWidgetsScrollController,
                         child: SingleChildScrollView(
                           controller: _additionalWidgetsScrollController,

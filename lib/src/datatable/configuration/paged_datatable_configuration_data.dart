@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/helpers/date_format.dart';
 
