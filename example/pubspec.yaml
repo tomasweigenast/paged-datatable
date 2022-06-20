@@ -14,6 +14,7 @@ dependencies:
   darq: any
   intl: any
   equatable: any
+  google_fonts: any
   flutter:
     sdk: flutter
   flutter_localizations:

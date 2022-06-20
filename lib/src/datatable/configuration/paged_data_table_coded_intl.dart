@@ -74,6 +74,8 @@ class PagedDataTableCodedIntl implements PagedDataTableLocalization {
     if(configuration?.internalization != null) {
       return PagedDataTableCodedIntl(intl: configuration!.internalization!);
     }
+
+    return null;
   }
 
   @override
