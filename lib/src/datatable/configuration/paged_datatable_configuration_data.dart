@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/helpers/date_format.dart';
 
@@ -27,6 +26,9 @@ class PagedDataTableConfigurationData extends Equatable {
   /// Indicates if the refresh button is enabled
   final bool refreshButtonEnabled;
 
+  /// The amount of time until the refresh button is available to press again
+  final Duration refreshButtonDelayDuration;
+
   final PagedDataTableInternalization? internalization;
 
   const PagedDataTableConfigurationData({
@@ -36,10 +38,13 @@ class PagedDataTableConfigurationData extends Equatable {
     this.messageEventNotifier,
     this.refreshButtonDateFormatting = VerboseDateFormat.format,
     this.refreshButtonEnabled = true,
+    this.refreshButtonDelayDuration = const Duration(minutes: 1),
     this.internalization});
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [
+    loader, enableTransitions, theme, messageEventNotifier, refreshButtonDateFormatting, refreshButtonEnabled, internalization
+  ];
 
 }
 

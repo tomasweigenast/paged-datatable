@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
@@ -36,12 +35,12 @@ class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
           child: Consumer<PagedDataTableState<T>>(
             builder: (context, state, _) {
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if(widget.additional != null)
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width / 2
+                        maxWidth: MediaQuery.of(context).size.width / 2,
                       ),
                       child: Scrollbar(
                         isAlwaysShown: true,
@@ -49,10 +48,7 @@ class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
                         child: SingleChildScrollView(
                           controller: _additionalWidgetsScrollController,
                           scrollDirection: Axis.horizontal,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: widget.additional!,
-                          )
+                          child: widget.additional!
                         ),
                       ),
                     ),
@@ -60,7 +56,7 @@ class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
                   const Spacer(),
                   if(widget.configuration.refreshButtonEnabled)
                     TimerBuilder(
-                      duration: const Duration(minutes: 1),
+                      duration: widget.configuration.refreshButtonDelayDuration,
                       builder: (context, child) => IconButton(
                         color: widget.configuration.theme?.footerTheme?.textColor,
                         icon: const Icon(Icons.refresh),

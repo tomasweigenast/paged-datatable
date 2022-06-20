@@ -194,7 +194,9 @@ class PagedDataTableState<T> extends ChangeNotifier {
       _selectedRows = { for(var item in newPage.items) item: false };
     }
 
-    notifyListeners();
+    try {
+      notifyListeners();
+    } catch(_) {}
   }
 
   Future refresh({required bool clearCache, required bool skipCache}) {

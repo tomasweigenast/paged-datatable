@@ -31,6 +31,7 @@ class _MainViewState extends State<MainView> {
     // ),
     enableTransitions: true,
     theme: PagedDataTableTheme(
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12)
       ),
@@ -59,7 +60,7 @@ class _MainViewState extends State<MainView> {
     )
   );
 
-  bool _themeEnabled = true;
+  bool _themeEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +108,21 @@ class _MainViewState extends State<MainView> {
                 iconColor: Colors.white,
               ),
               controller: controller,
-              configuration: _themeEnabled ? _dataTableConfiguration : null,
+              configuration: _themeEnabled ? _dataTableConfiguration : PagedDataTableConfigurationData(
+                theme: PagedDataTableTheme(
+                  rowColors: [Theme.of(context).canvasColor],
+                  shape: const RoundedRectangleBorder(),
+                  headerTheme: PagedDataTableHeaderTheme(
+                    backgroundColor: Theme.of(context).canvasColor,
+                    columnNameColor: Colors.black
+                  ),
+                  footerTheme: PagedDataTableFooterTheme(
+                    backgroundColor: Theme.of(context).canvasColor,
+                    textColor: Colors.black,
+                    paginationButtonsColor: Colors.red,
+                  ),
+                )
+              ),
               header: TextButton(
                 child: const Text("Switch theme"),
                 style: _themeEnabled ? TextButton.styleFrom(
@@ -129,6 +144,12 @@ class _MainViewState extends State<MainView> {
               defaultPageSize: 10,
               itemIdEvaluator: (item) => item.id,
               initialPageToken: "initial",
+              footer: TextButton(
+                child: const Text("Enviar a cola de impresión"),
+                onPressed: () {
+                  
+                },
+              ),
               resolvePage: (pageToken, pageSize, filters) async {
                 debugPrint("Fetching page. Active filters: $filters");
 
@@ -155,7 +176,7 @@ class _MainViewState extends State<MainView> {
                 }
               },
               filters: [
-                PagedDataTableTextFieldFilter(
+                PagedDataTableTextFilter(
                   filterId: "searchQuery",
                   text: "Search by author and content",
                   chipFormatter: (value) => "Searching for '$value'"

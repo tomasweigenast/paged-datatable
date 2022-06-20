@@ -16,12 +16,20 @@ class PagedDataTableController<T> {
 
   /// Gets a list of all the selected rows.
   List<T> getSelectedRows() {
-    return _state == null ? List.empty() : UnmodifiableListView(_state!.selectedRows.entries.where((element) => element.value).map((e) => e.key));
+    return _state == null ? List<T>.empty() : UnmodifiableListView(_state!.selectedRows.entries.where((element) => element.value).map((e) => e.key));
   }
 
   /// Marks a row as selected or not.
   void setRowSelected(T item, bool selected) {
     _state?.setRowSelected(item, selected);
+  }
+
+  /// Unselects all the selected rows.
+  void clearSelectedRows() {
+    var selectedEntries = _state!.selectedRows.entries;
+    for(var row in selectedEntries) {
+      _state!.selectedRows[row.key] = false;
+    }
   }
 
   /// Sets a filter value.

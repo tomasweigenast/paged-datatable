@@ -1,24 +1,16 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/column/checkbox_table_column.dart';
-import 'package:paged_datatable/src/datatable/column/table_column.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
-import 'package:paged_datatable/src/datatable/configuration/paged_datatable_configuration.dart';
-import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
-import 'package:paged_datatable/src/datatable/page_indicator.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_event.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_footer.dart';
 import 'package:paged_datatable/src/datatable/paged_data_table_header.dart';
-import 'package:paged_datatable/src/datatable/options_menu/paged_data_table_options_menu.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_state.dart';
 import 'package:paged_datatable/src/helpers/nil.dart';
 import 'package:provider/provider.dart';
-
-import 'configuration/paged_datatable_configuration_data.dart';
 
 part 'paged_data_table_controller.dart';
 
@@ -73,6 +65,12 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
   /// Sets an Options menu at the top right corner of the table.
   final PagedDataTableOptionsMenu? optionsMenu;
 
+  /// A stream can be passed so when it gets an update, the list is refreshed automatically.
+  final Stream? refreshListener;
+
+  /// A custom row builder.
+  final PagedDataTableRowBuilder<T>? rowBuilder;
+
   const PagedDataTable({
     required this.columns, 
     required this.resolvePage, 
@@ -88,6 +86,8 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
     this.header,
     this.controller,
     this.optionsMenu,
+    this.refreshListener,
+    this.rowBuilder,
     Key? key}) 
     : initialPageToken = initialPageToken ?? "", super(key: key);
 
@@ -98,7 +98,7 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
 class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
 
   late final PagedDataTableState<T> _state;
-  StreamSubscription? _onEventReceivedListener, _onControllerEventReceivedListener;
+  StreamSubscription? _onEventReceivedListener, _onControllerEventReceivedListener, _onRefreshListenerUpdate;
 
   @override
   void initState() {
@@ -158,6 +158,12 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
       widget.controller!._state = _state;
       _onControllerEventReceivedListener = widget.controller!._onEvent.listen(_onControllerEvent);
     }
+
+    if(widget.refreshListener != null) {
+      _onRefreshListenerUpdate = widget.refreshListener!.listen((_) { 
+        _state.refresh(clearCache: false, skipCache: true);
+      });
+    }
   }
 
   @override
@@ -177,10 +183,10 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
             debugPrint("Controller received table state.");
           }
         },
-        child: Card(
+        child: Material(
           clipBehavior: Clip.antiAlias,
           shape: configuration.theme?.shape,
-          elevation: 5,
+          elevation: configuration.theme?.elevation ?? 0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -194,7 +200,7 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
                   optionsMenu: widget.optionsMenu,
                 ),
               ),
-              const Divider(height: 1),
+              const Divider(height: 1, color: Color(0xFFE0E0E0)),
               Expanded(
                 child: Container(
                   color: configuration.theme?.rowColors?[0],
@@ -217,7 +223,8 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
               PagedDataTableFooter<T>(
                 additional: widget.footer,
                 configuration: configuration,
-              )
+              ),
+              const Divider(height: 1, color: Color(0xFFE0E0E0)),
             ],
           ),
         ),
@@ -264,23 +271,29 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
   }
 
   List<Widget> _buildRow(BuildContext context, T item) {
-    var items = <Widget>[];
 
-    for(var column in _state.columns) {
-      if(column is TableColumnBuilder<T>) {
-        items.add(_buildCell(context, column, item));
-      } else {
-        items.add(Expanded(
-          flex: column.flex ?? 1,
-          child: Align(
-            alignment: column.alignment ?? Alignment.centerLeft,
-            child: _buildCell(context, column, item),
-          ),
-        ));
+    if(widget.rowBuilder?.enabledWhen?.call(context, item) == true) {
+      return [
+        widget.rowBuilder!.builder(context, item)
+      ];
+    } else {
+      var items = <Widget>[];
+      for(var column in _state.columns) {
+        if(column is TableColumnBuilder<T>) {
+          items.add(_buildCell(context, column, item));
+        } else {
+          items.add(Expanded(
+            flex: column.flex ?? 1,
+            child: Align(
+              alignment: column.alignment ?? Alignment.centerLeft,
+              child: _buildCell(context, column, item),
+            ),
+          ));
+        }
       }
-    }
 
-    return items;
+      return items;
+    } 
   }
 
   Widget _buildCell(BuildContext context, BaseTableColumn<T> column, T item) {
@@ -343,6 +356,7 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
     _state.dispose();
     _onEventReceivedListener?.cancel();
     _onControllerEventReceivedListener?.cancel();
+    _onRefreshListenerUpdate?.cancel();
     super.dispose();
   }
 }

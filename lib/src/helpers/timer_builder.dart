@@ -24,9 +24,7 @@ class _TimerBuilderState extends State<TimerBuilder> {
 
     _timer = Timer.periodic(widget.duration, (_) { 
       if(mounted) {
-        Future.delayed(Duration.zero, () {
-          setState((){});
-        });
+        setState((){});
       }
     });
   }

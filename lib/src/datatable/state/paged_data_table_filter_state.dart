@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
+import 'package:paged_datatable/src/helpers/nil.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 class PagedDataTableFilterState extends ChangeNotifier {
@@ -104,7 +106,10 @@ class _FilterState<T extends Object> {
 }
 
 class _CustomFilter<T> extends BasePagedDataTableFilter<T> {
-  const _CustomFilter(String filterId, T? initialValue) : super(filterId: filterId, initialValue: initialValue, chipFormatter: null);
+  _CustomFilter(String filterId, T? initialValue) : super(filterId: filterId, initialValue: initialValue, chipFormatter: (context) => "");
+
+  @override
+  Widget render(BuildContext context, T? currentValue, FilterValueNotifier<T> notifyValue) => nil;
 }
 
 class FilterUpdateEvent {

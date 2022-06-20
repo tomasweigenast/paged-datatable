@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/datatable/configuration/paged_data_table_coded_intl.dart';
-import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter.dart';
 import 'package:paged_datatable/src/datatable/filter/paged_datatable_filter_popup.dart';
-import 'package:paged_datatable/src/datatable/options_menu/paged_data_table_options_menu.dart';
 import 'package:paged_datatable/src/datatable/state/paged_data_table_filter_state.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +35,7 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Divider(height: 1),
             if(widget.filters != null)
               ...[
                 Padding(
@@ -138,82 +137,11 @@ class _PagedDataTableHeaderState<T> extends State<PagedDataTableHeader<T>> {
   }
 
   Widget _buildFilter(BasePagedDataTableFilter filter, PagedDataTableFilterState state) {
-    if(filter is PagedDataTableTextFieldFilter) {
-      return _buildTextFilter(filter, state);
-    } else if(filter is PagedDataTableDropdownFilter) {
-      return _buildDropdownFilter(filter, state);
-    }
-
-    return Container();
-  }
-
-  Widget _buildTextFilter(PagedDataTableTextFieldFilter filter, PagedDataTableFilterState state) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-      // constraints: const BoxConstraints(
-      //   minWidth: 600
-      // ),
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: filter.text,
-          hintText: filter.decoration?.hintText,
-          border: filter.decoration?.border,
-          contentPadding: filter.decoration?.contentPadding,
-          helperText: filter.decoration?.helperText,
-          suffix: filter.decoration?.suffix,
-          suffixIcon: filter.decoration?.suffixIcon,
-          suffixStyle: filter.decoration?.suffixStyle,
-          suffixText: filter.decoration?.suffixText,
-          prefix: filter.decoration?.prefix,
-          prefixIcon: filter.decoration?.prefixIcon,
-          prefixStyle: filter.decoration?.prefixStyle,
-          prefixText: filter.decoration?.prefixText,
-          isDense: true
-        ),
-        initialValue: state.getFilterValue(filter.filterId) as String?,
-        autofocus: false,
-        autovalidateMode: AutovalidateMode.disabled,
-        onSaved: (fieldText) {
-          if(fieldText != null && fieldText.isNotEmpty) {
-            state.setFilterValue(filter.filterId, fieldText);
-          }
-        },
-      )
-    );
-  }
-
-  Widget _buildDropdownFilter(PagedDataTableDropdownFilter filter, PagedDataTableFilterState state) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-      // constraints: const BoxConstraints(
-      //   minWidth: 600
-      // ),
-      child: DropdownButtonFormField<dynamic>(
-        items: filter.items,
-        isExpanded: false,
-        value: state.getFilterValue(filter.filterId),
-        decoration: InputDecoration(
-          labelText: filter.text,
-          hintText: filter.decoration?.hintText,
-          border: filter.decoration?.border,
-          contentPadding: filter.decoration?.contentPadding,
-          helperText: filter.decoration?.helperText,
-          suffix: filter.decoration?.suffix,
-          suffixIcon: filter.decoration?.suffixIcon,
-          suffixStyle: filter.decoration?.suffixStyle,
-          suffixText: filter.decoration?.suffixText,
-          prefix: filter.decoration?.prefix,
-          prefixIcon: filter.decoration?.prefixIcon,
-          prefixStyle: filter.decoration?.prefixStyle,
-          prefixText: filter.decoration?.prefixText,
-          isDense: true
-        ),
-        autofocus: false,
-        autovalidateMode: AutovalidateMode.disabled,
-        onChanged: (newValue) {
-          state.setFilterValue(filter.filterId, newValue);
-        },
-      )
+      child: filter.render(context, state.getFilterValue(filter.filterId), (newValue) { 
+        state.setFilterValue(filter.filterId, newValue);
+      }),
     );
   }
 

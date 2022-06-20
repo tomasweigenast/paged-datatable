@@ -29,6 +29,9 @@ class PagedDataTableTheme {
   /// The shape of the entire table.
   final ShapeBorder? shape;
 
+  /// The shape elevation
+  final double? elevation;
+
   const PagedDataTableTheme({
     this.editableColumnTheme,
     this.rowColors,
@@ -37,6 +40,7 @@ class PagedDataTableTheme {
     this.backgroundColor,
     this.textColor,
     this.selectedRowColor,
+    this.elevation,
     this.shape}) : 
       assert(textColor == null || (headerTheme == null || footerTheme == null), "Cannot provide both textColor and headerTheme or footerTheme"),
       assert(backgroundColor == null || (headerTheme == null || footerTheme == null), "Cannot provide both textColor and headerTheme or footerTheme");
