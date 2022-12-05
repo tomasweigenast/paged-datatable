@@ -70,6 +70,7 @@ class _MainViewState extends State<MainView> {
         child: Builder(
           builder: (context) {
             return PagedDataTable<Post>(
+              autocalculateColumnWidths: false,
               optionsMenu: PagedDataTableOptionsMenu(
                 clipBehavior: Clip.hardEdge,
                 items: [

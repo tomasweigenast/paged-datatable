@@ -44,12 +44,10 @@ class _PagedDataTableFilterPopupState extends State<PagedDataTableFilterPopup> {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8),
-                  child: Scrollbar(
-                    isAlwaysShown: true,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: widget.widgets.toList(),
-                      ),
+                  child: SingleChildScrollView(
+                    primary: true,
+                    child: Column(
+                      children: widget.widgets.toList(),
                     ),
                   ),
                 ),

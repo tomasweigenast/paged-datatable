@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
 
 import 'main_view.dart';
@@ -23,7 +24,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
-        // PagedDataTableLocalization.delegate
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        PagedDataTableLocalization.delegate
       ],
       supportedLocales: const [
         Locale("es"), Locale("en")

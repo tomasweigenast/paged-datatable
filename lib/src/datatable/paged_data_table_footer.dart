@@ -18,8 +18,6 @@ class PagedDataTableFooter<T> extends StatefulWidget {
 
 class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
 
-  final ScrollController _additionalWidgetsScrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
     var intl = PagedDataTableLocalization.maybeOf(context) ?? PagedDataTableCodedIntl.maybeFrom(widget.configuration);
@@ -43,10 +41,9 @@ class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
                         maxWidth: MediaQuery.of(context).size.width / 2,
                       ),
                       child: Scrollbar(
-                        isAlwaysShown: true,
-                        controller: _additionalWidgetsScrollController,
+                        thumbVisibility: true,
                         child: SingleChildScrollView(
-                          controller: _additionalWidgetsScrollController,
+                          primary: true,
                           scrollDirection: Axis.horizontal,
                           child: widget.additional!
                         ),
@@ -147,11 +144,5 @@ class _PagedDataTableFooterState<T> extends State<PagedDataTableFooter<T>> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _additionalWidgetsScrollController.dispose();
-    super.dispose();
   }
 }

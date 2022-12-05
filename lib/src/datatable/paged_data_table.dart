@@ -71,6 +71,8 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
   /// A custom row builder.
   final PagedDataTableRowBuilder<T>? rowBuilder;
 
+  final bool autocalculateColumnWidths;
+
   const PagedDataTable({
     required this.columns, 
     required this.resolvePage, 
@@ -88,6 +90,7 @@ class PagedDataTable<T extends Object> extends StatefulWidget {
     this.optionsMenu,
     this.refreshListener,
     this.rowBuilder,
+    this.autocalculateColumnWidths = false,
     Key? key}) 
     : initialPageToken = initialPageToken ?? "", super(key: key);
 
@@ -299,13 +302,20 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
         if(column is TableColumnBuilder<T>) {
           items.add(_buildCell(context, column, item));
         } else {
-          items.add(Expanded(
-            flex: column.flex ?? 1,
-            child: Align(
-              alignment: column.alignment ?? Alignment.centerLeft,
+          if(widget.autocalculateColumnWidths) {
+            items.add(SizedBox(
+              width: 100,
               child: _buildCell(context, column, item),
-            ),
-          ));
+            ));
+          } else {
+            items.add(Expanded(
+              flex: column.flex ?? 1,
+              child: Align(
+                alignment: column.alignment ?? Alignment.centerLeft,
+                child: _buildCell(context, column, item),
+              ),
+            ));
+          }
         }
       }
 
