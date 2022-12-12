@@ -269,6 +269,7 @@ class _PagedDataTableState<T extends Object> extends State<PagedDataTable<T>> {
     }
 
     return ListView.separated(
+      controller: _state.listScrollController,
       key: ValueKey(_state.tableState),
       separatorBuilder: (_, __) => configuration.theme?.rowColors != null ? const Nil() : const Divider(height: 0, thickness: 1),
       itemCount: _state.currentPage.items.length,

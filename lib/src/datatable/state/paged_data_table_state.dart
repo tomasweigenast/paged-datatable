@@ -14,6 +14,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
   final PagedTableRowTapped<T>? _onRowTapped;
   final void Function(T, bool)? _onRowSelected;
   final PagedDataTableFilterState? _filterState;
+  final ScrollController _listScrollController = ScrollController(debugLabel: "PAGED_DATA_TABLE_LIST");
 
   late int _pageSize;
   late List<int> _pageSizes;
@@ -26,6 +27,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
   StreamSubscription? _filterUpdatedListener;
   TableState _tableState = TableState.unknown;
 
+  ScrollController get listScrollController => _listScrollController;
   bool get isLoading => _tableState == TableState.loading;
   bool get hasError => _tableState == TableState.error;
   Object get error => _currentError!;
@@ -197,6 +199,12 @@ class PagedDataTableState<T> extends ChangeNotifier {
     try {
       notifyListeners();
     } catch(_) {}
+
+    try {
+      if(_listScrollController.hasClients) {
+        _listScrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+      }
+    } catch(_) {}
   }
 
   Future refresh({required bool clearCache, required bool skipCache}) {
@@ -216,6 +224,7 @@ class PagedDataTableState<T> extends ChangeNotifier {
   void dispose() {
     _filterUpdatedListener?.cancel();
     _eventNotifier.close();
+    _listScrollController.dispose();
     super.dispose();
   }
 }

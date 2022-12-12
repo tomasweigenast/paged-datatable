@@ -1,3 +1,8 @@
+## 0.4.7
+
+* When the page changes, the scrollbar is animated to the top of the table
+
+
 ## 0.4.6
 
 * Fixes a bug with filters scrollbar
