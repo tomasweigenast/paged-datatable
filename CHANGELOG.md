@@ -1,3 +1,11 @@
+## 0.4.9
+
+* Fixes ScrollController
+
+## 0.4.8
+
+* Fixes ScrollController
+
 ## 0.4.7
 
 * When the page changes, the scrollbar is animated to the top of the table

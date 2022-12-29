@@ -29,15 +29,13 @@ class Post {
 }
 
 enum Gender {
-  male, female, unespecified
-}
+  male("Male"), 
+  female("Female"), 
+  unespecified("Unspecified");
 
-String formatGender(Gender gender) {
-  switch(gender) {
-    case Gender.male: return "Male";
-    case Gender.female: return "Female";
-    case Gender.unespecified: return "Unspecified";
-  }
+  const Gender(this.name);
+  
+  final String name;
 }
 
 class PostsRepository {

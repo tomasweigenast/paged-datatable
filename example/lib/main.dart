@@ -11,7 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await initializeDateFormatting("en");
 
-  PostsRepository.generate(100);
+  PostsRepository.generate(200);
 
   runApp(const MyApp());
 }
