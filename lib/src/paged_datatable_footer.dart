@@ -40,7 +40,9 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
                         ),
                         style: const TextStyle(fontSize: 14),
                         onChanged: (newPageSize) {
-                    
+                          if(newPageSize != null) {
+                            state.setPageSize(newPageSize);
+                          }
                         },
                         items: const [
                           DropdownMenuItem(value: 10, child: Text("10")),

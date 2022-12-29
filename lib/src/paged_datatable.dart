@@ -56,9 +56,17 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
               /* HEADER ROW */
               _PagedDataTableHeaderRow<TKey, TResult>(),
               const Divider(height: 0),
+              if(model.state == _TableState.loading)
+                const LinearProgressIndicator(),
 
               /* ITEMS */
-              Expanded(child: _PagedDataTableRows<TKey, TResult>()),
+              Expanded(
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: model.state == _TableState.loading ? .3 : 1,
+                  child: _PagedDataTableRows<TKey, TResult>(),
+                ),
+              ),
 
               /* FOOTER */
               const Divider(height: 0),

@@ -11,8 +11,8 @@ class MainView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
-        fetchPage: (pageToken) async {
-          var result = await PostsRepository.getPosts(pageSize: 100, pageToken: pageToken);
+        fetchPage: (pageToken, pageSize) async {
+          var result = await PostsRepository.getPosts(pageSize: pageSize, pageToken: pageToken);
           return PaginationResult.items(elements: result.items, nextPageToken: result.nextPageToken);
         },
         initialPage: "",
