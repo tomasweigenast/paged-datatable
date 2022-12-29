@@ -18,7 +18,7 @@ class MainView extends StatelessWidget {
         initialPage: "",
         columns: [
           TableColumn(
-            title: "Id", 
+            title: "Identificator", 
             itemBuilder: (item) => Text(item.id.toString()),
             sizeFactor: .01
           ),
