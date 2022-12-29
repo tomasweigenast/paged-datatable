@@ -55,9 +55,9 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
           child: Column(
             children: [
               /* HEADER ROW */
-              _PagedDataTableHeaderRow<TKey, TResult>(),
+             _PagedDataTableHeaderRow<TKey, TResult>(),
               const Divider(height: 0),
-
+                
               /* ITEMS */
               Expanded(
                 child: AnimatedOpacity(
@@ -66,7 +66,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
                   child: _PagedDataTableRows<TKey, TResult>(),
                 ),
               ),
-
+    
               /* FOOTER */
               const Divider(height: 0),
               _PagedDataTableFooter<TKey, TResult>()

@@ -33,7 +33,10 @@ class MainView extends StatelessWidget {
           ),
           TableColumn(
             title: "Content", 
-            itemBuilder: (item) => Text(item.content),
+            itemBuilder: (item) => Tooltip(
+              message: item.content,
+              child: Text(item.content),
+            ),
             sizeFactor: .3
           ),
           TableColumn(

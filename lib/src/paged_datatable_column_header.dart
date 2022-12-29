@@ -31,7 +31,10 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object> exte
                         mainAxisAlignment: column.isNumeric ? MainAxisAlignment.end : MainAxisAlignment.start,
                         children: [
                           if(state.isSorted && state._sortBy!.columnId == column.id)
-                            state._sortBy!._descending ? const Icon(Icons.arrow_downward_rounded) : const Icon(Icons.arrow_upward_rounded),
+                            ...[
+                              state._sortBy!._descending ? const Icon(Icons.arrow_downward_rounded) : const Icon(Icons.arrow_upward_rounded),
+                              const SizedBox(width: 8)
+                            ],
 
                           Flexible(child: Text(column.title, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis))
                         ],
