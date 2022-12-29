@@ -2,6 +2,7 @@ part of 'paged_datatable.dart';
 
 class _PagedDataTableState<TKey extends Object, TResult extends Object> extends ChangeNotifier {
   int _pageSize = 100;
+  SortBy? _sortBy;
   _TableState _state = _TableState.loading;
   
   final PagedDataTableController<TKey, TResult> controller;
@@ -12,6 +13,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   final List<TResult> currentItems = [];
 
   _TableState get state => _state;
+  bool get isSorted => _sortBy != null;
 
   _PagedDataTableState({
     required this.fetchCallback,
@@ -21,6 +23,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     PagedDataTableController<TKey, TResult>? controller
   }) : 
     controller = controller ?? PagedDataTableController() {
+      assert(columns.map((e) => e.sizeFactor).sum < 1, "the sum of all sizeFactor must be less than 1");
       _dispatchCallback();
     }
 
@@ -30,10 +33,30 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     _dispatchCallback();
   }
 
+  void setSortBy(String columnId, bool descending) {
+    if(_sortBy?.columnId == columnId && _sortBy?.descending == descending) {
+      return;
+    }
+
+    _sortBy = SortBy._internal(columnId: columnId, descending: descending);
+    notifyListeners();
+    _dispatchCallback();
+  }
+
+  void swapSortBy(String columnId) {
+    if(_sortBy != null && _sortBy!.columnId == columnId) {
+      _sortBy!._descending = !_sortBy!.descending;
+    } else {
+      _sortBy = SortBy._internal(columnId: columnId, descending: true);
+    }
+    notifyListeners();
+    _dispatchCallback();
+  }
+
   Future<void> _dispatchCallback() async {
     _state = _TableState.loading;
     try {
-      var pageIndicator = await fetchCallback(initialPage, _pageSize);
+      var pageIndicator = await fetchCallback(initialPage, _pageSize, _sortBy);
       currentItems.clear();
       currentItems.addAll(pageIndicator.elements);
       notifyListeners();

@@ -11,8 +11,13 @@ class MainView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
-        fetchPage: (pageToken, pageSize) async {
-          var result = await PostsRepository.getPosts(pageSize: pageSize, pageToken: pageToken);
+        fetchPage: (pageToken, pageSize, sortBy) async {
+          var result = await PostsRepository.getPosts(
+            pageSize: pageSize, 
+            pageToken: pageToken,
+            sortBy: sortBy?.columnId,
+            sortDescending: sortBy?.descending ?? false
+          );
           return PaginationResult.items(elements: result.items, nextPageToken: result.nextPageToken);
         },
         initialPage: "",
@@ -20,7 +25,7 @@ class MainView extends StatelessWidget {
           TableColumn(
             title: "Identificator", 
             itemBuilder: (item) => Text(item.id.toString()),
-            sizeFactor: .01
+            sizeFactor: .05
           ),
           TableColumn(
             title: "Author", 
@@ -32,7 +37,9 @@ class MainView extends StatelessWidget {
             sizeFactor: .3
           ),
           TableColumn(
+            id: "createdAt",
             title: "Created At", 
+            sortable: true,
             itemBuilder: (item) => Text(DateFormat.yMd().format(item.createdAt))
           ),
           TableColumn(
@@ -45,11 +52,14 @@ class MainView extends StatelessWidget {
           ),
           TableColumn(
             title: "Number", 
+            id: "number",
+            sortable: true,
+            sizeFactor: .05,
             isNumeric: true,
-            itemBuilder: (item) => Text(NumberFormat.currency(symbol: r"$ ", locale: "en").format(item.number))
+            itemBuilder: (item) => Text(item.number.toString())
           ),
           TableColumn(
-            title: "Fixed", 
+            title: "Fixed Value", 
             itemBuilder: (item) => const Text("abc")
           ),
         ],

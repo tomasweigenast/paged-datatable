@@ -48,13 +48,25 @@ class PostsRepository {
     _backend.addAll(List.generate(count, (index) => Post.random(id: index)));
   }
 
-  static Future<PaginatedList<Post>> getPosts({required int pageSize, required String? pageToken, bool? status, String? searchQuery}) async {
+  static Future<PaginatedList<Post>> getPosts({required int pageSize, required String? pageToken, bool? status, String? searchQuery, String? sortBy, bool sortDescending = false}) async {
     await Future.delayed(const Duration(seconds: 1));
     
     // Decode page token
     int nextId = pageToken == null ? 0 : int.tryParse(pageToken) ?? 1;
 
-    var query = _backend.orderBy((element) => element.id).where((element) => element.id >= nextId);
+    Iterable<Post> query = _backend;
+
+    if(sortBy == null) {
+      query = query.orderBy((element) => element.id);
+    } else {
+      if(sortBy == "createdAt") {
+        query = sortDescending ? query.orderByDescending((element) => element.createdAt.millisecondsSinceEpoch) : query.orderBy((element) => element.createdAt.millisecondsSinceEpoch);
+      } else if(sortBy == "number") {
+        query = sortDescending ?  query.orderByDescending((element) => element.number) : query.orderBy((element) => element.number);
+      }
+    }
+
+    query = query.where((element) => element.id >= nextId);
     if(status != null) {
       query = query.where((element) => element.isEnabled == status);
     }
