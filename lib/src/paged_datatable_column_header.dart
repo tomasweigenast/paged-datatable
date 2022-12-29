@@ -16,7 +16,10 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object> exte
             width: (state.viewSize.width - (32 * state.columns.length)) * column.sizeFactor,
             child: Align(
               alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
-              child: Text(column.title, style: const TextStyle(fontWeight: FontWeight.bold))
+              child: Tooltip(
+                message: column.title,
+                child: Text(column.title, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)
+              )
             )
           ),
         )).toList(),

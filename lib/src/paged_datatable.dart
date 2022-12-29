@@ -8,6 +8,7 @@ part 'paged_datatable_column_header.dart';
 part 'paged_datatable_controller.dart';
 part 'paged_datatable_rows.dart';
 part 'paged_datatable_state.dart';
+part 'paged_datatable_footer.dart';
 part 'pagination_result.dart';
 part 'types.dart';
 
@@ -55,7 +56,13 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
               /* HEADER ROW */
               _PagedDataTableHeaderRow<TKey, TResult>(),
               const Divider(height: 0),
-              Expanded(child: _PagedDataTableRows<TKey, TResult>())
+
+              /* ITEMS */
+              Expanded(child: _PagedDataTableRows<TKey, TResult>()),
+
+              /* FOOTER */
+              const Divider(height: 0),
+              _PagedDataTableFooter<TKey, TResult>()
             ],
           ),
         ),
