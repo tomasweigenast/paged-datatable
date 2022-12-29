@@ -39,6 +39,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       notifyListeners();
       _state = _TableState.displaying;
     } catch(err, stack) {
+      debugPrint("An error ocurred trying to fetch elements from source. Error: $err");
+      debugPrint(stack.toString());
       _state = _TableState.error;
     }
   }
