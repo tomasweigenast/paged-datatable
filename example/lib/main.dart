@@ -34,7 +34,10 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        colorScheme: const ColorScheme.light(
+          primary: Colors.deepPurple,
+          secondary: Colors.teal
+        ),
         textTheme: GoogleFonts.robotoTextTheme(),
         cardTheme: CardTheme(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

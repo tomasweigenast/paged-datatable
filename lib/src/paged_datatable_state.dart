@@ -9,8 +9,11 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   final FetchCallback<TKey, TResult> fetchCallback;
   final TKey initialPage;
   final Size viewSize;
+  late final Size viewportSize;
   final List<TableColumn<TResult>> columns;
+  final Map<String, TableFilterState> filters;
   final List<TResult> currentItems = [];
+  final GlobalKey<FormState> filtersFormKey = GlobalKey();
 
   _TableState get state => _state;
   bool get isSorted => _sortBy != null;
@@ -20,10 +23,14 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     required this.initialPage,
     required this.viewSize,
     required this.columns,
+    required List<TableFilter>? filters,
     PagedDataTableController<TKey, TResult>? controller
   }) : 
-    controller = controller ?? PagedDataTableController() {
+    controller = controller ?? PagedDataTableController(),
+    filters = filters == null ? {} : { for (var v in filters) v.id: TableFilterState._internal(v) }
+    {
       assert(columns.map((e) => e.sizeFactor).sum < 1, "the sum of all sizeFactor must be less than 1");
+      viewportSize = Size(viewSize.width - (16 * columns.length), viewSize.height);
       _dispatchCallback();
     }
 
@@ -53,10 +60,38 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     _dispatchCallback();
   }
 
+  void applyFilters() {
+    if(filters.values.any((element) => element.hasValue)) {
+      notifyListeners();
+      _dispatchCallback();
+    }
+  }
+
+  void removeFilters() {
+    bool changed = false;
+    for(var filterState in filters.values) {
+      if(filterState.hasValue) {
+        filterState.value = null;
+        changed = true;
+      }
+    }
+    
+    if(changed) {
+      notifyListeners();
+      _dispatchCallback();
+    }
+  }
+  
+  void removeFilter(String filterId) {
+    filters[filterId]?.value = null;
+    notifyListeners();
+    _dispatchCallback();
+  }
+
   Future<void> _dispatchCallback() async {
     _state = _TableState.loading;
     try {
-      var pageIndicator = await fetchCallback(initialPage, _pageSize, _sortBy);
+      var pageIndicator = await fetchCallback(initialPage, _pageSize, _sortBy, Filtering._internal(filters));
       currentItems.clear();
       currentItems.addAll(pageIndicator.elements);
       notifyListeners();
@@ -67,6 +102,12 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       _state = _TableState.error;
     }
   }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 }
 
 /// Represents the current state of the rows itself
@@ -74,4 +115,13 @@ enum _TableState {
   loading, // for loading elements
   error, // when the table broke due to an error
   displaying // when showing elements
+}
+
+class TableFilterState<TValue> {
+  final TableFilter<TValue> _filter;
+  dynamic value;
+
+  bool get hasValue => value != null;
+
+  TableFilterState._internal(this._filter);
 }

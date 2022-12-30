@@ -20,7 +20,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
             children: state.columns.map((column) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(
-                width: (state.viewSize.width - (32 * state.columns.length)) * column.sizeFactor,
+                width: state.viewportSize.width * column.sizeFactor,
                 child: Align(
                   alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
                   child: column.itemBuilder(state.currentItems[index]),

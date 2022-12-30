@@ -2,7 +2,13 @@
 
 part of 'paged_datatable.dart';
 
-typedef FetchCallback<TKey extends Object, TResult extends Object> = FutureOr<PaginationResult<TResult>> Function(TKey pageToken, int pageSize, SortBy? sortBy);
+typedef FetchCallback<TKey extends Object, TResult extends Object> 
+  = FutureOr<PaginationResult<TResult>> Function(
+      TKey pageToken, 
+      int pageSize, 
+      SortBy? sortBy,
+      Filtering filtering
+    );
 
 class SortBy {
   String _columnId;
@@ -13,4 +19,33 @@ class SortBy {
 
   SortBy._internal({required String columnId, required bool descending})
     : _columnId = columnId, _descending = descending;
+}
+
+class Filtering {
+  final Map<String, TableFilterState> _states;
+
+  const Filtering._internal(this._states);
+  
+  /// Returns the current value of a filter or null if the filter is not found
+  /// or does not have a value.
+  dynamic valueOrNull(String filterId) {
+    var state = _states[filterId];
+    if(state == null) {
+      return null;
+    }
+
+    return state.value;
+  }
+
+  /// Returns the current value of a filter casting to [T] or null if the filter is not found
+  /// or does not have a value.
+  T? valueOrNullAs<T>(String filterId) {
+    var value = valueOrNull(filterId);
+    return value as T?;
+  }
+
+  /// Returns true if [filterId] has a value.
+  bool has(String filterId) {
+    return _states[filterId]?.value != null;
+  }
 }

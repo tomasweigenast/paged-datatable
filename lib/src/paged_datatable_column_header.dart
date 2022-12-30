@@ -18,7 +18,7 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object> exte
             children: state.columns.map((column) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(
-                width: (state.viewSize.width - (32 * state.columns.length)) * column.sizeFactor,
+                width: state.viewportSize.width * column.sizeFactor,
                 child: Tooltip(
                   message: column.title,
                   child: MouseRegion(
@@ -49,7 +49,7 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object> exte
           /* LOADING INDICATOR */
           Positioned(
             bottom: 0, 
-            width: MediaQuery.of(context).size.width, 
+            width: state.viewSize.width, 
             child: AnimatedOpacity(
               opacity: state.state == _TableState.loading ? 1 : 0, 
               duration: const Duration(milliseconds: 300),
