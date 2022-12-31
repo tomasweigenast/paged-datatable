@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 
 part 'paged_datatable_column.dart';
@@ -11,6 +12,8 @@ part 'paged_datatable_column_header.dart';
 part 'paged_datatable_controller.dart';
 part 'paged_datatable_filter.dart';
 part 'paged_datatable_filter_bar.dart';
+part 'paged_datatable_filter_bar_menu.dart';
+part 'paged_datatable_menu.dart';
 part 'paged_datatable_footer.dart';
 part 'paged_datatable_rows.dart';
 part 'paged_datatable_state.dart';
@@ -28,12 +31,14 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final List<TableFilter>? filters;
   final PagedDataTableController<TKey, TResult>? controller;
   final List<TableColumn<TResult>> columns;
+  final PagedDataTableFilterBarMenu? menu;
 
   const PagedDataTable({
     required this.fetchPage,
     required this.initialPage,
     required this.columns,
     this.filters,
+    this.menu,
     this.controller,
     super.key
   });
@@ -63,7 +68,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
           child: Column(
             children: [
               /* FILTER TAB */
-              _PagedDataTableFilterTab<TKey, TResult>(),
+              _PagedDataTableFilterTab<TKey, TResult>(menu),
               const Divider(height: 0),
 
               /* HEADER ROW */

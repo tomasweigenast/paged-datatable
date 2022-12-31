@@ -100,6 +100,23 @@ class MainView extends StatelessWidget {
             lastDate: DateTime.now(),
           )
         ],
+        menu: PagedDataTableFilterBarMenu(
+          items: [
+            ListTile(
+              title: const Text("Remove filters"),
+              onTap: () {},
+            ),
+            ListTile(
+              title: const Text("Add filter"),
+              onTap: () {}
+            ),
+            const Divider(height: 0),
+            ListTile(
+              title: const Text("Refresh cache"),
+              onTap: () {},
+            ),
+          ]
+        ),
       ),
     );
   }

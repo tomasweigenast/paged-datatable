@@ -1,7 +1,9 @@
 part of 'paged_datatable.dart';
 
 class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> extends StatelessWidget {
-  const _PagedDataTableFilterTab();
+  final PagedDataTableFilterBarMenu? menu;
+  
+  const _PagedDataTableFilterTab(this.menu);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,20 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
                 label: Text((e._filter as dynamic).chipFormatter(e.value), style: const TextStyle(fontWeight: FontWeight.bold))
               ),
             )).toList()
-          )
+          ),
+          const Spacer(),
+          
+          /* MENU */
+          if(menu != null)
+            IconButton(
+              splashRadius: 20,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              tooltip: menu!.tooltip,
+              icon: const Icon(Icons.more_vert),
+              onPressed: () {
+                _showMenu(context: context, items: menu!.items);
+              },
+            )
         ],
       ),
     );
@@ -59,10 +74,11 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
     var offset = renderBox.localToGlobal(Offset.zero);
     var size = renderBox.size;
 
-    var rect = RelativeRect.fromLTRB(offset.dx, offset.dy+size.height, 0, 0);
+    var rect = RelativeRect.fromLTRB(offset.dx+10, offset.dy+size.height-10, 0, 0);
 
     await showDialog(
       context: context,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierDismissible: true,
       barrierColor: Colors.transparent,
       builder: (context) => _FiltersDialog<TKey, TResult>(rect: rect, state: state)
@@ -84,11 +100,16 @@ class _FiltersDialog<TKey extends Object, TResult extends Object> extends Statel
         Positioned(
           top: rect.top,
           left: rect.left,
-          child: SizedBox(
+          child: Container(
             width: MediaQuery.of(context).size.width / 3,
-            child: Card(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(blurRadius: 3, color: Colors.black54)],
+              borderRadius: BorderRadius.all(Radius.circular(4))
+            ),
+            child: Material(
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
-              elevation: 8,
+              elevation: 0,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
