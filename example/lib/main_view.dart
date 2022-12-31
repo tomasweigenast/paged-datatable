@@ -100,6 +100,10 @@ class MainView extends StatelessWidget {
             lastDate: DateTime.now(),
           )
         ],
+        footer: TextButton(
+          onPressed: () {},
+          child: const Text("Im a footer button"),
+        ),
         menu: PagedDataTableFilterBarMenu(
           items: [
             ListTile(

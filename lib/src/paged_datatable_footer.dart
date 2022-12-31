@@ -1,7 +1,9 @@
 part of 'paged_datatable.dart';
 
 class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends StatelessWidget {
-  const _PagedDataTableFooter();
+  final Widget? footer;
+  
+  const _PagedDataTableFooter(this.footer);
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +17,9 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             /* USER DEFINED CONTROLS */
-      
-            const Spacer(),
-            
+            if(footer != null)
+              footer!,
+
             /* PAGINATION CONTROLS */
             Row(
               children: [

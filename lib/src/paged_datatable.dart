@@ -32,6 +32,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final PagedDataTableController<TKey, TResult>? controller;
   final List<TableColumn<TResult>> columns;
   final PagedDataTableFilterBarMenu? menu;
+  final Widget? footer, header;
 
   const PagedDataTable({
     required this.fetchPage,
@@ -40,6 +41,8 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
     this.filters,
     this.menu,
     this.controller,
+    this.footer,
+    this.header,
     super.key
   });
 
@@ -57,18 +60,18 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
         viewSize: size
       ),
       builder: (context, widget) => Consumer<_PagedDataTableState<TKey, TResult>>(
-        builder: (context, model, child) => Card(
+        builder: (context, model, child) => Material(
+          color: Colors.white,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(4)),
             side: BorderSide(
               color: Color(0xffDADCE0)
             )
           ),
-          elevation: 0,
           child: Column(
             children: [
               /* FILTER TAB */
-              _PagedDataTableFilterTab<TKey, TResult>(menu),
+              _PagedDataTableFilterTab<TKey, TResult>(menu, header),
               const Divider(height: 0),
 
               /* HEADER ROW */
@@ -86,7 +89,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
     
               /* FOOTER */
               const Divider(height: 0),
-              _PagedDataTableFooter<TKey, TResult>()
+              _PagedDataTableFooter<TKey, TResult>(footer)
             ],
           ),
         ),

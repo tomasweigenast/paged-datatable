@@ -5,6 +5,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   SortBy? _sortBy;
   _TableState _state = _TableState.loading;
   
+  final ScrollController filterChipsScrollController = ScrollController();
   final PagedDataTableController<TKey, TResult> controller;
   final FetchCallback<TKey, TResult> fetchCallback;
   final TKey initialPage;
@@ -106,6 +107,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   @override
   void dispose() {
     controller.dispose();
+    filterChipsScrollController.dispose();
     super.dispose();
   }
 }

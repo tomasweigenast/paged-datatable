@@ -2,8 +2,9 @@ part of 'paged_datatable.dart';
 
 class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> extends StatelessWidget {
   final PagedDataTableFilterBarMenu? menu;
+  final Widget? header;
   
-  const _PagedDataTableFilterTab(this.menu);
+  const _PagedDataTableFilterTab(this.menu, this.header);
 
   @override
   Widget build(BuildContext context) {
@@ -12,58 +13,85 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
     return SizedBox(
       height: 56,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          /* FILTER BUTTON */
-          if(state.filters.isNotEmpty)
-            Ink(
-              child: InkWell(
-                radius: 20,
-                child: Tooltip(
-                  message: "Filter",
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTapDown: (details) {
-                        _showFilterOverlay(details, context, state);
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Icon(Icons.filter_list_rounded),
+          Flexible(
+            child: Row(
+              children: [
+                 /* FILTER BUTTON */
+                if(state.filters.isNotEmpty)
+                  Ink(
+                    child: InkWell(
+                      radius: 20,
+                      child: Tooltip(
+                        message: "Filter",
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTapDown: (details) {
+                              _showFilterOverlay(details, context, state);
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Icon(Icons.filter_list_rounded),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          
+                /* SELECTED FILTERS */
+                Expanded(
+                  child: Scrollbar(
+                    controller: state.filterChipsScrollController,
+                    trackVisibility: true,
+                    child: SingleChildScrollView(
+                      controller: state.filterChipsScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: state.filters.values.where((element) => element.hasValue).map((e) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: Chip(
+                            visualDensity: VisualDensity.comfortable,
+                            deleteIcon: const Icon(Icons.close, size: 20,),
+                            deleteButtonTooltipMessage: "Remove filter",
+                            onDeleted: () {
+                              state.removeFilter(e._filter.id);
+                            },
+                            label: Text((e._filter as dynamic).chipFormatter(e.value), style: const TextStyle(fontWeight: FontWeight.bold))
+                          ),
+                        )).toList()
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-
-          /* SELECTED FILTERS */
-          Row(
-            children: state.filters.values.where((element) => element.hasValue).map((e) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Chip(
-                visualDensity: VisualDensity.comfortable,
-                deleteIcon: const Icon(Icons.close, size: 20,),
-                deleteButtonTooltipMessage: "Remove filter",
-                onDeleted: () {
-                  state.removeFilter(e._filter.id);
-                },
-                label: Text((e._filter as dynamic).chipFormatter(e.value), style: const TextStyle(fontWeight: FontWeight.bold))
-              ),
-            )).toList()
           ),
-          const Spacer(),
           
-          /* MENU */
-          if(menu != null)
-            IconButton(
-              splashRadius: 20,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              tooltip: menu!.tooltip,
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {
-                _showMenu(context: context, items: menu!.items);
-              },
-            )
+          Flexible(
+            child: Row(
+              children: [
+                if(header != null)
+                  Expanded(child: header!)
+                else
+                  const Spacer(),
+          
+                /* MENU */
+                if(menu != null)
+                  IconButton(
+                    splashRadius: 20,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    tooltip: menu!.tooltip,
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () {
+                      _showMenu(context: context, items: menu!.items);
+                    },
+                  )
+              ],
+            ),
+          )
         ],
       ),
     );
