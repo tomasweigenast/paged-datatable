@@ -17,6 +17,7 @@ part 'paged_datatable_menu.dart';
 part 'paged_datatable_footer.dart';
 part 'paged_datatable_rows.dart';
 part 'paged_datatable_state.dart';
+part 'paged_datatable_configuration.dart';
 part 'pagination_result.dart';
 part 'types.dart';
 part 'pickers.dart';
@@ -33,6 +34,8 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final List<TableColumn<TResult>> columns;
   final PagedDataTableFilterBarMenu? menu;
   final Widget? footer, header;
+  final ErrorBuilder? errorBuilder;
+  final PagedDataTableConfigurationData? configuration;
 
   const PagedDataTable({
     required this.fetchPage,
@@ -43,12 +46,18 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
     this.controller,
     this.footer,
     this.header,
+    this.configuration,
+    this.errorBuilder,
     super.key
   });
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
+    if(configuration != null) {
+
+    }
 
     return ChangeNotifierProvider<_PagedDataTableState<TKey, TResult>>(
       create: (context) => _PagedDataTableState(
@@ -60,39 +69,47 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
         viewSize: size
       ),
       builder: (context, widget) => Consumer<_PagedDataTableState<TKey, TResult>>(
-        builder: (context, model, child) => Material(
-          color: Colors.white,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-            side: BorderSide(
-              color: Color(0xffDADCE0)
-            )
-          ),
-          child: Column(
-            children: [
-              /* FILTER TAB */
-              _PagedDataTableFilterTab<TKey, TResult>(menu, header),
-              const Divider(height: 0),
+        builder: (context, model, child) {
+          Widget child = Material(
+            color: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              side: BorderSide(
+                color: Color(0xffDADCE0)
+              )
+            ),
+            child: Column(
+              children: [
+                /* FILTER TAB */
+                _PagedDataTableFilterTab<TKey, TResult>(menu, header),
+                const Divider(height: 0),
 
-              /* HEADER ROW */
-             _PagedDataTableHeaderRow<TKey, TResult>(),
-              const Divider(height: 0),
-                
-              /* ITEMS */
-              Expanded(
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 300),
-                  opacity: model.state == _TableState.loading ? .3 : 1,
-                  child: _PagedDataTableRows<TKey, TResult>(),
+                /* HEADER ROW */
+              _PagedDataTableHeaderRow<TKey, TResult>(),
+                const Divider(height: 0),
+                  
+                /* ITEMS */
+                Expanded(
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    opacity: model.tableState == _TableState.loading ? .3 : 1,
+                    child: _PagedDataTableRows<TKey, TResult>(),
+                  ),
                 ),
-              ),
-    
-              /* FOOTER */
-              const Divider(height: 0),
-              _PagedDataTableFooter<TKey, TResult>(footer)
-            ],
-          ),
-        ),
+      
+                /* FOOTER */
+                const Divider(height: 0),
+                _PagedDataTableFooter<TKey, TResult>(footer)
+              ],
+            ),
+          );
+
+          if(configuration != null) {
+            child = PagedDataTableConfiguration(data: configuration!, child: child);
+          }
+
+          return child;
+        },
       ),
     );
   }

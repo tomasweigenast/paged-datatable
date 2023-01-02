@@ -3,12 +3,14 @@
 part of 'paged_datatable.dart';
 
 typedef FetchCallback<TKey extends Object, TResult extends Object> 
-  = FutureOr<PaginationResult<TResult>> Function(
+  = FutureOr<PaginationResult<TKey, TResult>> Function(
       TKey pageToken, 
       int pageSize, 
       SortBy? sortBy,
       Filtering filtering
     );
+
+typedef ErrorBuilder = Widget Function(Object error);
 
 class SortBy {
   String _columnId;

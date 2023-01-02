@@ -51,7 +51,7 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object> exte
             bottom: 0, 
             width: state.viewSize.width, 
             child: AnimatedOpacity(
-              opacity: state.state == _TableState.loading ? 1 : 0, 
+              opacity: state.tableState == _TableState.loading ? 1 : 0, 
               duration: const Duration(milliseconds: 300),
               child: const LinearProgressIndicator()
             )

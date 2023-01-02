@@ -26,9 +26,9 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
                       child: Tooltip(
                         message: "Filter",
                         child: MouseRegion(
-                          cursor: SystemMouseCursors.click,
+                          cursor: state.tableState == _TableState.loading ? SystemMouseCursors.basic : SystemMouseCursors.click,
                           child: GestureDetector(
-                            onTapDown: (details) {
+                            onTapDown: state.tableState == _TableState.loading ? null : (details) {
                               _showFilterOverlay(details, context, state);
                             },
                             child: const Padding(

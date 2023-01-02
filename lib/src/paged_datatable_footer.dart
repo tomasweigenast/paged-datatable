@@ -7,6 +7,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
 
   @override
   Widget build(BuildContext context) {
+    final config = PagedDataTableConfiguration.of(context);
     var state = context.read<_PagedDataTableState<TKey, TResult>>();
 
     return SizedBox(
@@ -41,7 +42,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
                           border: OutlineInputBorder()
                         ),
                         style: const TextStyle(fontSize: 14),
-                        onChanged: (newPageSize) {
+                        onChanged: state.tableState == _TableState.loading ? null : (newPageSize) {
                           if(newPageSize != null) {
                             state.setPageSize(newPageSize);
                           }
@@ -60,7 +61,10 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
                 const Padding(padding: EdgeInsets.symmetric(horizontal: 12.0), child: VerticalDivider(indent: 10, endIndent: 10)),
                 
                 /* CURRENT PAGE ELEMENTS */
-                Text("Showing ${state.currentItems.length} elements"),
+                if(config.footer.showTotalElements)
+                  Text("Showing ${state.tableCache.currentLength} elements")
+                else
+                  Text("Page ${state.tableCache.currentPageIndex}"),
             
                 const Padding(padding: EdgeInsets.symmetric(horizontal: 12.0), child: VerticalDivider(indent: 10, endIndent: 10)),
             
@@ -69,14 +73,18 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
                   tooltip: "Previous page",
                   splashRadius: 20,
                   icon: const Icon(Icons.keyboard_arrow_left_rounded),
-                  onPressed: () {},
+                  onPressed: (state.tableCache.canGoBack && state.tableState != _TableState.loading) ? () {
+                    state.navigate(state.tableCache.currentPageIndex-1);
+                  } : null,
                 ),
                 const SizedBox(width: 16),
                 IconButton(
                   tooltip: "Next page",
                   splashRadius: 20,
                   icon: const Icon(Icons.keyboard_arrow_right_rounded),
-                  onPressed: () {},
+                  onPressed: (state.tableCache.canGoNext && state.tableState != _TableState.loading) ? () {
+                    state.navigate(state.tableCache.currentPageIndex+1);
+                  } : null,
                 )
               ],
             )
