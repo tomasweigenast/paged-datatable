@@ -37,6 +37,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final PagedDataTableFilterBarMenu? menu;
   final Widget? footer, header;
   final ErrorBuilder? errorBuilder;
+  final WidgetBuilder? noItemsFoundBuilder;
   final PagedDataTableConfigurationData? configuration;
 
   const PagedDataTable({
@@ -50,6 +51,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
     this.header,
     this.configuration,
     this.errorBuilder,
+    this.noItemsFoundBuilder,
     super.key
   });
 
@@ -95,7 +97,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 300),
                     opacity: model.tableState == _TableState.loading ? .3 : 1,
-                    child: _PagedDataTableRows<TKey, TResult>(),
+                    child: _PagedDataTableRows<TKey, TResult>(noItemsFoundBuilder, errorBuilder),
                   ),
                 ),
       

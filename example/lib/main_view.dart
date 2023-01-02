@@ -12,6 +12,10 @@ class MainView extends StatelessWidget {
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
+          if(filtering.valueOrNull("authorName") == "error!") {
+            throw Exception("This is an unexpected error, wow!");
+          }
+
           var result = await PostsRepository.getPosts(
             pageSize: pageSize, 
             pageToken: pageToken,

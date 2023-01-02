@@ -11,6 +11,7 @@ typedef FetchCallback<TKey extends Object, TResult extends Object>
     );
 
 typedef ErrorBuilder = Widget Function(Object error);
+typedef WidgetBuilder = Widget Function();
 
 typedef Getter<T extends Object, TValue extends Object> = TValue? Function(T item);
 typedef Setter<T extends Object, TValue> = FutureOr<bool> Function(T item, TValue newValue);
