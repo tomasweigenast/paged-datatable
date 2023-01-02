@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 part 'paged_datatable_column.dart';
 part 'paged_datatable_column_header.dart';
@@ -70,6 +71,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
         controller: controller,
         fetchCallback: fetchPage,
         initialPage: initialPage,
+        refreshInterval: configuration?.refreshInterval,
         viewSize: size
       ),
       builder: (context, widget) => Consumer<_PagedDataTableState<TKey, TResult>>(

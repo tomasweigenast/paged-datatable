@@ -424,3 +424,33 @@ class _EditableTextFieldOverlay extends HookWidget {
     );
   }
 }
+
+class _TimerBuilder extends HookWidget {
+  final Widget Function(BuildContext context, bool isEnabled, void Function() call) builder;
+  final bool Function() canDisplay;
+  final Duration checkInterval;
+
+  const _TimerBuilder({required this.builder, required this.checkInterval, required this.canDisplay});
+
+  @override
+  Widget build(BuildContext context) {
+    var enabledN = useState<bool>(canDisplay());
+    var keyRef = useRef<int>(0);
+    useEffect(() {
+      Timer.periodic(checkInterval, (timer) {
+        bool enabled = canDisplay();
+        if(enabled) {
+          enabledN.value = true;
+          timer.cancel();
+        }
+      });
+      return null;
+    }, [keyRef.value]);
+
+    return builder(context, enabledN.value, () {
+      keyRef.value = DateTime.now().microsecondsSinceEpoch;
+      enabledN.value = canDisplay();
+    });
+  }
+
+}

@@ -19,9 +19,16 @@ class PagedDataTableConfiguration extends InheritedWidget {
 }
 
 class PagedDataTableConfigurationData {
+  /// The interval between allowed table refreshes
+  final Duration? refreshInterval;
+
+  /// Configuration related to the footer of the table.
   final PagedDataTableFooterConfiguration footer;
 
-  const PagedDataTableConfigurationData({this.footer = const PagedDataTableFooterConfiguration()});
+  const PagedDataTableConfigurationData({
+    this.refreshInterval,
+    this.footer = const PagedDataTableFooterConfiguration()
+  });
 }
 
 class PagedDataTableFooterConfiguration {

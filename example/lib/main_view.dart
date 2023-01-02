@@ -27,6 +27,9 @@ class MainView extends StatelessWidget {
           );
           return PaginationResult.items(elements: result.items, nextPageToken: result.nextPageToken);
         },
+        configuration: const PagedDataTableConfigurationData(
+          refreshInterval: Duration.zero
+        ),
         initialPage: "",
         columns: [
           TableColumn(

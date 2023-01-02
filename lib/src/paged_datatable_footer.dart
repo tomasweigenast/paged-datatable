@@ -24,6 +24,25 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object> extends
             /* PAGINATION CONTROLS */
             Row(
               children: [
+                /* REFRESH */
+                if(state.refreshInterval != null)
+                  ...[
+                    _TimerBuilder(
+                      builder: (context, isEnabled, call) => IconButton(
+                        splashRadius: 20,
+                        tooltip: "Refresh${state._lastRefreshAt != null ? '. Last refreshed ${timeago.format(state._lastRefreshAt!)}' : ''}",
+                        onPressed: isEnabled ? () async {
+                          await state._refresh();
+                          call();
+                        } : null, 
+                        icon: const Icon(Icons.refresh_outlined)
+                      ),
+                      canDisplay: () => state._lastRefreshAt == null || state._lastRefreshAt!.add(state.refreshInterval!).isBefore(DateTime.now()),
+                      checkInterval: state.refreshInterval!,
+                    ),
+                    const Padding(padding: EdgeInsets.symmetric(horizontal: 12.0), child: VerticalDivider(indent: 10, endIndent: 10)),
+                  ],
+
                 /* ROWS PER PAGE */
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,

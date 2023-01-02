@@ -5,6 +5,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   SortBy? _sortBy;
   _TableState _state = _TableState.loading;
   Object? _currentError;
+  DateTime? _lastRefreshAt;
   
   final ScrollController filterChipsScrollController = ScrollController();
   final ScrollController rowsScrollController = ScrollController();
@@ -16,6 +17,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   final Map<String, TableFilterState> filters;
   final GlobalKey<FormState> filtersFormKey = GlobalKey();
   final _TableCache<TKey, TResult> tableCache;
+  final Duration? refreshInterval;
 
   _TableState get tableState => _state;
   bool get isSorted => _sortBy != null;
@@ -27,7 +29,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     required this.viewSize,
     required this.columns,
     required List<TableFilter>? filters,
-    PagedDataTableController<TKey, TResult>? controller
+    required this.refreshInterval,
+    required PagedDataTableController<TKey, TResult>? controller
   }) : 
     controller = controller ?? PagedDataTableController(),
     tableCache = _TableCache(initialPage),
@@ -158,6 +161,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
 
       // change state and notify listeners of update
       _state = _TableState.displaying;
+      _lastRefreshAt = DateTime.now();
       notifyListeners();
 
       if(rowsScrollController.hasClients) {
@@ -172,6 +176,11 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       _currentError = err;
       notifyListeners();
     }
+  }
+
+  Future<void> _refresh() {
+    tableCache.emptyCache();
+    return _dispatchCallback();
   }
 }
 
