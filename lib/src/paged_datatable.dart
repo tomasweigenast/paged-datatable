@@ -4,6 +4,8 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
 
@@ -20,7 +22,7 @@ part 'paged_datatable_state.dart';
 part 'paged_datatable_configuration.dart';
 part 'pagination_result.dart';
 part 'types.dart';
-part 'pickers.dart';
+part 'controls.dart';
 
 /// A paginated DataTable that allows page caching and filtering
 /// [TKey] is the type of the page token
@@ -31,7 +33,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final TKey initialPage;
   final List<TableFilter>? filters;
   final PagedDataTableController<TKey, TResult>? controller;
-  final List<TableColumn<TResult>> columns;
+  final List<BaseTableColumn<TResult>> columns;
   final PagedDataTableFilterBarMenu? menu;
   final Widget? footer, header;
   final ErrorBuilder? errorBuilder;
@@ -56,7 +58,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
     var size = MediaQuery.of(context).size;
 
     if(configuration != null) {
-
+      // TODO: config
     }
 
     return ChangeNotifierProvider<_PagedDataTableState<TKey, TResult>>(

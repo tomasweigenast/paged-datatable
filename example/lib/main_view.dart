@@ -34,12 +34,14 @@ class MainView extends StatelessWidget {
             title: "Author", 
             cellBuilder: (item) => Text(item.author)
           ),
-          TableColumn(
-            title: "Content", 
-            cellBuilder: (item) => Tooltip(
-              message: item.content,
-              child: Text(item.content),
-            ),
+          LargeTextTableColumn(
+            title: "Content",
+            getter: (post) => post.content,
+            setter: (post, newContent) async {
+              await Future.delayed(const Duration(seconds: 1));
+              post.content = newContent;
+              return true;
+            }, 
             sizeFactor: .3
           ),
           TableColumn(
@@ -48,21 +50,42 @@ class MainView extends StatelessWidget {
             sortable: true,
             cellBuilder: (item) => Text(DateFormat.yMd().format(item.createdAt))
           ),
-          TableColumn(
+          DropdownTableColumn<Post, Gender>(
             title: "Gender", 
-            cellBuilder: (item) => Text(item.authorGender.name)
+            getter: (post) => post.authorGender,
+            setter: (post, newGender) async {
+              post.authorGender = newGender;
+              await Future.delayed(const Duration(seconds: 1));
+              return true;
+            },
+            items: const [
+              DropdownMenuItem(value: Gender.male, child: Text("Male")),
+              DropdownMenuItem(value: Gender.female, child: Text("Female")),
+              DropdownMenuItem(value: Gender.unespecified, child: Text("Unspecified")),
+            ],
           ),
           TableColumn(
             title: "Enabled", 
             cellBuilder: (item) => Text(item.isEnabled ? "Yes" : "No")
           ),
-          TableColumn(
+          TextTableColumn(
             title: "Number", 
             id: "number",
             sortable: true,
             sizeFactor: .05,
             isNumeric: true,
-            cellBuilder: (item) => Text(item.number.toString())
+            getter: (post) => post.number.toString(),
+            setter: (post, newValue) async {
+              await Future.delayed(const Duration(seconds: 1));
+
+              int? number = int.tryParse(newValue);
+              if(number == null) {
+                return false;
+              }
+
+              post.number = number;
+              return true;
+            }
           ),
           TableColumn(
             title: "Fixed Value", 

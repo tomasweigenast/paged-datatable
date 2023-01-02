@@ -27,6 +27,12 @@ class Post {
       authorGender: Gender.values[_faker.randomGenerator.integer(3)]
     );  
   }
+
+  @override
+  int get hashCode => id.hashCode;
+  
+  @override
+  bool operator ==(Object other) => other is Post ? other.id == id : false;
 }
 
 enum Gender {

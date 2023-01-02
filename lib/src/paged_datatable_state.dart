@@ -7,11 +7,12 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   Object? _currentError;
   
   final ScrollController filterChipsScrollController = ScrollController();
+  final ScrollController rowsScrollController = ScrollController();
   final PagedDataTableController<TKey, TResult> controller;
   final FetchCallback<TKey, TResult> fetchCallback;
   final Size viewSize;
   late final Size viewportSize;
-  final List<TableColumn<TResult>> columns;
+  final List<BaseTableColumn<TResult>> columns;
   final Map<String, TableFilterState> filters;
   final GlobalKey<FormState> filtersFormKey = GlobalKey();
   final _TableCache<TKey, TResult> tableCache;
@@ -100,6 +101,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   @override
   void dispose() {
     controller.dispose();
+    rowsScrollController.dispose();
     filterChipsScrollController.dispose();
     super.dispose();
   }
@@ -157,6 +159,10 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       // change state and notify listeners of update
       _state = _TableState.displaying;
       notifyListeners();
+
+      if(rowsScrollController.hasClients) {
+        rowsScrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
+      }
     } catch(err, stack) {
       debugPrint("An error ocurred trying to fetch elements from source. Error: $err");
       debugPrint(stack.toString());

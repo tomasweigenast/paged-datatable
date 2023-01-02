@@ -11,6 +11,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
       overflow: TextOverflow.ellipsis,
       style: const TextStyle(fontSize: 14),
       child: ListView.separated(
+        controller: state.rowsScrollController,
         separatorBuilder: (_, __) => const Divider(height: 0),
         itemCount: state.tableCache.currentResultset.length,
         itemBuilder: (context, index) => SizedBox(
@@ -23,7 +24,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
                 width: state.viewportSize.width * column.sizeFactor,
                 child: Align(
                   alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
-                  child: column.cellBuilder(state.tableCache.currentResultset[index]),
+                  child: column._buildCell(state.tableCache.currentResultset[index]),
                   heightFactor: null,
                 )
               ),
