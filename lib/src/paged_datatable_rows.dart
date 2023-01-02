@@ -23,7 +23,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
                 width: state.viewportSize.width * column.sizeFactor,
                 child: Align(
                   alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
-                  child: column.itemBuilder(state.tableCache.currentResultset[index]),
+                  child: column.cellBuilder(state.tableCache.currentResultset[index]),
                   heightFactor: null,
                 )
               ),

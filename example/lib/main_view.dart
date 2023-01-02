@@ -27,16 +27,16 @@ class MainView extends StatelessWidget {
         columns: [
           TableColumn(
             title: "Identificator", 
-            itemBuilder: (item) => Text(item.id.toString()),
+            cellBuilder: (item) => Text(item.id.toString()),
             sizeFactor: .05
           ),
           TableColumn(
             title: "Author", 
-            itemBuilder: (item) => Text(item.author)
+            cellBuilder: (item) => Text(item.author)
           ),
           TableColumn(
             title: "Content", 
-            itemBuilder: (item) => Tooltip(
+            cellBuilder: (item) => Tooltip(
               message: item.content,
               child: Text(item.content),
             ),
@@ -46,15 +46,15 @@ class MainView extends StatelessWidget {
             id: "createdAt",
             title: "Created At", 
             sortable: true,
-            itemBuilder: (item) => Text(DateFormat.yMd().format(item.createdAt))
+            cellBuilder: (item) => Text(DateFormat.yMd().format(item.createdAt))
           ),
           TableColumn(
             title: "Gender", 
-            itemBuilder: (item) => Text(item.authorGender.name)
+            cellBuilder: (item) => Text(item.authorGender.name)
           ),
           TableColumn(
             title: "Enabled", 
-            itemBuilder: (item) => Text(item.isEnabled ? "Yes" : "No")
+            cellBuilder: (item) => Text(item.isEnabled ? "Yes" : "No")
           ),
           TableColumn(
             title: "Number", 
@@ -62,11 +62,11 @@ class MainView extends StatelessWidget {
             sortable: true,
             sizeFactor: .05,
             isNumeric: true,
-            itemBuilder: (item) => Text(item.number.toString())
+            cellBuilder: (item) => Text(item.number.toString())
           ),
           TableColumn(
             title: "Fixed Value", 
-            itemBuilder: (item) => const Text("abc")
+            cellBuilder: (item) => const Text("abc")
           ),
         ],
         filters: [
