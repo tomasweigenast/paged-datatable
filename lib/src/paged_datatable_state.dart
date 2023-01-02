@@ -116,6 +116,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     try {
 
       bool goOnline = true;
+
       // try to lookup key in cache
       var key = tableCache.getKey(page);
       
@@ -134,7 +135,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       }
 
       if(goOnline) {
-        TKey lookupKey = page == 1 ? tableCache.currentKey : tableCache.nextKey!;
+        TKey lookupKey = tableCache.nextKey ?? tableCache.currentKey; //page == 1 ? tableCache.currentKey : tableCache.nextKey!;
 
         // fetch elements
         var pageIndicator = await fetchCallback(lookupKey, _pageSize, _sortBy, Filtering._internal(filters));
@@ -184,7 +185,7 @@ class _TableCache<TKey extends Object, TResult extends Object> {
   bool get canGoBack => currentPageIndex > 1;
   bool get canGoNext => nextKey != null;
 
-  _TableCache(this.initialPageKey) : currentKey = initialPageKey;
+  _TableCache(this.initialPageKey) : currentKey = initialPageKey, nextKey = initialPageKey;
 
   void emptyCache() {
     // its faster to create a new map instead of clearing
@@ -192,7 +193,7 @@ class _TableCache<TKey extends Object, TResult extends Object> {
     keys = [];
     currentPageIndex = 0;
     currentKey = initialPageKey;
-    nextKey = null;
+    nextKey = initialPageKey;
     debugPrint("TableCache cleared.");
   }
 
