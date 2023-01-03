@@ -51,10 +51,10 @@ class PagedDataTableLocalization {
         context, PagedDataTableLocalization);
   }
 
-  /// `Show filter menu`
+  /// `Filter`
   String get showFilterMenuTooltip {
     return Intl.message(
-      'Show filter menu',
+      'Filter',
       name: 'showFilterMenuTooltip',
       desc: '',
       args: [],
@@ -111,11 +111,21 @@ class PagedDataTableLocalization {
     );
   }
 
-  /// `Refresh. Refreshed {time}`
-  String refreshButtonText(Object time) {
+  /// `Refresh`
+  String get refreshText {
     return Intl.message(
-      'Refresh. Refreshed $time',
-      name: 'refreshButtonText',
+      'Refresh',
+      name: 'refreshText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last refreshed at {time}`
+  String refreshedAtText(Object time) {
+    return Intl.message(
+      'Last refreshed at $time',
+      name: 'refreshedAtText',
       desc: '',
       args: [time],
     );
@@ -141,6 +151,16 @@ class PagedDataTableLocalization {
     );
   }
 
+  /// `Showing {totalElements} elements`
+  String totalElementsText(Object totalElements) {
+    return Intl.message(
+      'Showing $totalElements elements',
+      name: 'totalElementsText',
+      desc: '',
+      args: [totalElements],
+    );
+  }
+
   /// `Next page`
   String get nextPageButtonText {
     return Intl.message(
@@ -161,101 +181,11 @@ class PagedDataTableLocalization {
     );
   }
 
-  /// `never`
-  String get refreshTimeFormattingNever {
+  /// `No items found`
+  String get noItemsFoundText {
     return Intl.message(
-      'never',
-      name: 'refreshTimeFormattingNever',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `just now`
-  String get refreshTimeFormattingJustNow {
-    return Intl.message(
-      'just now',
-      name: 'refreshTimeFormattingJustNow',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `a minute ago`
-  String get refreshTimeFormattingAMinuteAgo {
-    return Intl.message(
-      'a minute ago',
-      name: 'refreshTimeFormattingAMinuteAgo',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `a few minutes ago`
-  String get refreshTimeFormattingAFewMinutesAgo {
-    return Intl.message(
-      'a few minutes ago',
-      name: 'refreshTimeFormattingAFewMinutesAgo',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `an hour ago`
-  String get refreshTimeFormattingAnHourAgo {
-    return Intl.message(
-      'an hour ago',
-      name: 'refreshTimeFormattingAnHourAgo',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `today at {time}`
-  String refreshTimeFormattingTodayAt(Object time) {
-    return Intl.message(
-      'today at $time',
-      name: 'refreshTimeFormattingTodayAt',
-      desc: '',
-      args: [time],
-    );
-  }
-
-  /// `yesterday at {time}`
-  String refreshTimeFormattingYesterdayAt(Object time) {
-    return Intl.message(
-      'yesterday at $time',
-      name: 'refreshTimeFormattingYesterdayAt',
-      desc: '',
-      args: [time],
-    );
-  }
-
-  /// `on {time}`
-  String refreshTimeFormattingAnotherTime(Object time) {
-    return Intl.message(
-      'on $time',
-      name: 'refreshTimeFormattingAnotherTime',
-      desc: '',
-      args: [time],
-    );
-  }
-
-  /// `Table has been reset because local cache has expired.`
-  String get tableResetDueCacheReset {
-    return Intl.message(
-      'Table has been reset because local cache has expired.',
-      name: 'tableResetDueCacheReset',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Table has been reset because the requested page was not found in cache.`
-  String get tableResetDuePreviousPageNotFound {
-    return Intl.message(
-      'Table has been reset because the requested page was not found in cache.',
-      name: 'tableResetDuePreviousPageNotFound',
+      'No items found',
+      name: 'noItemsFoundText',
       desc: '',
       args: [],
     );

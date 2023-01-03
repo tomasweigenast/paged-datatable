@@ -22,13 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(currentPage) => "Page ${currentPage}";
 
-  static String m1(time) => "Refresh. Refreshed ${time}";
+  static String m1(time) => "Last refreshed at ${time}";
 
-  static String m2(time) => "on ${time}";
-
-  static String m3(time) => "today at ${time}";
-
-  static String m4(time) => "yesterday at ${time}";
+  static String m2(totalElements) => "Showing ${totalElements} elements";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -37,34 +33,20 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Cancel"),
         "filterByTitle": MessageLookupByLibrary.simpleMessage("Filter by"),
         "nextPageButtonText": MessageLookupByLibrary.simpleMessage("Next page"),
+        "noItemsFoundText":
+            MessageLookupByLibrary.simpleMessage("No items found"),
         "pageIndicatorText": m0,
         "previousPageButtonText":
             MessageLookupByLibrary.simpleMessage("Previous page"),
-        "refreshButtonText": m1,
-        "refreshTimeFormattingAFewMinutesAgo":
-            MessageLookupByLibrary.simpleMessage("a few minutes ago"),
-        "refreshTimeFormattingAMinuteAgo":
-            MessageLookupByLibrary.simpleMessage("a minute ago"),
-        "refreshTimeFormattingAnHourAgo":
-            MessageLookupByLibrary.simpleMessage("an hour ago"),
-        "refreshTimeFormattingAnotherTime": m2,
-        "refreshTimeFormattingJustNow":
-            MessageLookupByLibrary.simpleMessage("just now"),
-        "refreshTimeFormattingNever":
-            MessageLookupByLibrary.simpleMessage("never"),
-        "refreshTimeFormattingTodayAt": m3,
-        "refreshTimeFormattingYesterdayAt": m4,
+        "refreshText": MessageLookupByLibrary.simpleMessage("Refresh"),
+        "refreshedAtText": m1,
         "removeAllFiltersButtonText":
             MessageLookupByLibrary.simpleMessage("Remove"),
         "removeFilterButtonText":
             MessageLookupByLibrary.simpleMessage("Remove this filter"),
         "rowsPagePageText":
             MessageLookupByLibrary.simpleMessage("Rows per page"),
-        "showFilterMenuTooltip":
-            MessageLookupByLibrary.simpleMessage("Show filter menu"),
-        "tableResetDueCacheReset": MessageLookupByLibrary.simpleMessage(
-            "Table has been reset because local cache has expired."),
-        "tableResetDuePreviousPageNotFound": MessageLookupByLibrary.simpleMessage(
-            "Table has been reset because the requested page was not found in cache.")
+        "showFilterMenuTooltip": MessageLookupByLibrary.simpleMessage("Filter"),
+        "totalElementsText": m2
       };
 }

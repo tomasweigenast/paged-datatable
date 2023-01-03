@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:darq/darq.dart';
 import 'package:faker/faker.dart';
+import 'package:flutter/material.dart';
 
 class Post {
   final int id;
@@ -20,24 +21,28 @@ class Post {
       id: id,
       author: _faker.person.name(),
       content: _faker.lorem.sentences(10).join(". "),
-      createdAt: _faker.date.dateTime(minYear: 2019, maxYear: 2021),
+      createdAt: _faker.date.dateTime(minYear: 2022, maxYear: 2023),
       isEnabled: _faker.randomGenerator.boolean(),
       number: faker.randomGenerator.integer(9999),
       authorGender: Gender.values[_faker.randomGenerator.integer(3)]
     );  
   }
+
+  @override
+  int get hashCode => id.hashCode;
+  
+  @override
+  bool operator ==(Object other) => other is Post ? other.id == id : false;
 }
 
 enum Gender {
-  male, female, unespecified
-}
+  male("Male"), 
+  female("Female"), 
+  unespecified("Unspecified");
 
-String formatGender(Gender gender) {
-  switch(gender) {
-    case Gender.male: return "Male";
-    case Gender.female: return "Female";
-    case Gender.unespecified: return "Unspecified";
-  }
+  const Gender(this.name);
+  
+  final String name;
 }
 
 class PostsRepository {
@@ -50,15 +55,39 @@ class PostsRepository {
     _backend.addAll(List.generate(count, (index) => Post.random(id: index)));
   }
 
-  static Future<PaginatedList<Post>> getPosts({required int pageSize, required String? pageToken, bool? status, String? searchQuery}) async {
+  static Future<PaginatedList<Post>> getPosts({required int pageSize, required String? pageToken, bool? status, Gender? gender, DateTimeRange? between, String? authorName, String? searchQuery, String? sortBy, bool sortDescending = false}) async {
     await Future.delayed(const Duration(seconds: 1));
     
     // Decode page token
     int nextId = pageToken == null ? 0 : int.tryParse(pageToken) ?? 1;
 
-    var query = _backend.orderBy((element) => element.id).where((element) => element.id >= nextId);
+    Iterable<Post> query = _backend;
+
+    if(sortBy == null) {
+      query = query.orderBy((element) => element.id);
+    } else {
+      if(sortBy == "createdAt") {
+        query = sortDescending ? query.orderByDescending((element) => element.createdAt.millisecondsSinceEpoch) : query.orderBy((element) => element.createdAt.millisecondsSinceEpoch);
+      } else if(sortBy == "number") {
+        query = sortDescending ?  query.orderByDescending((element) => element.number) : query.orderBy((element) => element.number);
+      }
+    }
+
+    query = query.where((element) => element.id >= nextId);
     if(status != null) {
       query = query.where((element) => element.isEnabled == status);
+    }
+
+    if(gender != null) {
+      query = query.where((element) => element.authorGender == gender);
+    }
+
+    if(between != null) {
+      query = query.where((element) => between.start.isBefore(element.createdAt) && between.end.isAfter(element.createdAt));
+    }
+
+    if(authorName != null) {
+      query = query.where((element) => element.author.toLowerCase().contains(authorName.toLowerCase()));
     }
 
     if(searchQuery != null) {

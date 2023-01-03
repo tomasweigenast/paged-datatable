@@ -22,13 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(currentPage) => "Página ${currentPage}";
 
-  static String m1(time) => "Actualizar. Actualizado ${time}";
+  static String m1(time) => "Ultima actualización ${time}";
 
-  static String m2(time) => "el ${time}";
-
-  static String m3(time) => "hoy a las ${time}";
-
-  static String m4(time) => "ayer a las ${time}";
+  static String m2(totalElements) => "Showing ${totalElements} elements";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -37,25 +33,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelFilteringButtonText":
             MessageLookupByLibrary.simpleMessage("Cancelar"),
         "filterByTitle": MessageLookupByLibrary.simpleMessage("Filtrar por"),
-        "nextPageButtonText":
-            MessageLookupByLibrary.simpleMessage("Siguiente página"),
+        "nextPageButtonText": MessageLookupByLibrary.simpleMessage("Siguiente"),
+        "noItemsFoundText": MessageLookupByLibrary.simpleMessage(
+            "No se han encontrado elementos"),
         "pageIndicatorText": m0,
         "previousPageButtonText":
-            MessageLookupByLibrary.simpleMessage("Página anterior"),
-        "refreshButtonText": m1,
-        "refreshTimeFormattingAFewMinutesAgo":
-            MessageLookupByLibrary.simpleMessage("hace unos minutos"),
-        "refreshTimeFormattingAMinuteAgo":
-            MessageLookupByLibrary.simpleMessage("hace un minuto"),
-        "refreshTimeFormattingAnHourAgo":
-            MessageLookupByLibrary.simpleMessage("hace una hora"),
-        "refreshTimeFormattingAnotherTime": m2,
-        "refreshTimeFormattingJustNow":
-            MessageLookupByLibrary.simpleMessage("justo ahora"),
-        "refreshTimeFormattingNever":
-            MessageLookupByLibrary.simpleMessage("nunca"),
-        "refreshTimeFormattingTodayAt": m3,
-        "refreshTimeFormattingYesterdayAt": m4,
+            MessageLookupByLibrary.simpleMessage("Anterior"),
+        "refreshText": MessageLookupByLibrary.simpleMessage("Actualizar"),
+        "refreshedAtText": m1,
         "removeAllFiltersButtonText":
             MessageLookupByLibrary.simpleMessage("Borrar"),
         "removeFilterButtonText":
@@ -63,10 +48,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "rowsPagePageText":
             MessageLookupByLibrary.simpleMessage("Filas por página"),
         "showFilterMenuTooltip":
-            MessageLookupByLibrary.simpleMessage("Mostrar filtros"),
-        "tableResetDueCacheReset": MessageLookupByLibrary.simpleMessage(
-            "La table ha sido reestablecida desde el inicio debido a que caché expiró."),
-        "tableResetDuePreviousPageNotFound": MessageLookupByLibrary.simpleMessage(
-            "La table ha sido reestablecida desde el inicio debido a que la página solicitada no se encontró en caché.")
+            MessageLookupByLibrary.simpleMessage("Filtrar"),
+        "totalElementsText": m2
       };
 }

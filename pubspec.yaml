@@ -1,6 +1,6 @@
 name: paged_datatable
 description: A Flutter widget which is a paged DataTable which supports cursor pagination
-version: 0.4.5
+version: 1.0.0
 homepage: https://github.com/TomasWeg/paged-datatable
 
 environment:
@@ -16,11 +16,15 @@ dependencies:
   intl: ^0.17.0
   stream_transform: ^2.0.0
   equatable: ^2.0.3
+  collection: ^1.16.0
+  calendar_date_picker2: ^0.3.5
+  flutter_hooks: ^0.18.5+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+  intl_utils: ^2.8.1
 
 flutter:
   generate: true
