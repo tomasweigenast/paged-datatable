@@ -1,3 +1,6 @@
+## 1.0.5
+* Small bug fixes
+
 ## 1.0.4
 * Add refresh listener. Listen to a stream and refresh the dataset when it changes
 * Add custom row builder

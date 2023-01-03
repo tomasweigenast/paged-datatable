@@ -61,7 +61,7 @@ typedef RowBuilder<TResult extends Object> = Widget Function(
 /// Allows you to pass a custom [RowBuilder] method.
 class CustomRowBuilder<TResult extends Object> {
   /// The callback used to build the row.
-  final RowBuilder builder;
+  final RowBuilder<TResult> builder;
 
   /// A function that gets called before [builder], in order to determine if the callback should
   /// be used or not.
