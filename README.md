@@ -27,6 +27,7 @@ Designed to follow Google's Material You style.
     - [Custom column](#custom-column)
     - [Custom filter](#custom-filter)
 - [Internationalization](#internationalization)
+- [Screenshots](#screenshots)
 - [Contribute](#contribute)
 ## Setup
 Everything you need is a **PagedDataTable\<TKey, TValue>** widget, which accepts two generic arguments, **TKey** and **TValue**, the type of object you will use as paging key and the type of object you will be showing in the table.
@@ -184,6 +185,13 @@ localizationsDelegates: const [
   ],
 ```
 And you're done.
+
+## Screenshots
+![Screenshot 1](resources/screenshot1.png?raw=true)
+![Screenshot 2](resources/screenshot2.png?raw=true)
+![Screenshot 3](resources/screenshot3.png?raw=true)
+![Screenshot 4](resources/screenshot4.png?raw=true)
+![Screenshot 5](resources/screenshot5.png?raw=true)
 
 ## Contribute
 Any suggestion to improve/add is welcome, if you want to make a PR, you are welcome :)
