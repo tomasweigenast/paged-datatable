@@ -185,10 +185,10 @@ class _MainViewState extends State<MainView> {
             lastDate: DateTime.now(),
           )
         ],
-        footer: TextButton(
-          onPressed: () {},
-          child: const Text("Im a footer button"),
-        ),
+        // footer: TextButton(
+        //   onPressed: () {},
+        //   child: const Text("Im a footer button"),
+        // ),
         menu: PagedDataTableFilterBarMenu(items: [
           FilterMenuItem(
             title: const Text("Remove filters"),

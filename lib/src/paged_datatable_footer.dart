@@ -20,7 +20,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 /* USER DEFINED CONTROLS */
-                if (footer != null) footer!,
+                if (footer != null) footer! else const SizedBox.shrink(),
 
                 /* PAGINATION CONTROLS */
                 Row(

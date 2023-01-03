@@ -135,7 +135,6 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
 
   @override
   void dispose() {
-    controller.dispose();
     rowsScrollController.dispose();
     filterChipsScrollController.dispose();
     _refreshListenerSubscription?.cancel();
