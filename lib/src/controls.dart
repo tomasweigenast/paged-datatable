@@ -429,7 +429,7 @@ class _EditableTextFieldOverlay extends HookWidget {
   }
 }
 
-class _TimerBuilder extends HookWidget {
+/*class _TimerBuilder extends HookWidget {
   final Widget Function(BuildContext context, bool isEnabled, void Function() call) builder;
   final bool Function() canDisplay;
   final Duration checkInterval;
@@ -457,4 +457,4 @@ class _TimerBuilder extends HookWidget {
     });
   }
 
-}
+}*/

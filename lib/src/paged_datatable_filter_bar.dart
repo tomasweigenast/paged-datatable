@@ -8,6 +8,8 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
 
   @override
   Widget build(BuildContext context) {
+    var localizations = PagedDataTableLocalization.of(context);
+
     return SizedBox(
       height: 56,
       child: Consumer<_PagedDataTableState<TKey, TResult>>(
@@ -24,12 +26,12 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
                         child: InkWell(
                           radius: 20,
                           child: Tooltip(
-                            message: "Filter",
+                            message: localizations.showFilterMenuTooltip,
                             child: MouseRegion(
                               cursor: state.tableState == _TableState.loading ? SystemMouseCursors.basic : SystemMouseCursors.click,
                               child: GestureDetector(
                                 onTapDown: state.tableState == _TableState.loading ? null : (details) {
-                                  _showFilterOverlay(details, context, state);
+                                  _showFilterOverlay(details, context, state, localizations);
                                 },
                                 child: const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -55,7 +57,7 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
                               child: Chip(
                                 visualDensity: VisualDensity.comfortable,
                                 deleteIcon: const Icon(Icons.close, size: 20,),
-                                deleteButtonTooltipMessage: "Remove filter",
+                                deleteButtonTooltipMessage: localizations.removeFilterButtonText,
                                 onDeleted: () {
                                   state.removeFilter(e._filter.id);
                                 },
@@ -99,7 +101,7 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
     );
   }
 
-  Future<void> _showFilterOverlay(TapDownDetails details, BuildContext context, _PagedDataTableState<TKey, TResult> state) async {
+  Future<void> _showFilterOverlay(TapDownDetails details, BuildContext context, _PagedDataTableState<TKey, TResult> state, PagedDataTableLocalization localizations) async {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     var offset = renderBox.localToGlobal(Offset.zero);
     var size = renderBox.size;
@@ -111,7 +113,7 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierDismissible: true,
       barrierColor: Colors.transparent,
-      builder: (context) => _FiltersDialog<TKey, TResult>(rect: rect, state: state)
+      builder: (context) => _FiltersDialog<TKey, TResult>(rect: rect, state: state, localizations: localizations)
     );
   }
 }
@@ -119,8 +121,9 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object> exte
 class _FiltersDialog<TKey extends Object, TResult extends Object> extends StatelessWidget {
   final RelativeRect rect;
   final _PagedDataTableState<TKey, TResult> state;
+  final PagedDataTableLocalization localizations;
 
-  const _FiltersDialog({required this.rect, required this.state});
+  const _FiltersDialog({required this.rect, required this.state, required this.localizations});
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +153,7 @@ class _FiltersDialog<TKey extends Object, TResult extends Object> extends Statel
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Text("Filter by", style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(localizations.filterByTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
                           ...state.filters.entries.map((entry) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 6),
@@ -175,7 +178,7 @@ class _FiltersDialog<TKey extends Object, TResult extends Object> extends Statel
                             Navigator.pop(context);
                             state.removeFilters();
                           },
-                          child: const Text("Remove"),
+                          child: Text(localizations.removeAllFiltersButtonText),
                         ),
                         const Spacer(),
                         TextButton(
@@ -185,7 +188,7 @@ class _FiltersDialog<TKey extends Object, TResult extends Object> extends Statel
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text("Cancel"),
+                          child: Text(localizations.cancelFilteringButtonText),
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton(
@@ -198,7 +201,7 @@ class _FiltersDialog<TKey extends Object, TResult extends Object> extends Statel
                             Navigator.pop(context);
                             state.applyFilters();
                           },
-                          child: const Text("Apply"),
+                          child: Text(localizations.applyFilterButtonText),
                         ),
                       ],
                     ),

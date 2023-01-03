@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
@@ -18,7 +20,7 @@ class _MainViewState extends State<MainView> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
-        rowsSelectable: false,
+        rowsSelectable: true,
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
           if(filtering.valueOrNull("authorName") == "error!") {
@@ -36,16 +38,8 @@ class _MainViewState extends State<MainView> {
           );
           return PaginationResult.items(elements: result.items, nextPageToken: result.nextPageToken);
         },
-        configuration: const PagedDataTableConfigurationData(
-          refreshInterval: Duration.zero
-        ),
         initialPage: "",
         columns: [
-          TableColumn(
-            title: "I", 
-            cellBuilder: (item) => Text(item.id.toString()),
-            sizeFactor: .05
-          ),
           TableColumn(
             title: "Identificator", 
             cellBuilder: (item) => Text(item.id.toString()),
@@ -162,6 +156,28 @@ class _MainViewState extends State<MainView> {
               title: const Text("Add filter"),
               onTap: () {
                 tableController.setFilter("gender", Gender.male);
+              }
+            ),
+            const FilterMenuDivider(),
+            FilterMenuItem(
+              title: const Text("Print selected rows"),
+              onTap: () {
+                var selectedPosts = tableController.getSelectedRows();
+                debugPrint("SELECTED ROWS ----------------------------");
+                debugPrint(selectedPosts.map((e) => "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]").join("\n"));
+                debugPrint("------------------------------------------");
+              }
+            ),
+            FilterMenuItem(
+              title: const Text("Unselect all rows"),
+              onTap: () {
+                tableController.unselectAllRows();
+              }
+            ),
+            FilterMenuItem(
+              title: const Text("Select random row"),
+              onTap: () {
+                tableController.selectRow(Random(DateTime.now().microsecondsSinceEpoch).nextInt(10));
               }
             ),
             const FilterMenuDivider(),

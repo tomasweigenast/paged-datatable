@@ -5,7 +5,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   SortBy? _sortBy;
   _TableState _state = _TableState.loading;
   Object? _currentError;
-  DateTime? _lastRefreshAt;
+  List<PagedDataTableRowState> _rowsState = [];
   double _availableWidth = 0; // the available width for the table
   double _nullSizeFactorColumnsWidth = 0; // the width applied to every column that has sizeFactor = null
 
@@ -20,8 +20,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   final Map<String, TableFilterState> filters;
   final GlobalKey<FormState> filtersFormKey = GlobalKey();
   final _TableCache<TKey, TResult> tableCache;
-  final Duration? refreshInterval;
-  final Map<int, bool> selectedRows = {};
+  final Map<int, bool> selectedRows = {}; // key is the index of the item in the current resultset, and the value is just a boolean indicating if its selected or not
   late final double columnsSizeFactor;
   late final int lengthColumnsWithoutSizeFactor;
 
@@ -42,7 +41,6 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     required TKey initialPage,
     required this.columns,
     required List<TableFilter>? filters,
-    required this.refreshInterval,
     required PagedDataTableController<TKey, TResult>? controller,
     required bool rowsSelectable
   }) : 
@@ -145,6 +143,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     _state = _TableState.loading;
     _rowsChange++;
     _currentError = null;
+    selectedRows.clear();
+    _rowsState.clear();
     notifyListeners();
 
     try {
@@ -190,8 +190,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
 
       // change state and notify listeners of update
       _state = _TableState.displaying;
-      _lastRefreshAt = DateTime.now();
       _rowsChange++;
+      _rowsState = List.generate(tableCache.currentLength, (index) => PagedDataTableRowState(index));
       notifyListeners();
 
       if(rowsScrollController.hasClients) {

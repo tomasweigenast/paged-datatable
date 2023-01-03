@@ -19,19 +19,24 @@ class PagedDataTableConfiguration extends InheritedWidget {
 }
 
 class PagedDataTableConfigurationData {
-  /// The interval between allowed table refreshes
-  final Duration? refreshInterval;
+  /// A flag that indicates if the current dataset of the table can be refreshed.
+  final bool allowRefresh;
 
   /// The list of available page sizes the user can select.
   /// Set it to null to disable user-selected page size.
   final List<int>? pageSizes;
 
+  /// The initial page size. If [pageSizes] is not null, [initialPageSize] must match
+  /// any of the values in the list.
+  final int initialPageSize;
+
   /// Configuration related to the footer of the table.
   final PagedDataTableFooterConfiguration footer;
 
   const PagedDataTableConfigurationData({
-    this.refreshInterval,
+    this.allowRefresh = true,
     this.pageSizes = const [10, 20, 50, 100],
+    this.initialPageSize = 100,
     this.footer = const PagedDataTableFooterConfiguration()
   });
 }

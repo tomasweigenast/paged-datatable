@@ -29,7 +29,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
   
   Widget _build(BuildContext context, _PagedDataTableState<TKey, TResult> state) {
     if(state.tableCache.currentLength == 0 && state.tableState == _TableState.displaying) {
-      return noItemsFoundBuilder?.call(context) ?? const Center(child: Text("No items found"));
+      return noItemsFoundBuilder?.call(context) ?? Center(child: Text(PagedDataTableLocalization.of(context).noItemsFoundText));
     }
 
     if(state.tableState == _TableState.error) {
@@ -40,8 +40,8 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
       controller: state.rowsScrollController,
       separatorBuilder: (_, __) => const Divider(height: 0),
       itemCount: state.tableCache.currentResultset.length,
-      itemBuilder: (context, index) => ChangeNotifierProvider(
-        create: (context) => PagedDataTableRowState(index),
+      itemBuilder: (context, index) => ChangeNotifierProvider<PagedDataTableRowState>.value(
+        value: state._rowsState[index],
         child: Consumer<PagedDataTableRowState>(
           builder: (context, model, child) => SizedBox(
             height: 52,

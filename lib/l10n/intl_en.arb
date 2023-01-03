@@ -5,8 +5,9 @@
     "cancelFilteringButtonText": "Cancel",
     "removeAllFiltersButtonText": "Remove",
     "removeFilterButtonText": "Remove this filter",
-    "refreshButtonText": "Refresh. Refreshed {time}",
-    "@refreshButtonText": {
+    "refreshText": "Refresh",
+    "refreshedAtText": "Last refreshed at {time}",
+    "@refreshedAtText": {
         "placeholders": {
             "time": {}
         }
@@ -18,6 +19,13 @@
             "currentPage": {}
         }
     },
+    "totalElementsText": "Showing {totalElements} elements",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
     "nextPageButtonText": "Next page",
     "previousPageButtonText": "Previous page",
+    "noItemsFoundText": "No items found"
 }

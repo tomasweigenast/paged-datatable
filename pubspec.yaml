@@ -19,12 +19,12 @@ dependencies:
   collection: ^1.16.0
   calendar_date_picker2: ^0.3.5
   flutter_hooks: ^0.18.5+1
-  timeago: ^3.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+  intl_utils: ^2.8.1
 
 flutter:
   generate: true

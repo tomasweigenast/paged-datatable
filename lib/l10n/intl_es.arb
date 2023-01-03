@@ -5,8 +5,9 @@
     "cancelFilteringButtonText": "Cancelar",
     "removeAllFiltersButtonText": "Borrar",
     "removeFilterButtonText": "Quitar este filtro",
-    "refreshButtonText": "Actualizar. Actualizado {time}",
-    "@refreshButtonText": {
+    "refreshText": "Actualizar",
+    "refreshedAtText": "Ultima actualización {time}",
+    "@refreshedAtText": {
         "placeholders": {
             "time": {}
         }
@@ -18,6 +19,13 @@
             "currentPage": {}
         }
     },
+    "totalElementsText": "Showing {totalElements} elements",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
     "nextPageButtonText": "Siguiente",
     "previousPageButtonText": "Anterior",
+    "noItemsFoundText": "No se han encontrado elementos"
 }
