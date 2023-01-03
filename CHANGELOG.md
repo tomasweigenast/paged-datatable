@@ -1,3 +1,6 @@
+## 1.0.7
+* Fix menu overlay is not opening correctly
+
 ## 1.0.6
 * Fix call stack exceeded
 

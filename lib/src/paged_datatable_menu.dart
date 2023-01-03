@@ -36,8 +36,9 @@ void _showMenu(
     {required BuildContext context, required List<BaseFilterMenuItem> items}) {
   final RenderBox button = context.findRenderObject() as RenderBox;
   var offset = button.localToGlobal(Offset.zero);
-  var position = RelativeRect.fromLTRB(button.size.width,
-      offset.dy + button.size.height - 10, offset.dx + 10, 0);
+  var position = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + button.size.height - 10, 0, 0);
+
+  // var rect = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + size.height - 10, 0, 0);
 
   final NavigatorState navigator = Navigator.of(context);
   Navigator.push(
