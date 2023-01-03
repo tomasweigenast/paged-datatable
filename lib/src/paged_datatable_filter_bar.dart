@@ -10,9 +10,10 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
   @override
   Widget build(BuildContext context) {
     var localizations = PagedDataTableLocalization.of(context);
+    var config = PagedDataTableConfiguration.of(context);
 
     return SizedBox(
-      height: 56,
+      height: config.filterBarHeight,
       child: Consumer<_PagedDataTableState<TKey, TResult>>(
           builder: (context, state, child) {
         return Row(

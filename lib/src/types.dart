@@ -54,3 +54,18 @@ class Filtering {
     return _states[filterId]?.value != null;
   }
 }
+
+typedef RowBuilder<TResult extends Object> = Widget Function(BuildContext context, TResult item);
+
+/// Allows you to pass a custom [RowBuilder] method.
+class CustomRowBuilder<TResult extends Object> {
+
+  /// The callback used to build the row.
+  final RowBuilder builder;
+
+  /// A function that gets called before [builder], in order to determine if the callback should
+  /// be used or not.
+  final bool Function(BuildContext context, TResult item) shouldUse;
+
+  CustomRowBuilder({required this.builder, required this.shouldUse});
+}

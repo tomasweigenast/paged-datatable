@@ -1,3 +1,7 @@
+## 1.0.4
+* Add refresh listener. Listen to a stream and refresh the dataset when it changes
+* Add custom row builder
+
 ## 1.0.3
 * Add option to set default filters
 

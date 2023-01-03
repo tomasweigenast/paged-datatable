@@ -14,7 +14,9 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
   int _sortChange =
       0; // an int which changes when the sort column should update
   int _rowsChange = 0;
+  StreamSubscription? _refreshListenerSubscription;
 
+  final Stream? refreshListener;
   final ScrollController filterChipsScrollController = ScrollController();
   final ScrollController rowsScrollController = ScrollController();
   final PagedDataTableController<TKey, TResult> controller;
@@ -47,7 +49,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
       required this.columns,
       required List<TableFilter>? filters,
       required PagedDataTableController<TKey, TResult>? controller,
-      required bool rowsSelectable})
+      required bool rowsSelectable,
+      required this.refreshListener})
       : controller = controller ?? PagedDataTableController(),
         tableCache = _TableCache(initialPage),
         filters = filters == null
@@ -135,6 +138,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     controller.dispose();
     rowsScrollController.dispose();
     filterChipsScrollController.dispose();
+    _refreshListenerSubscription?.cancel();
     super.dispose();
   }
 
@@ -220,9 +224,15 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     }
   }
 
-  Future<void> _refresh() {
-    tableCache.emptyCache();
-    return _dispatchCallback();
+  Future<void> _refresh({required bool currentDataset}) {
+    int page = 1;
+    if(!currentDataset) {
+      tableCache.emptyCache();
+    } else {
+      page = tableCache.currentPageIndex;
+    }
+
+    return _dispatchCallback(page: page);
   }
 
   void _init() {
@@ -230,6 +240,12 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     _setDefaultFilters();
     _dispatchCallback();
     controller._state = this;
+
+    if(refreshListener != null) {
+      _refreshListenerSubscription = refreshListener!.listen((event) { 
+        _refresh(currentDataset: true);
+      });
+    }
   }
 
   void _setDefaultFilters() {

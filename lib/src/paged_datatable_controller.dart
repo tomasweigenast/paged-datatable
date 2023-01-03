@@ -9,8 +9,10 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
   }
 
   /// Refreshes the table clearing the cache and fetching from source again.
-  void refresh() {
-    _state._refresh();
+  /// If [currentDataset] is true, it will only refresh the current viewing resultset, otherwise,
+  /// it will clear the local cache and start from page 1.
+  void refresh({bool currentDataset = true}) {
+    _state._refresh(currentDataset: currentDataset);
     // _controller.add(_ControllerEvent(_ControllerEventType.refresh, null));
   }
 

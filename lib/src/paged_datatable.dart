@@ -42,6 +42,8 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
   final WidgetBuilder? noItemsFoundBuilder;
   final PagedDataTableConfigurationData? configuration;
   final bool rowsSelectable;
+  final CustomRowBuilder<TResult>? customRowBuilder;
+  final Stream? refreshListener;
 
   const PagedDataTable(
       {required this.fetchPage,
@@ -56,6 +58,8 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
       this.errorBuilder,
       this.noItemsFoundBuilder,
       this.rowsSelectable = false,
+      this.customRowBuilder,
+      this.refreshListener,
       super.key});
 
   @override
@@ -68,6 +72,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
         controller: controller,
         fetchCallback: fetchPage,
         initialPage: initialPage,
+        refreshListener: refreshListener
       ),
       builder: (context, widget) {
         var state = context.read<_PagedDataTableState<TKey, TResult>>();
@@ -93,7 +98,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
                 /* ITEMS */
                 Expanded(
                   child: _PagedDataTableRows<TKey, TResult>(
-                      rowsSelectable, noItemsFoundBuilder, errorBuilder, width),
+                      rowsSelectable, customRowBuilder, noItemsFoundBuilder, errorBuilder, width),
                 ),
 
                 /* FOOTER */

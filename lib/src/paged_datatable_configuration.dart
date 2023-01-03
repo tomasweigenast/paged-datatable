@@ -35,12 +35,27 @@ class PagedDataTableConfigurationData {
   /// any of the values in the list.
   final int initialPageSize;
 
+  /// The height of the columns header
+  /// Defaults to 56
+  final double columnsHeaderHeight;
+
+  /// The height of every row.
+  /// Defaults to 52
+  final double rowHeight;
+
+  /// The height of the filter bar.
+  /// Defaults to 56
+  final double filterBarHeight;
+
   /// Configuration related to the footer of the table.
   final PagedDataTableFooterConfiguration footer;
 
   const PagedDataTableConfigurationData(
       {this.allowRefresh = true,
       this.pageSizes = const [10, 20, 50, 100],
+      this.columnsHeaderHeight = 56.0,
+      this.filterBarHeight = 56.0,
+      this.rowHeight = 52.0,
       this.initialPageSize = 100,
       this.footer = const PagedDataTableFooterConfiguration()});
 }
