@@ -21,6 +21,7 @@ class _MainViewState extends State<MainView> {
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
         rowsSelectable: true,
+        configuration: const PagedDataTableConfigurationData(),
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
           if(filtering.valueOrNull("authorName") == "error!") {
@@ -43,7 +44,8 @@ class _MainViewState extends State<MainView> {
           TableColumn(
             title: "Identificator", 
             cellBuilder: (item) => Text(item.id.toString()),
-            sizeFactor: .05
+            sizeFactor: .05,
+            
           ),
           TableColumn(
             title: "Author", 
