@@ -3,22 +3,33 @@ part of 'paged_datatable.dart';
 class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends StatelessWidget {
   final WidgetBuilder? noItemsFoundBuilder;
   final ErrorBuilder? errorBuilder;
+  final bool rowsSelectable;
+  final double width;
   
-  const _PagedDataTableRows(this.noItemsFoundBuilder, this.errorBuilder);
+  const _PagedDataTableRows(this.rowsSelectable, this.noItemsFoundBuilder, this.errorBuilder, this.width);
 
   @override
   Widget build(BuildContext context) {
-    var state = context.read<_PagedDataTableState<TKey, TResult>>();
-
-    return DefaultTextStyle(
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(fontSize: 14),
-      child: _build(state)
+    return Selector<_PagedDataTableState<TKey, TResult>, int>(
+      selector: (context, model) => model._rowsChange,
+      builder: (context, _, child) {
+        var state = context.read<_PagedDataTableState<TKey, TResult>>();
+        return AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          opacity: state.tableState == _TableState.loading ? .3 : 1,
+          child: DefaultTextStyle(
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 14),
+            child: _build(context, state)
+          ),
+        );
+      },
     );
   }
-  Widget _build(_PagedDataTableState<TKey, TResult> state) {
+  
+  Widget _build(BuildContext context, _PagedDataTableState<TKey, TResult> state) {
     if(state.tableCache.currentLength == 0 && state.tableState == _TableState.displaying) {
-      return noItemsFoundBuilder?.call() ?? const Center(child: Text("No items found"));
+      return noItemsFoundBuilder?.call(context) ?? const Center(child: Text("No items found"));
     }
 
     if(state.tableState == _TableState.error) {
@@ -29,21 +40,37 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
       controller: state.rowsScrollController,
       separatorBuilder: (_, __) => const Divider(height: 0),
       itemCount: state.tableCache.currentResultset.length,
-      itemBuilder: (context, index) => SizedBox(
-        height: 52,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: state.columns.map((column) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SizedBox(
-              width: state.viewportSize.width * column.sizeFactor,
-              child: Align(
-                alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
-                child: column._buildCell(state.tableCache.currentResultset[index]),
-                heightFactor: null,
-              )
+      itemBuilder: (context, index) => ChangeNotifierProvider(
+        create: (context) => PagedDataTableRowState(index),
+        child: Consumer<PagedDataTableRowState>(
+          builder: (context, model, child) => SizedBox(
+            height: 52,
+            child: Ink(
+              padding: EdgeInsets.zero,
+              color: model._isSelected ? Theme.of(context).primaryColorLight : null,
+              child: InkWell(
+                onTap: rowsSelectable ? () {} : null,
+                onDoubleTap: rowsSelectable ? () {
+                  state.selectedRows[index] = !(state.selectedRows[index] ?? false);
+                  model.selected = state.selectedRows[index] ?? false;
+                } : null,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: state.columns.map((column) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SizedBox(
+                      width: column.sizeFactor == null ? state._nullSizeFactorColumnsWidth : width * column.sizeFactor!,
+                      child: Align(
+                        alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
+                        child: column._buildCell(state.tableCache.currentResultset[index]),
+                        heightFactor: null,
+                      )
+                    ),
+                  )).toList(),
+                ),
+              ),
             ),
-          )).toList(),
+          ),
         ),
       )
     );

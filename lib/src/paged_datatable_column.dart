@@ -5,7 +5,7 @@ abstract class BaseTableColumn<TType extends Object> {
   final String title;
   final bool sortable;
   final bool isNumeric;
-  final double sizeFactor;
+  final double? sizeFactor;
 
   const BaseTableColumn({
     required this.id,
@@ -16,23 +16,6 @@ abstract class BaseTableColumn<TType extends Object> {
   });
 
   Widget _buildCell(TType item);
-}
-
-/// Defines a simple [BaseTableColumn] that renders a cell based on [cellBuilder]
-class TableColumn<TType extends Object> extends BaseTableColumn<TType> {
-  final Widget Function(TType) cellBuilder;
-  
-  const TableColumn({
-    required super.title, 
-    required this.cellBuilder, 
-    super.sizeFactor = .1, 
-    super.isNumeric = false,
-    super.sortable = false,
-    super.id
-  }) : assert(!sortable || id != null, "sortable columns must define an id");
-  
-  @override
-  Widget _buildCell(TType item) => cellBuilder(item);
 }
 
 /// Defines a [BaseTableColumn] that allows the content of a cell to be modified, updating the underlying
@@ -55,6 +38,23 @@ abstract class EditableTableColumn<TType extends Object, TValue extends Object> 
     required super.isNumeric, 
     required super.sizeFactor
   });
+}
+
+/// Defines a simple [BaseTableColumn] that renders a cell based on [cellBuilder]
+class TableColumn<TType extends Object> extends BaseTableColumn<TType> {
+  final Widget Function(TType) cellBuilder;
+  
+  const TableColumn({
+    required super.title, 
+    required this.cellBuilder, 
+    super.sizeFactor = .1, 
+    super.isNumeric = false,
+    super.sortable = false,
+    super.id
+  }) : assert(!sortable || id != null, "sortable columns must define an id");
+  
+  @override
+  Widget _buildCell(TType item) => cellBuilder(item);
 }
 
 /// Defines an [EditableTableColumn] that renders a [DropdownFormField] with a list of items.

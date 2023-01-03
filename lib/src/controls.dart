@@ -265,6 +265,10 @@ class _EditableTextField extends HookWidget {
     var currentValueRef = useRef<String>(initialValue);
     var isLoadingN = useState<bool>(false);
     var isMounted = useIsMounted();
+    useEffect(() {
+      currentValueRef.value = initialValue;
+      return null;
+    }, [initialValue]);
 
     return GestureDetector(
       onDoubleTap: () async {

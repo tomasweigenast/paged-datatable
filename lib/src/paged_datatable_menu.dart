@@ -1,26 +1,15 @@
 part of 'paged_datatable.dart';
 
-class _PagedDataTableMenu extends StatefulWidget {
-  final List<Widget> items;
+class _PagedDataTableMenu extends StatelessWidget {
+  final List<BaseFilterMenuItem> items;
 
   const _PagedDataTableMenu({Key? key, required this.items}) : super(key: key);
-  @override
-  State<StatefulWidget> createState() => _PagedDataTableMenuState();
-}
-
-class _PagedDataTableMenuState extends State<_PagedDataTableMenu> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       decoration: const BoxDecoration(
         color: Colors.white,
-        boxShadow:  [BoxShadow(blurRadius: 3, color: Colors.black54)],
+        boxShadow: [BoxShadow(blurRadius: 5, color: Colors.black38)],
         borderRadius: BorderRadius.all(Radius.circular(4))
       ),
       duration: const Duration(milliseconds: 500),
@@ -37,7 +26,7 @@ class _PagedDataTableMenuState extends State<_PagedDataTableMenu> {
                 width: 300,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: widget.items
+                  children: items.map((e) => e._build(context)).toList()
                 ),
               ),
             )
@@ -48,7 +37,7 @@ class _PagedDataTableMenuState extends State<_PagedDataTableMenu> {
   }
 }
 
-void _showMenu({required BuildContext context, required List<Widget> items}) {
+void _showMenu({required BuildContext context, required List<BaseFilterMenuItem> items}) {
   final RenderBox button = context.findRenderObject() as RenderBox;
   var offset = button.localToGlobal(Offset.zero);
   var position = RelativeRect.fromLTRB(button.size.width, offset.dy+button.size.height-10, offset.dx+10, 0);
@@ -76,7 +65,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   }) : itemSizes = List<Size?>.filled(items.length, null);
 
   final RelativeRect position;
-  final List<Widget> items;
+  final List<BaseFilterMenuItem> items;
   final List<Size?> itemSizes;
   final double? elevation;
   final String? semanticLabel;

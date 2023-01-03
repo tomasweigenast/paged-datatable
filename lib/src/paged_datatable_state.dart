@@ -6,39 +6,53 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   _TableState _state = _TableState.loading;
   Object? _currentError;
   DateTime? _lastRefreshAt;
+  double _availableWidth = 0; // the available width for the table
+  double _nullSizeFactorColumnsWidth = 0; // the width applied to every column that has sizeFactor = null
+
+  int _sortChange = 0; // an int which changes when the sort column should update
+  int _rowsChange = 0;
   
   final ScrollController filterChipsScrollController = ScrollController();
   final ScrollController rowsScrollController = ScrollController();
   final PagedDataTableController<TKey, TResult> controller;
   final FetchCallback<TKey, TResult> fetchCallback;
-  final Size viewSize;
-  late final Size viewportSize;
   final List<BaseTableColumn<TResult>> columns;
   final Map<String, TableFilterState> filters;
   final GlobalKey<FormState> filtersFormKey = GlobalKey();
   final _TableCache<TKey, TResult> tableCache;
   final Duration? refreshInterval;
+  final Map<int, bool> selectedRows = {};
+  late final double columnsSizeFactor;
+  late final int lengthColumnsWithoutSizeFactor;
 
   _TableState get tableState => _state;
   bool get isSorted => _sortBy != null;
   Object? get currentError => _currentError;
 
+  set availableWidth(double newWidth) {
+    _availableWidth = newWidth;
+
+    // subtract all the columns that has a specific sizeFactor
+    _availableWidth = _availableWidth - (_availableWidth * columnsSizeFactor);
+    _nullSizeFactorColumnsWidth = _availableWidth / lengthColumnsWithoutSizeFactor; // equally distributed
+  }
+
   _PagedDataTableState({
     required this.fetchCallback,
     required TKey initialPage,
-    required this.viewSize,
     required this.columns,
     required List<TableFilter>? filters,
     required this.refreshInterval,
-    required PagedDataTableController<TKey, TResult>? controller
+    required PagedDataTableController<TKey, TResult>? controller,
+    required bool rowsSelectable
   }) : 
     controller = controller ?? PagedDataTableController(),
     tableCache = _TableCache(initialPage),
     filters = filters == null ? {} : { for (var v in filters) v.id: TableFilterState._internal(v) }
     {
-      assert(columns.map((e) => e.sizeFactor).sum < 1, "the sum of all sizeFactor must be less than 1");
-      viewportSize = Size(viewSize.width - (16 * columns.length), viewSize.height);
+      _initSizes();
       _dispatchCallback();
+      this.controller._state = this;
     }
 
   void setPageSize(int pageSize) {
@@ -55,6 +69,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
 
     _sortBy = SortBy._internal(columnId: columnId, descending: descending);
     tableCache.emptyCache(); // cache must be cleared before applying sorting
+    _sortChange++;
     notifyListeners();
     _dispatchCallback();
   }
@@ -66,6 +81,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       _sortBy = SortBy._internal(columnId: columnId, descending: true);
     }
     tableCache.emptyCache(); // cache must be cleared before applying sorting
+    _sortChange++;
     notifyListeners();
     _dispatchCallback();
   }
@@ -76,6 +92,18 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       notifyListeners();
       _dispatchCallback();
     }
+  }
+
+  void applyFilter(String filterId, dynamic value) {
+    var filter = filters[filterId];
+    if(filter == null) {
+      throw TableError("Filter $filterId not found.");
+    }
+
+    filter.value = value;
+    tableCache.emptyCache();
+    notifyListeners();
+    _dispatchCallback();
   }
 
   void removeFilters() {
@@ -115,6 +143,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
 
   Future<void> _dispatchCallback({int page = 1}) async {
     _state = _TableState.loading;
+    _rowsChange++;
     _currentError = null;
     notifyListeners();
 
@@ -162,6 +191,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       // change state and notify listeners of update
       _state = _TableState.displaying;
       _lastRefreshAt = DateTime.now();
+      _rowsChange++;
       notifyListeners();
 
       if(rowsScrollController.hasClients) {
@@ -173,6 +203,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       
       // store the error so the errorBuilder can display it
       _state = _TableState.error;
+      _rowsChange++;
       _currentError = err;
       notifyListeners();
     }
@@ -181,6 +212,22 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   Future<void> _refresh() {
     tableCache.emptyCache();
     return _dispatchCallback();
+  }
+
+  void _initSizes() {
+    int withoutSizeFactor = 0;
+    double sizeFactorSum = 0;
+    for(var column in columns) {
+      if(column.sizeFactor == null) {
+        withoutSizeFactor++;
+      } else {
+        sizeFactorSum += column.sizeFactor!;
+      }
+    }
+
+    columnsSizeFactor = sizeFactorSum;
+    lengthColumnsWithoutSizeFactor = withoutSizeFactor;
+    assert(columnsSizeFactor <= 1, "the sum of all sizeFactor must be less than or equals to 1, given $columnsSizeFactor");
   }
 }
 

@@ -22,11 +22,16 @@ class PagedDataTableConfigurationData {
   /// The interval between allowed table refreshes
   final Duration? refreshInterval;
 
+  /// The list of available page sizes the user can select.
+  /// Set it to null to disable user-selected page size.
+  final List<int>? pageSizes;
+
   /// Configuration related to the footer of the table.
   final PagedDataTableFooterConfiguration footer;
 
   const PagedDataTableConfigurationData({
     this.refreshInterval,
+    this.pageSizes = const [10, 20, 50, 100],
     this.footer = const PagedDataTableFooterConfiguration()
   });
 }
