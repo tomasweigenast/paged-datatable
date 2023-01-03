@@ -52,7 +52,7 @@ class _MainViewState extends State<MainView> {
           LargeTextTableColumn(
             title: "Content",
             getter: (post) => post.content,
-            setter: (post, newContent) async {
+            setter: (post, newContent, rowIndex) async {
               await Future.delayed(const Duration(seconds: 1));
               post.content = newContent;
               return true;
@@ -69,7 +69,7 @@ class _MainViewState extends State<MainView> {
             title: "Gender", 
             sizeFactor: null,
             getter: (post) => post.authorGender,
-            setter: (post, newGender) async {
+            setter: (post, newGender, rowIndex) async {
               post.authorGender = newGender;
               await Future.delayed(const Duration(seconds: 1));
               return true;
@@ -91,7 +91,7 @@ class _MainViewState extends State<MainView> {
             sizeFactor: .05,
             isNumeric: true,
             getter: (post) => post.number.toString(),
-            setter: (post, newValue) async {
+            setter: (post, newValue, rowIndex) async {
               await Future.delayed(const Duration(seconds: 1));
 
               int? number = int.tryParse(newValue);
@@ -100,6 +100,10 @@ class _MainViewState extends State<MainView> {
               }
 
               post.number = number;
+
+              // if you want to do this too, dont forget to call refreshRow
+              post.author = "empty content haha";
+              tableController.refreshRow(rowIndex);
               return true;
             }
           ),
@@ -178,6 +182,18 @@ class _MainViewState extends State<MainView> {
               title: const Text("Select random row"),
               onTap: () {
                 tableController.selectRow(Random(DateTime.now().microsecondsSinceEpoch).nextInt(10));
+              }
+            ),
+            const FilterMenuDivider(),
+            FilterMenuItem(
+              title: const Text("Update first row's gender and number"),
+              onTap: () {
+                tableController.modifyRowValue(0, (item) { 
+                  item.authorGender = Gender.male;
+                  item.number = 1;
+                  item.author = "Tomas";
+                  item.content = "empty content";
+                });
               }
             ),
             const FilterMenuDivider(),

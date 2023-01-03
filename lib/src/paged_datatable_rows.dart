@@ -40,10 +40,11 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
       controller: state.rowsScrollController,
       separatorBuilder: (_, __) => const Divider(height: 0),
       itemCount: state.tableCache.currentResultset.length,
-      itemBuilder: (context, index) => ChangeNotifierProvider<PagedDataTableRowState>.value(
+      itemBuilder: (context, index) => ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
         value: state._rowsState[index],
-        child: Consumer<PagedDataTableRowState>(
-          builder: (context, model, child) => SizedBox(
+        child: Consumer<_PagedDataTableRowState<TResult>>(
+          builder: (context, model, child) {
+            return SizedBox(
             height: 52,
             child: Ink(
               padding: EdgeInsets.zero,
@@ -62,7 +63,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
                       width: column.sizeFactor == null ? state._nullSizeFactorColumnsWidth : width * column.sizeFactor!,
                       child: Align(
                         alignment: column.isNumeric ? Alignment.centerRight : Alignment.centerLeft,
-                        child: column._buildCell(state.tableCache.currentResultset[index]),
+                        child: column._buildCell(model.item, model.rowIndex),
                         heightFactor: null,
                       )
                     ),
@@ -70,7 +71,8 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends S
                 ),
               ),
             ),
-          ),
+          );
+          },
         ),
       )
     );

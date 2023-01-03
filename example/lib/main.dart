@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [
         Locale("es"), Locale("en")
       ],
+      locale: const Locale("en"),
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

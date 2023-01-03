@@ -5,7 +5,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
   SortBy? _sortBy;
   _TableState _state = _TableState.loading;
   Object? _currentError;
-  List<PagedDataTableRowState> _rowsState = [];
+  List<_PagedDataTableRowState<TResult>> _rowsState = [];
   double _availableWidth = 0; // the available width for the table
   double _nullSizeFactorColumnsWidth = 0; // the width applied to every column that has sizeFactor = null
 
@@ -144,7 +144,6 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
     _rowsChange++;
     _currentError = null;
     selectedRows.clear();
-    _rowsState.clear();
     notifyListeners();
 
     try {
@@ -191,7 +190,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object> extends 
       // change state and notify listeners of update
       _state = _TableState.displaying;
       _rowsChange++;
-      _rowsState = List.generate(tableCache.currentLength, (index) => PagedDataTableRowState(index));
+      _rowsState = List.generate(tableCache.currentLength, (index) => _PagedDataTableRowState(tableCache.currentResultset[index], index));
       notifyListeners();
 
       if(rowsScrollController.hasClients) {

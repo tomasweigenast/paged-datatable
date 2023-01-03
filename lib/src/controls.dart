@@ -145,7 +145,7 @@ class _DropdownButtonCell<TType extends Object, T extends Object> extends HookWi
     useEffect(() {
       currentValueRef.value = initialValue;
       return null;
-    }, [item]);
+    }, [item, initialValue]);
 
     return DropdownButtonHideUnderline(
       child: DropdownButtonFormField<T>(
@@ -194,7 +194,7 @@ class _TextFieldCell<TType extends Object> extends HookWidget {
     useEffect(() {
       currentValueRef.value = initialValue;
       return null;
-    }, [item]);
+    }, [item, initialValue]);
 
     if(isEnabledN.value || isLoadingN.value) {
       return TextFormField(
@@ -428,33 +428,3 @@ class _EditableTextFieldOverlay extends HookWidget {
     );
   }
 }
-
-/*class _TimerBuilder extends HookWidget {
-  final Widget Function(BuildContext context, bool isEnabled, void Function() call) builder;
-  final bool Function() canDisplay;
-  final Duration checkInterval;
-
-  const _TimerBuilder({required this.builder, required this.checkInterval, required this.canDisplay});
-
-  @override
-  Widget build(BuildContext context) {
-    var enabledN = useState<bool>(canDisplay());
-    var keyRef = useRef<int>(0);
-    useEffect(() {
-      Timer.periodic(checkInterval, (timer) {
-        bool enabled = canDisplay();
-        if(enabled) {
-          enabledN.value = true;
-          timer.cancel();
-        }
-      });
-      return null;
-    }, [keyRef.value]);
-
-    return builder(context, enabledN.value, () {
-      keyRef.value = DateTime.now().microsecondsSinceEpoch;
-      enabledN.value = canDisplay();
-    });
-  }
-
-}*/

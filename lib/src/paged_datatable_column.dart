@@ -15,7 +15,7 @@ abstract class BaseTableColumn<TType extends Object> {
     required this.sizeFactor
   });
 
-  Widget _buildCell(TType item);
+  Widget _buildCell(TType item, int rowIndex);
 }
 
 /// Defines a [BaseTableColumn] that allows the content of a cell to be modified, updating the underlying
@@ -54,7 +54,7 @@ class TableColumn<TType extends Object> extends BaseTableColumn<TType> {
   }) : assert(!sortable || id != null, "sortable columns must define an id");
   
   @override
-  Widget _buildCell(TType item) => cellBuilder(item);
+  Widget _buildCell(TType item, int rowIndex) => cellBuilder(item);
 }
 
 /// Defines an [EditableTableColumn] that renders a [DropdownFormField] with a list of items.
@@ -75,13 +75,13 @@ class DropdownTableColumn<TType extends Object, TValue extends Object> extends E
   });
 
   @override
-  Widget _buildCell(TType item) {
+  Widget _buildCell(TType item, int rowIndex) {
     return _DropdownButtonCell<TType, TValue>(
       item: item,
       items: items, 
       decoration: decoration,
       initialValue: getter(item), 
-      setter: (newValue) => setter(item, newValue), 
+      setter: (newValue) => setter(item, newValue, rowIndex), 
     );
   }
 }
@@ -104,14 +104,14 @@ class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, S
   });
 
   @override
-  Widget _buildCell(TType item) {
+  Widget _buildCell(TType item, int rowIndex) {
     return _TextFieldCell<TType>(
       isNumeric: isNumeric,
       item: item,
       inputFormatters: inputFormatters,
       decoration: decoration,
       initialValue: getter(item), 
-      setter: (newValue) => setter(item, newValue), 
+      setter: (newValue) => setter(item, newValue, rowIndex), 
     );
   }
 }
@@ -140,13 +140,13 @@ class LargeTextTableColumn<TType extends Object> extends EditableTableColumn<TTy
   });
 
   @override
-  Widget _buildCell(TType item) {
+  Widget _buildCell(TType item, int rowIndex) {
     return _EditableTextField(
       tooltipText: tooltipText,
       tooltipMargin: tooltipMargin,
       tooltipPadding: tooltipPadding,
       initialValue: getter(item) ?? "", 
-      setter: (newValue) => setter(item, newValue),
+      setter: (newValue) => setter(item, newValue, rowIndex),
       validator: null, 
       decoration: decoration, 
       label: label ?? title, 

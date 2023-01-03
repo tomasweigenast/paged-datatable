@@ -49,4 +49,27 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
     _state.selectedRows[index] = true;
     _state._rowsState[index].selected = true;
   }
+
+  /// Updates an item from the current resultset located at [rowIndex] and rebuilds the row.
+  void modifyRowValue(int rowIndex, void Function(TResult item) update) {
+    try {
+      var row = _state.tableCache.currentResultset[rowIndex];
+      update(row);
+
+      // refresh state of that row.
+      _state._rowsState[rowIndex].refresh();
+    } catch(_) {
+      throw TableError("There is no row at index $rowIndex.");
+    }
+  }
+
+  /// Rebuilds the row at the specified [rowIndex] to reflect changes to the item.
+  void refreshRow(int rowIndex) {
+    try {
+      // refresh state of that row.
+      _state._rowsState[rowIndex].refresh();
+    } catch(_) {
+      throw TableError("There is no row at index $rowIndex.");
+    }
+  }
 }

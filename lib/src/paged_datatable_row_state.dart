@@ -1,6 +1,7 @@
 part of 'paged_datatable.dart';
 
-class PagedDataTableRowState extends ChangeNotifier {
+class _PagedDataTableRowState<TResult extends Object> extends ChangeNotifier {
+  final TResult item;
   final int rowIndex;
   bool _isSelected = false;
   set selected(bool newValue) {
@@ -8,6 +9,9 @@ class PagedDataTableRowState extends ChangeNotifier {
     notifyListeners();
   }
 
-  PagedDataTableRowState(this.rowIndex);
+  _PagedDataTableRowState(this.item, this.rowIndex);
 
+  void refresh() {
+    notifyListeners();
+  }
 }
