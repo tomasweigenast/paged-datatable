@@ -5,7 +5,7 @@ Completely customisable data table which supports cursor and offset pagination o
 Designed to follow Google's Material You style.
 
 ## Online demo
-[Check it out here]()
+<a href="https://tomasweigenast.github.io/pageddatatable/#/.com" target="_blank">Check it out here</a>
 
 ## Features
 * **Page caching** allowing you to keep already fetched pages in memory for offline-use.
