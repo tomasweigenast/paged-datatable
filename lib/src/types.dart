@@ -55,11 +55,11 @@ class Filtering {
   }
 }
 
-typedef RowBuilder<TResult extends Object> = Widget Function(BuildContext context, TResult item);
+typedef RowBuilder<TResult extends Object> = Widget Function(
+    BuildContext context, TResult item);
 
 /// Allows you to pass a custom [RowBuilder] method.
 class CustomRowBuilder<TResult extends Object> {
-
   /// The callback used to build the row.
   final RowBuilder builder;
 

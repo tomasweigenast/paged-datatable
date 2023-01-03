@@ -30,7 +30,8 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                       IconButton(
                           splashRadius: 20,
                           tooltip: localization.refreshText,
-                          onPressed: () => state._refresh(currentDataset: false),
+                          onPressed: () =>
+                              state._refresh(currentDataset: false),
                           icon: const Icon(Icons.refresh_outlined)),
                       const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.0),

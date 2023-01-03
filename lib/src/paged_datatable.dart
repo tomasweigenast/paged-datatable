@@ -66,14 +66,13 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<_PagedDataTableState<TKey, TResult>>(
       create: (context) => _PagedDataTableState(
-        columns: columns,
-        rowsSelectable: rowsSelectable,
-        filters: filters,
-        controller: controller,
-        fetchCallback: fetchPage,
-        initialPage: initialPage,
-        refreshListener: refreshListener
-      ),
+          columns: columns,
+          rowsSelectable: rowsSelectable,
+          filters: filters,
+          controller: controller,
+          fetchCallback: fetchPage,
+          initialPage: initialPage,
+          refreshListener: refreshListener),
       builder: (context, widget) {
         var state = context.read<_PagedDataTableState<TKey, TResult>>();
 
@@ -98,7 +97,11 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
                 /* ITEMS */
                 Expanded(
                   child: _PagedDataTableRows<TKey, TResult>(
-                      rowsSelectable, customRowBuilder, noItemsFoundBuilder, errorBuilder, width),
+                      rowsSelectable,
+                      customRowBuilder,
+                      noItemsFoundBuilder,
+                      errorBuilder,
+                      width),
                 ),
 
                 /* FOOTER */

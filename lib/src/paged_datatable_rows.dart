@@ -8,8 +8,8 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
   final double width;
   final CustomRowBuilder<TResult>? customRowBuilder;
 
-  const _PagedDataTableRows(this.rowsSelectable, this.customRowBuilder, this.noItemsFoundBuilder,
-      this.errorBuilder, this.width);
+  const _PagedDataTableRows(this.rowsSelectable, this.customRowBuilder,
+      this.noItemsFoundBuilder, this.errorBuilder, this.width);
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
 
   Widget _build(
       BuildContext context, _PagedDataTableState<TKey, TResult> state) {
-        var config = PagedDataTableConfiguration.of(context);
-
+    var config = PagedDataTableConfiguration.of(context);
 
     if (state.tableCache.currentLength == 0 &&
         state.tableState == _TableState.displaying) {
@@ -49,123 +48,124 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                   textAlign: TextAlign.center));
     }
 
-    // a little bit of verbose is better than checking this on every row 
-    if(customRowBuilder == null) {
+    // a little bit of verbose is better than checking this on every row
+    if (customRowBuilder == null) {
       return ListView.separated(
-        controller: state.rowsScrollController,
-        separatorBuilder: (_, __) => const Divider(height: 0),
-        itemCount: state.tableCache.currentResultset.length,
-        itemBuilder: (context, index) =>
-            ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
-              value: state._rowsState[index],
-              child: Consumer<_PagedDataTableRowState<TResult>>(
-                builder: (context, model, child) {
-                  return SizedBox(
-                    height: config.rowHeight,
-                    child: Ink(
-                      padding: EdgeInsets.zero,
-                      color: model._isSelected
-                          ? Theme.of(context).primaryColorLight
-                          : null,
-                      child: InkWell(
-                        onTap: rowsSelectable ? () {} : null,
-                        onDoubleTap: rowsSelectable
-                            ? () {
-                                state.selectedRows[index] =
-                                    !(state.selectedRows[index] ?? false);
-                                model.selected =
-                                    state.selectedRows[index] ?? false;
-                              }
-                            : null,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: state.columns
-                              .map((column) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    child: SizedBox(
-                                        width: column.sizeFactor == null
-                                            ? state._nullSizeFactorColumnsWidth
-                                            : width * column.sizeFactor!,
-                                        child: Align(
-                                          alignment: column.isNumeric
-                                              ? Alignment.centerRight
-                                              : Alignment.centerLeft,
-                                          child: column.buildCell(
-                                              model.item, model.rowIndex),
-                                          heightFactor: null,
-                                        )),
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ));
-  
-    } else {
-      return ListView.separated(
-        controller: state.rowsScrollController,
-        separatorBuilder: (_, __) => const Divider(height: 0),
-        itemCount: state.tableCache.currentResultset.length,
-        itemBuilder: (context, index) =>
-            ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
-              value: state._rowsState[index],
-              child: Consumer<_PagedDataTableRowState<TResult>>(
-                builder: (context, model, child) {
-                  if(customRowBuilder!.shouldUse(context, model.item)) {
+          controller: state.rowsScrollController,
+          separatorBuilder: (_, __) => const Divider(height: 0),
+          itemCount: state.tableCache.currentResultset.length,
+          itemBuilder: (context, index) =>
+              ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
+                value: state._rowsState[index],
+                child: Consumer<_PagedDataTableRowState<TResult>>(
+                  builder: (context, model, child) {
                     return SizedBox(
                       height: config.rowHeight,
-                      child: customRowBuilder!.builder(context, model.item),
-                    );
-                  }
-
-                  return SizedBox(
-                    height: 52,
-                    child: Ink(
-                      padding: EdgeInsets.zero,
-                      color: model._isSelected
-                          ? Theme.of(context).primaryColorLight
-                          : null,
-                      child: InkWell(
-                        onTap: rowsSelectable ? () {} : null,
-                        onDoubleTap: rowsSelectable
-                            ? () {
-                                state.selectedRows[index] =
-                                    !(state.selectedRows[index] ?? false);
-                                model.selected =
-                                    state.selectedRows[index] ?? false;
-                              }
+                      child: Ink(
+                        padding: EdgeInsets.zero,
+                        color: model._isSelected
+                            ? Theme.of(context).primaryColorLight
                             : null,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: state.columns
-                              .map((column) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    child: SizedBox(
-                                        width: column.sizeFactor == null
-                                            ? state._nullSizeFactorColumnsWidth
-                                            : width * column.sizeFactor!,
-                                        child: Align(
-                                          alignment: column.isNumeric
-                                              ? Alignment.centerRight
-                                              : Alignment.centerLeft,
-                                          child: column.buildCell(
-                                              model.item, model.rowIndex),
-                                          heightFactor: null,
-                                        )),
-                                  ))
-                              .toList(),
+                        child: InkWell(
+                          onTap: rowsSelectable ? () {} : null,
+                          onDoubleTap: rowsSelectable
+                              ? () {
+                                  state.selectedRows[index] =
+                                      !(state.selectedRows[index] ?? false);
+                                  model.selected =
+                                      state.selectedRows[index] ?? false;
+                                }
+                              : null,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: state.columns
+                                .map((column) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: SizedBox(
+                                          width: column.sizeFactor == null
+                                              ? state
+                                                  ._nullSizeFactorColumnsWidth
+                                              : width * column.sizeFactor!,
+                                          child: Align(
+                                            alignment: column.isNumeric
+                                                ? Alignment.centerRight
+                                                : Alignment.centerLeft,
+                                            child: column.buildCell(
+                                                model.item, model.rowIndex),
+                                            heightFactor: null,
+                                          )),
+                                    ))
+                                .toList(),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ));
+                    );
+                  },
+                ),
+              ));
+    } else {
+      return ListView.separated(
+          controller: state.rowsScrollController,
+          separatorBuilder: (_, __) => const Divider(height: 0),
+          itemCount: state.tableCache.currentResultset.length,
+          itemBuilder: (context, index) =>
+              ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
+                value: state._rowsState[index],
+                child: Consumer<_PagedDataTableRowState<TResult>>(
+                  builder: (context, model, child) {
+                    if (customRowBuilder!.shouldUse(context, model.item)) {
+                      return SizedBox(
+                        height: config.rowHeight,
+                        child: customRowBuilder!.builder(context, model.item),
+                      );
+                    }
+
+                    return SizedBox(
+                      height: 52,
+                      child: Ink(
+                        padding: EdgeInsets.zero,
+                        color: model._isSelected
+                            ? Theme.of(context).primaryColorLight
+                            : null,
+                        child: InkWell(
+                          onTap: rowsSelectable ? () {} : null,
+                          onDoubleTap: rowsSelectable
+                              ? () {
+                                  state.selectedRows[index] =
+                                      !(state.selectedRows[index] ?? false);
+                                  model.selected =
+                                      state.selectedRows[index] ?? false;
+                                }
+                              : null,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: state.columns
+                                .map((column) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: SizedBox(
+                                          width: column.sizeFactor == null
+                                              ? state
+                                                  ._nullSizeFactorColumnsWidth
+                                              : width * column.sizeFactor!,
+                                          child: Align(
+                                            alignment: column.isNumeric
+                                                ? Alignment.centerRight
+                                                : Alignment.centerLeft,
+                                            child: column.buildCell(
+                                                model.item, model.rowIndex),
+                                            heightFactor: null,
+                                          )),
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ));
     }
   }
 }

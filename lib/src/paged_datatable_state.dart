@@ -226,7 +226,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
 
   Future<void> _refresh({required bool currentDataset}) {
     int page = 1;
-    if(!currentDataset) {
+    if (!currentDataset) {
       tableCache.emptyCache();
     } else {
       page = tableCache.currentPageIndex;
@@ -241,8 +241,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     _dispatchCallback();
     controller._state = this;
 
-    if(refreshListener != null) {
-      _refreshListenerSubscription = refreshListener!.listen((event) { 
+    if (refreshListener != null) {
+      _refreshListenerSubscription = refreshListener!.listen((event) {
         _refresh(currentDataset: true);
       });
     }
