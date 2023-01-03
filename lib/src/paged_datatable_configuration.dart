@@ -1,5 +1,6 @@
 part of 'paged_datatable.dart';
 
+/// Distributes the same [PagedDataTableConfigurationData] across descendants widgets.
 class PagedDataTableConfiguration extends InheritedWidget {
   final PagedDataTableConfigurationData data;
 

@@ -1,3 +1,6 @@
+## 1.0.0
+* Rewrite all the code from scratch
+
 ## 0.4.9
 
 * Fixes ScrollController

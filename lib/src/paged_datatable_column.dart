@@ -15,7 +15,7 @@ abstract class BaseTableColumn<TType extends Object> {
     required this.sizeFactor
   });
 
-  Widget _buildCell(TType item, int rowIndex);
+  Widget buildCell(TType item, int rowIndex);
 }
 
 /// Defines a [BaseTableColumn] that allows the content of a cell to be modified, updating the underlying
@@ -54,7 +54,7 @@ class TableColumn<TType extends Object> extends BaseTableColumn<TType> {
   }) : assert(!sortable || id != null, "sortable columns must define an id");
   
   @override
-  Widget _buildCell(TType item, int rowIndex) => cellBuilder(item);
+  Widget buildCell(TType item, int rowIndex) => cellBuilder(item);
 }
 
 /// Defines an [EditableTableColumn] that renders a [DropdownFormField] with a list of items.
@@ -75,7 +75,7 @@ class DropdownTableColumn<TType extends Object, TValue extends Object> extends E
   });
 
   @override
-  Widget _buildCell(TType item, int rowIndex) {
+  Widget buildCell(TType item, int rowIndex) {
     return _DropdownButtonCell<TType, TValue>(
       item: item,
       items: items, 
@@ -86,7 +86,7 @@ class DropdownTableColumn<TType extends Object, TValue extends Object> extends E
   }
 }
 
-/// Defines a [EditableTableColumn] that renders a text field when double-clicked
+/// Defines an [EditableTableColumn] that renders a text field when double-clicked
 class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, String> {
   final InputDecoration? decoration;
   final List<TextInputFormatter>? inputFormatters;
@@ -104,7 +104,7 @@ class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, S
   });
 
   @override
-  Widget _buildCell(TType item, int rowIndex) {
+  Widget buildCell(TType item, int rowIndex) {
     return _TextFieldCell<TType>(
       isNumeric: isNumeric,
       item: item,
@@ -116,6 +116,8 @@ class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, S
   }
 }
 
+/// Defines an [EditableTableColumn] that renders the text of a field and when double-clicked, an overlay with a multiline, bigger text field
+/// is shown.
 class LargeTextTableColumn<TType extends Object> extends EditableTableColumn<TType, String> {
   final InputDecoration? decoration;
   final String? label;
@@ -140,7 +142,7 @@ class LargeTextTableColumn<TType extends Object> extends EditableTableColumn<TTy
   });
 
   @override
-  Widget _buildCell(TType item, int rowIndex) {
+  Widget buildCell(TType item, int rowIndex) {
     return _EditableTextField(
       tooltipText: tooltipText,
       tooltipMargin: tooltipMargin,
