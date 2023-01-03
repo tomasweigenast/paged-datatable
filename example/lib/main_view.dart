@@ -3,14 +3,23 @@ import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
 
-class MainView extends StatelessWidget {
+class MainView extends StatefulWidget {
   const MainView({Key? key}) : super(key: key);
+  
+  @override
+  State<StatefulWidget> createState() => _MainViewState();
+}
+
+class _MainViewState extends State<MainView> {
+  final tableController = PagedDataTableController<String, Post>();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
+        rowsSelectable: false,
+        controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
           if(filtering.valueOrNull("authorName") == "error!") {
             throw Exception("This is an unexpected error, wow!");
@@ -32,6 +41,11 @@ class MainView extends StatelessWidget {
         ),
         initialPage: "",
         columns: [
+          TableColumn(
+            title: "I", 
+            cellBuilder: (item) => Text(item.id.toString()),
+            sizeFactor: .05
+          ),
           TableColumn(
             title: "Identificator", 
             cellBuilder: (item) => Text(item.id.toString()),
@@ -59,6 +73,7 @@ class MainView extends StatelessWidget {
           ),
           DropdownTableColumn<Post, Gender>(
             title: "Gender", 
+            sizeFactor: null,
             getter: (post) => post.authorGender,
             setter: (post, newGender) async {
               post.authorGender = newGender;
@@ -96,7 +111,8 @@ class MainView extends StatelessWidget {
           ),
           TableColumn(
             title: "Fixed Value", 
-            cellBuilder: (item) => const Text("abc")
+            cellBuilder: (item) => const Text("abc"),
+            sizeFactor: null
           ),
         ],
         filters: [
@@ -136,22 +152,34 @@ class MainView extends StatelessWidget {
         ),
         menu: PagedDataTableFilterBarMenu(
           items: [
-            ListTile(
+            FilterMenuItem(
               title: const Text("Remove filters"),
-              onTap: () {},
+              onTap: () {
+                tableController.removeFilters();
+              },
             ),
-            ListTile(
+            FilterMenuItem(
               title: const Text("Add filter"),
-              onTap: () {}
+              onTap: () {
+                tableController.setFilter("gender", Gender.male);
+              }
             ),
-            const Divider(height: 0),
-            ListTile(
+            const FilterMenuDivider(),
+            FilterMenuItem(
               title: const Text("Refresh cache"),
-              onTap: () {},
+              onTap: () {
+                tableController.refresh();
+              },
             ),
           ]
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    tableController.dispose();
+    super.dispose();
   }
 }
