@@ -1,3 +1,6 @@
+## 1.0.1
+* Fix homepage
+
 ## 1.0.0
 * Rewrite all the code from scratch
 
