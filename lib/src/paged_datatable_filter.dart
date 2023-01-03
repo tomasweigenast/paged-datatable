@@ -4,9 +4,13 @@ abstract class TableFilter<TValue> {
   final String title;
   final String id;
   final String Function(TValue value) chipFormatter;
+  final TValue? defaultValue;
 
   const TableFilter(
-      {required this.id, required this.title, required this.chipFormatter});
+      {required this.id,
+      required this.title,
+      required this.chipFormatter,
+      required this.defaultValue});
 
   Widget buildPicker(BuildContext context, TableFilterState state);
 
@@ -25,7 +29,8 @@ class TextTableFilter extends TableFilter<String> {
       {this.decoration,
       required super.chipFormatter,
       required super.id,
-      required super.title});
+      required super.title,
+      super.defaultValue});
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -50,7 +55,8 @@ class DropdownTableFilter<TValue> extends TableFilter<TValue> {
       required this.items,
       required super.chipFormatter,
       required super.id,
-      required super.title});
+      required super.title,
+      super.defaultValue});
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -78,7 +84,8 @@ class DatePickerTableFilter extends TableFilter<DateTime> {
       required this.lastDate,
       required super.chipFormatter,
       required super.id,
-      required super.title});
+      required super.title,
+      super.defaultValue});
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -109,7 +116,8 @@ class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
       required this.lastDate,
       required super.chipFormatter,
       required super.id,
-      required super.title});
+      required super.title,
+      super.defaultValue});
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {

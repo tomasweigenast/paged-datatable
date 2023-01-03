@@ -53,9 +53,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
         filters = filters == null
             ? {}
             : {for (var v in filters) v.id: TableFilterState._internal(v)} {
-    _initSizes();
-    _dispatchCallback();
-    this.controller._state = this;
+    _init();
   }
 
   void setPageSize(int pageSize) {
@@ -225,6 +223,21 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
   Future<void> _refresh() {
     tableCache.emptyCache();
     return _dispatchCallback();
+  }
+
+  void _init() {
+    _initSizes();
+    _setDefaultFilters();
+    _dispatchCallback();
+    controller._state = this;
+  }
+
+  void _setDefaultFilters() {
+    for (var filter in filters.values) {
+      if (filter._filter.defaultValue != null) {
+        filter.value = filter._filter.defaultValue;
+      }
+    }
   }
 
   void _initSizes() {

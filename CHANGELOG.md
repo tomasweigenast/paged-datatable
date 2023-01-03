@@ -1,3 +1,6 @@
+## 1.0.3
+* Add option to set default filters
+
 ## 1.0.2
 * Fix scores
 
