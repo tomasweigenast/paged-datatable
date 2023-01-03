@@ -16,15 +16,16 @@ class PaginationResult<TKey extends Object, TResult extends Object> {
   List<TResult> get elements => _elements!;
   TKey? get nextPageToken => _nextPageToken;
 
-  PaginationResult.items({required List<TResult> elements, TKey? nextPageToken, int? size}) 
-    : _nextPageToken = nextPageToken,
-      _elements = elements,
-      _length = size,
-      _error = null;
+  PaginationResult.items(
+      {required List<TResult> elements, TKey? nextPageToken, int? size})
+      : _nextPageToken = nextPageToken,
+        _elements = elements,
+        _length = size,
+        _error = null;
 
-  PaginationResult.error({required Object? error}) 
-    : _nextPageToken = null, 
-      _elements = null,
-      _length = null,
-      _error = error;
+  PaginationResult.error({required Object? error})
+      : _nextPageToken = null,
+        _elements = null,
+        _length = null,
+        _error = error;
 }

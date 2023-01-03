@@ -31,14 +31,17 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
 
   /// Gets all the selected rows in the current resultset
   List<TResult> getSelectedRows() {
-    return _state.selectedRows.entries.where((element) => element.value).map((e) => _state.tableCache.currentResultset[e.key]).toList();
+    return _state.selectedRows.entries
+        .where((element) => element.value)
+        .map((e) => _state.tableCache.currentResultset[e.key])
+        .toList();
   }
 
   /// Unselects any selected row in the current resultset
   void unselectAllRows() {
     _state.selectedRows.clear();
-    for(var rowState in _state._rowsState) {
-      if(rowState._isSelected) {
+    for (var rowState in _state._rowsState) {
+      if (rowState._isSelected) {
         rowState.selected = false;
       }
     }
@@ -58,7 +61,7 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
 
       // refresh state of that row.
       _state._rowsState[rowIndex].refresh();
-    } catch(_) {
+    } catch (_) {
       throw TableError("There is no row at index $rowIndex.");
     }
   }
@@ -68,7 +71,7 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
     try {
       // refresh state of that row.
       _state._rowsState[rowIndex].refresh();
-    } catch(_) {
+    } catch (_) {
       throw TableError("There is no row at index $rowIndex.");
     }
   }

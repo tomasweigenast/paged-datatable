@@ -29,8 +29,8 @@ part 'types.dart';
 /// A paginated DataTable that allows page caching and filtering
 /// [TKey] is the type of the page token
 /// [TResult] is the type of data the data table will show.
-class PagedDataTable<TKey extends Object, TResult extends Object> extends StatelessWidget {
-
+class PagedDataTable<TKey extends Object, TResult extends Object>
+    extends StatelessWidget {
   final FetchCallback<TKey, TResult> fetchPage;
   final TKey initialPage;
   final List<TableFilter>? filters;
@@ -43,21 +43,20 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final PagedDataTableConfigurationData? configuration;
   final bool rowsSelectable;
 
-  const PagedDataTable({
-    required this.fetchPage,
-    required this.initialPage,
-    required this.columns,
-    this.filters,
-    this.menu,
-    this.controller,
-    this.footer,
-    this.header,
-    this.configuration,
-    this.errorBuilder,
-    this.noItemsFoundBuilder,
-    this.rowsSelectable = false,
-    super.key
-  });
+  const PagedDataTable(
+      {required this.fetchPage,
+      required this.initialPage,
+      required this.columns,
+      this.filters,
+      this.menu,
+      this.controller,
+      this.footer,
+      this.header,
+      this.configuration,
+      this.errorBuilder,
+      this.noItemsFoundBuilder,
+      this.rowsSelectable = false,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,50 +69,47 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
         fetchCallback: fetchPage,
         initialPage: initialPage,
       ),
-      builder: (context, widget) { 
+      builder: (context, widget) {
         var state = context.read<_PagedDataTableState<TKey, TResult>>();
 
         Widget child = Material(
           color: Colors.white,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-            side: BorderSide(
-              color: Color(0xffDADCE0)
-            )
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              var width = constraints.maxWidth - (columns.length * 32);
-              state.availableWidth = width;
-              return Column(
-                children: [
-                  /* FILTER TAB */
-                  _PagedDataTableFilterTab<TKey, TResult>(menu, header),
-                  const Divider(height: 0),
-                
-                  /* HEADER ROW */
-                  _PagedDataTableHeaderRow<TKey, TResult>(rowsSelectable, width),
-                  const Divider(height: 0),
-                    
-                  /* ITEMS */
-                  Expanded(
-                    child: _PagedDataTableRows<TKey, TResult>(rowsSelectable, noItemsFoundBuilder, errorBuilder, width),
-                  ),
-                  
-                  /* FOOTER */
-                  const Divider(height: 0),
-                  _PagedDataTableFooter<TKey, TResult>(footer)
-                ],
-              );
-            }
-          ),
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              side: BorderSide(color: Color(0xffDADCE0))),
+          child: LayoutBuilder(builder: (context, constraints) {
+            var width = constraints.maxWidth - (columns.length * 32);
+            state.availableWidth = width;
+            return Column(
+              children: [
+                /* FILTER TAB */
+                _PagedDataTableFilterTab<TKey, TResult>(menu, header),
+                const Divider(height: 0),
+
+                /* HEADER ROW */
+                _PagedDataTableHeaderRow<TKey, TResult>(rowsSelectable, width),
+                const Divider(height: 0),
+
+                /* ITEMS */
+                Expanded(
+                  child: _PagedDataTableRows<TKey, TResult>(
+                      rowsSelectable, noItemsFoundBuilder, errorBuilder, width),
+                ),
+
+                /* FOOTER */
+                const Divider(height: 0),
+                _PagedDataTableFooter<TKey, TResult>(footer)
+              ],
+            );
+          }),
         );
-  
+
         // apply configuration to this widget only
-        if(configuration != null) {
-          child = PagedDataTableConfiguration(data: configuration!, child: child);
+        if (configuration != null) {
+          child =
+              PagedDataTableConfiguration(data: configuration!, child: child);
         }
-  
+
         return child;
       },
     );

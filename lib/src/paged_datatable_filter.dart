@@ -5,36 +5,35 @@ abstract class TableFilter<TValue> {
   final String id;
   final String Function(TValue value) chipFormatter;
 
-  const TableFilter({required this.id, required this.title, required this.chipFormatter});
+  const TableFilter(
+      {required this.id, required this.title, required this.chipFormatter});
 
   Widget buildPicker(BuildContext context, TableFilterState state);
 
   @override
   int get hashCode => id.hashCode;
-  
+
   @override
-  bool operator ==(Object other) => other is TableFilter ? other.id == id : false;
+  bool operator ==(Object other) =>
+      other is TableFilter ? other.id == id : false;
 }
 
 class TextTableFilter extends TableFilter<String> {
   final InputDecoration? decoration;
 
-  const TextTableFilter({
-    this.decoration,
-    required super.chipFormatter,
-    required super.id, 
-    required super.title
-  });
-  
+  const TextTableFilter(
+      {this.decoration,
+      required super.chipFormatter,
+      required super.id,
+      required super.title});
+
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
     return TextFormField(
-      decoration: decoration ?? InputDecoration(
-        labelText: title
-      ),
+      decoration: decoration ?? InputDecoration(labelText: title),
       initialValue: state.value,
       onSaved: (newValue) {
-        if(newValue != null && newValue.isNotEmpty) {
+        if (newValue != null && newValue.isNotEmpty) {
           state.value = newValue;
         }
       },
@@ -46,14 +45,13 @@ class DropdownTableFilter<TValue> extends TableFilter<TValue> {
   final InputDecoration? decoration;
   final List<DropdownMenuItem<TValue>> items;
 
-  const DropdownTableFilter({
-    this.decoration,
-    required this.items,
-    required super.chipFormatter,
-    required super.id, 
-    required super.title
-  });
-  
+  const DropdownTableFilter(
+      {this.decoration,
+      required this.items,
+      required super.chipFormatter,
+      required super.id,
+      required super.title});
+
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
     return DropdownButtonFormField<TValue>(
@@ -63,9 +61,7 @@ class DropdownTableFilter<TValue> extends TableFilter<TValue> {
       onSaved: (newValue) {
         state.value = newValue;
       },
-      decoration: decoration ?? InputDecoration(
-        labelText: title
-      ),
+      decoration: decoration ?? InputDecoration(labelText: title),
     );
   }
 }
@@ -75,28 +71,25 @@ class DatePickerTableFilter extends TableFilter<DateTime> {
   final DateTime firstDate, lastDate;
   final DateFormat? dateFormat;
 
-  const DatePickerTableFilter({
-    this.decoration,
-    this.dateFormat,
-    required this.firstDate,
-    required this.lastDate,
-    required super.chipFormatter,
-    required super.id, 
-    required super.title
-  });
-  
+  const DatePickerTableFilter(
+      {this.decoration,
+      this.dateFormat,
+      required this.firstDate,
+      required this.lastDate,
+      required super.chipFormatter,
+      required super.id,
+      required super.title});
+
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
     return _DateTimePicker(
-      firstDate: firstDate, 
+      firstDate: firstDate,
       lastDate: lastDate,
       dateFormat: dateFormat,
       initialDate: state.value,
-      decoration: decoration ?? InputDecoration(
-        labelText: title
-      ),
+      decoration: decoration ?? InputDecoration(labelText: title),
       onSaved: (newValue) {
-        if(newValue != null) {
+        if (newValue != null) {
           state.value = newValue;
         }
       },
@@ -109,28 +102,25 @@ class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
   final DateTime firstDate, lastDate;
   final DateFormat? dateFormat;
 
-  const DateRangePickerTableFilter({
-    this.decoration,
-    this.dateFormat,
-    required this.firstDate,
-    required this.lastDate,
-    required super.chipFormatter,
-    required super.id, 
-    required super.title
-  });
-  
+  const DateRangePickerTableFilter(
+      {this.decoration,
+      this.dateFormat,
+      required this.firstDate,
+      required this.lastDate,
+      required super.chipFormatter,
+      required super.id,
+      required super.title});
+
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
     return _DateTimeRangePicker(
-      firstDate: firstDate, 
+      firstDate: firstDate,
       lastDate: lastDate,
       dateFormat: dateFormat,
       initialValue: state.value,
-      decoration: decoration ?? InputDecoration(
-        labelText: title
-      ),
+      decoration: decoration ?? InputDecoration(labelText: title),
       onSaved: (newValue) {
-        if(newValue != null) {
+        if (newValue != null) {
           state.value = newValue;
         }
       },

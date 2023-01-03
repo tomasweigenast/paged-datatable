@@ -8,47 +8,47 @@ class _PagedDataTableMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(blurRadius: 5, color: Colors.black38)],
-        borderRadius: BorderRadius.all(Radius.circular(4))
-      ),
+          color: Colors.white,
+          boxShadow: [BoxShadow(blurRadius: 5, color: Colors.black38)],
+          borderRadius: BorderRadius.all(Radius.circular(4))),
       duration: const Duration(milliseconds: 500),
       child: Material(
-        color: Colors.transparent,
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-        child: ClipRRect(
+          color: Colors.transparent,
           borderRadius: const BorderRadius.all(Radius.circular(4)),
-          child: SingleChildScrollView(
-            child: _AutoAnimatedSize(
-              startAfterDuration: const Duration(milliseconds: 0),
-              alignment: AlignmentDirectional.topStart,
-              child: SizedBox(
-                width: 300,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: items.map((e) => e._build(context)).toList()
+          child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(4)),
+              child: SingleChildScrollView(
+                  child: _AutoAnimatedSize(
+                startAfterDuration: const Duration(milliseconds: 0),
+                alignment: AlignmentDirectional.topStart,
+                child: SizedBox(
+                  width: 300,
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: items.map((e) => e._build(context)).toList()),
                 ),
-              ),
-            )
-          )
-        )
-      ),
+              )))),
     );
   }
 }
 
-void _showMenu({required BuildContext context, required List<BaseFilterMenuItem> items}) {
+void _showMenu(
+    {required BuildContext context, required List<BaseFilterMenuItem> items}) {
   final RenderBox button = context.findRenderObject() as RenderBox;
   var offset = button.localToGlobal(Offset.zero);
-  var position = RelativeRect.fromLTRB(button.size.width, offset.dy+button.size.height-10, offset.dx+10, 0);
+  var position = RelativeRect.fromLTRB(button.size.width,
+      offset.dy + button.size.height - 10, offset.dx + 10, 0);
 
   final NavigatorState navigator = Navigator.of(context);
-  Navigator.push(context, _PopupMenuRoute(
-    items: items,
-    position: position,
-    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel, 
-    capturedThemes: InheritedTheme.capture(from: context, to: navigator.context)
-  ));
+  Navigator.push(
+      context,
+      _PopupMenuRoute(
+          items: items,
+          position: position,
+          barrierLabel:
+              MaterialLocalizations.of(context).modalBarrierDismissLabel,
+          capturedThemes:
+              InheritedTheme.capture(from: context, to: navigator.context)));
 }
 
 class _PopupMenuRoute<T> extends PopupRoute<T> {
@@ -79,7 +79,7 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
     return CurvedAnimation(
       parent: super.createAnimation(),
       curve: Curves.linear,
-      reverseCurve: const Interval(0.0, 1.0/3.0),
+      reverseCurve: const Interval(0.0, 1.0 / 3.0),
     );
   }
 
@@ -96,7 +96,8 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   final String barrierLabel;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
     final menu = _PagedDataTableMenu(items: items);
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     return MediaQuery.removePadding(
@@ -204,7 +205,8 @@ class _AutoAnimatedSize extends StatefulWidget {
   State<StatefulWidget> createState() => _AutoAnimatedSizeState();
 }
 
-class _AutoAnimatedSizeState extends State<_AutoAnimatedSize> with SingleTickerProviderStateMixin {
+class _AutoAnimatedSizeState extends State<_AutoAnimatedSize>
+    with SingleTickerProviderStateMixin {
   bool showChild = false;
 
   @override
