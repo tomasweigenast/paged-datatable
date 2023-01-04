@@ -1,3 +1,6 @@
+## 1.0.8
+* Added `ProgrammaticTableFilter`
+
 ## 1.0.7
 * Fix menu overlay is not opening correctly
 

@@ -5,12 +5,14 @@ abstract class TableFilter<TValue> {
   final String id;
   final String Function(TValue value) chipFormatter;
   final TValue? defaultValue;
+  final bool visible;
 
   const TableFilter(
       {required this.id,
       required this.title,
       required this.chipFormatter,
-      required this.defaultValue});
+      required this.defaultValue,
+      required this.visible});
 
   Widget buildPicker(BuildContext context, TableFilterState state);
 
@@ -22,6 +24,23 @@ abstract class TableFilter<TValue> {
       other is TableFilter ? other.id == id : false;
 }
 
+/// A filter that is not visible in the popup dialog but can be set with the controller.
+class ProgrammaticTableFilter<TValue> extends TableFilter<TValue> {
+  
+  const ProgrammaticTableFilter(
+      {required super.chipFormatter,
+      required super.id,
+      required super.title,
+      super.defaultValue,
+      super.visible = false});
+
+  @override
+  Widget buildPicker(BuildContext context, TableFilterState state) {
+    return const SizedBox.shrink();
+  }
+
+}
+
 class TextTableFilter extends TableFilter<String> {
   final InputDecoration? decoration;
 
@@ -30,7 +49,7 @@ class TextTableFilter extends TableFilter<String> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue});
+      super.defaultValue}) : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -56,7 +75,7 @@ class DropdownTableFilter<TValue> extends TableFilter<TValue> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue});
+      super.defaultValue}) : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -85,7 +104,7 @@ class DatePickerTableFilter extends TableFilter<DateTime> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue});
+      super.defaultValue}) : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -117,7 +136,7 @@ class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue});
+      super.defaultValue}) : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {

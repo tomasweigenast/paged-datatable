@@ -184,7 +184,7 @@ class _FiltersDialog<TKey extends Object, TResult extends Object>
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
-                            ...state.filters.entries.map((entry) => Padding(
+                            ...state.filters.entries.where((element) => element.value._filter.visible).map((entry) => Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 6),
                                   child: entry.value._filter
