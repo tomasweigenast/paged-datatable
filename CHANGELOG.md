@@ -1,3 +1,6 @@
+## 1.0.9
+* Remove header when no filter is added
+
 ## 1.0.8
 * Added `ProgrammaticTableFilter`
 
