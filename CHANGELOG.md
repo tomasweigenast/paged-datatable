@@ -1,3 +1,6 @@
+## 1.0.12
+* Add Flexible to every row
+
 ## 1.0.11
 * Add option to remove the size of the rows
 
