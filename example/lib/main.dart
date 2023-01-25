@@ -191,6 +191,12 @@ class _MainViewState extends State<MainView> {
         // ),
         menu: PagedDataTableFilterBarMenu(items: [
           FilterMenuItem(
+            title: const Text("Remove row"),
+            onTap: () {
+              tableController.removeRow(tableController.currentDataset.first);
+            },
+          ),
+          FilterMenuItem(
             title: const Text("Remove filters"),
             onTap: () {
               tableController.removeFilters();
@@ -238,6 +244,12 @@ class _MainViewState extends State<MainView> {
           const FilterMenuDivider(),
           FilterMenuItem(
             title: const Text("Refresh cache"),
+            onTap: () {
+              tableController.refresh(currentDataset: false);
+            },
+          ),
+          FilterMenuItem(
+            title: const Text("Refresh current dataset"),
             onTap: () {
               tableController.refresh();
             },

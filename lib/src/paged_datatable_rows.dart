@@ -50,10 +50,11 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
 
     // a little bit of verbose is better than checking this on every row
     if (customRowBuilder == null) {
+      int length = state.tableCache.currentLength;
       return ListView.separated(
           controller: state.rowsScrollController,
           separatorBuilder: (_, __) => const Divider(height: 0),
-          itemCount: state.tableCache.currentResultset.length,
+          itemCount: length,
           itemBuilder: (context, index) =>
               ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
                 value: state._rowsState[index],

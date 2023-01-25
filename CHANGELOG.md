@@ -1,3 +1,9 @@
+## 1.0.10
+* Fix locales
+* Fix refresh current dataset
+* Add option to remove a row without reloading the entire dataset
+
+
 ## 1.0.9
 * Remove header when no filter is added
 

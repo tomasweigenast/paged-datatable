@@ -24,7 +24,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(time) => "Ultima actualización ${time}";
 
-  static String m2(totalElements) => "Showing ${totalElements} elements";
+  static String m2(totalElements) => "Mostrando ${totalElements} elementos";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{

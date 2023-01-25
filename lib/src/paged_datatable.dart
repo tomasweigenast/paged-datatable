@@ -87,11 +87,12 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
             return Column(
               children: [
                 /* FILTER TAB */
-                if(header != null || menu != null || state.filters.isNotEmpty)
-                  ...[
-                    _PagedDataTableFilterTab<TKey, TResult>(menu, header),
-                    const Divider(height: 0),
-                  ],
+                if (header != null ||
+                    menu != null ||
+                    state.filters.isNotEmpty) ...[
+                  _PagedDataTableFilterTab<TKey, TResult>(menu, header),
+                  const Divider(height: 0),
+                ],
 
                 /* HEADER ROW */
                 _PagedDataTableHeaderRow<TKey, TResult>(rowsSelectable, width),

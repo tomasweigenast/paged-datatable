@@ -26,7 +26,6 @@ abstract class TableFilter<TValue> {
 
 /// A filter that is not visible in the popup dialog but can be set with the controller.
 class ProgrammaticTableFilter<TValue> extends TableFilter<TValue> {
-  
   const ProgrammaticTableFilter(
       {required super.chipFormatter,
       required super.id,
@@ -38,7 +37,6 @@ class ProgrammaticTableFilter<TValue> extends TableFilter<TValue> {
   Widget buildPicker(BuildContext context, TableFilterState state) {
     return const SizedBox.shrink();
   }
-
 }
 
 class TextTableFilter extends TableFilter<String> {
@@ -49,7 +47,8 @@ class TextTableFilter extends TableFilter<String> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue}) : super(visible: true);
+      super.defaultValue})
+      : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -75,7 +74,8 @@ class DropdownTableFilter<TValue> extends TableFilter<TValue> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue}) : super(visible: true);
+      super.defaultValue})
+      : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -104,7 +104,8 @@ class DatePickerTableFilter extends TableFilter<DateTime> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue}) : super(visible: true);
+      super.defaultValue})
+      : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {
@@ -136,7 +137,8 @@ class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
       required super.chipFormatter,
       required super.id,
       required super.title,
-      super.defaultValue}) : super(visible: true);
+      super.defaultValue})
+      : super(visible: true);
 
   @override
   Widget buildPicker(BuildContext context, TableFilterState state) {

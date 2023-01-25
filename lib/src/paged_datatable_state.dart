@@ -145,7 +145,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     _dispatchCallback(page: page);
   }
 
-  Future<void> _dispatchCallback({int page = 1}) async {
+  Future<void> _dispatchCallback({int page = 1, bool goNext = true}) async {
     _state = _TableState.loading;
     _rowsChange++;
     _currentError = null;
@@ -159,7 +159,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
       var key = tableCache.getKey(page);
 
       // key found, lookup data in cache
-      if (key != null) {
+      if (key != null && goNext) {
         var data = tableCache.cache[key];
 
         // data found, display it
@@ -173,9 +173,9 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
       }
 
       if (goOnline) {
-        TKey lookupKey = tableCache.nextKey ??
-            tableCache
-                .currentKey; //page == 1 ? tableCache.currentKey : tableCache.nextKey!;
+        TKey lookupKey = goNext
+            ? (tableCache.nextKey ?? tableCache.currentKey)
+            : tableCache.currentKey;
 
         // fetch elements
         var pageIndicator = await fetchCallback(
@@ -188,10 +188,13 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
 
         // store page in cache
         tableCache.cache[lookupKey] = pageIndicator;
-        tableCache.currentKey = tableCache.nextKey ??
-            tableCache
+        tableCache.currentKey = goNext
+            ? (tableCache.nextKey ?? tableCache.currentKey)
+            : tableCache
                 .currentKey; // now currentKey is the nextKey of the previous fetch
-        tableCache.keys.add(tableCache.currentKey);
+        if (goNext) {
+          tableCache.keys.add(tableCache.currentKey);
+        }
         tableCache.nextKey = pageIndicator.nextPageToken;
         tableCache.currentPageIndex++;
         debugPrint("Page $page fetched from source.");
@@ -231,7 +234,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
       page = tableCache.currentPageIndex;
     }
 
-    return _dispatchCallback(page: page);
+    return _dispatchCallback(page: page, goNext: !currentDataset);
   }
 
   void _init() {
@@ -286,7 +289,7 @@ class _TableCache<TKey extends Object, TResult extends Object> {
 
   bool get hasResultset => cache[currentKey] != null;
   List<TResult> get currentResultset => cache[currentKey]?.elements ?? const [];
-  int get currentLength => cache[currentKey]?.elements.length ?? 0;
+  int get currentLength => currentResultset.length;
 
   bool get canGoBack => currentPageIndex > 1;
   bool get canGoNext => nextKey != null;
@@ -311,6 +314,10 @@ class _TableCache<TKey extends Object, TResult extends Object> {
     } catch (_) {
       return null;
     }
+  }
+
+  void deleteFromCurrentDataset(TResult element) {
+    cache[currentKey]?._elements?.remove(element);
   }
 }
 

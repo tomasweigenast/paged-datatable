@@ -19,7 +19,7 @@
             "currentPage": {}
         }
     },
-    "totalElementsText": "Showing {totalElements} elements",
+    "totalElementsText": "Mostrando {totalElements} elementos",
     "@totalElementsText": {
         "placeholders": {
             "totalElements": {}

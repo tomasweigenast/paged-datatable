@@ -1,8 +1,13 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 part of 'paged_datatable.dart';
 
 /// Represents a controller of a [PagedDataTable]
 class PagedDataTableController<TKey extends Object, TResult extends Object> {
   late final _PagedDataTableState<TKey, TResult> _state;
+
+  /// Returns the current showing dataset elements.
+  Iterable<TResult> get currentDataset => _state._rowsState.map((e) => e.item);
 
   void dispose() {
     _state.dispose();
@@ -75,6 +80,20 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
       _state._rowsState[rowIndex].refresh();
     } catch (_) {
       throw TableError("There is no row at index $rowIndex.");
+    }
+  }
+
+  /// Removes the row containing [element].
+  /// Keep in mind this will work only if [TResult] defines a custom hashcode implementation.
+  void removeRow(TResult element) {
+    var rowStateIndex =
+        _state._rowsState.indexWhere((elem) => elem.item == element);
+    if (rowStateIndex != -1) {
+      _state.tableCache.deleteFromCurrentDataset(element);
+      _state._rowsState.removeAt(rowStateIndex);
+      _state._rowsChange = rowStateIndex;
+      // ignore: invalid_use_of_visible_for_testing_member
+      _state.notifyListeners();
     }
   }
 }

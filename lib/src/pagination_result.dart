@@ -19,7 +19,8 @@ class PaginationResult<TKey extends Object, TResult extends Object> {
   PaginationResult.items(
       {required List<TResult> elements, TKey? nextPageToken, int? size})
       : _nextPageToken = nextPageToken,
-        _elements = elements,
+        _elements = List.from(
+            elements), // Creates a new list because we need to maintain our own cache in order to allow row deletion
         _length = size,
         _error = null;
 
