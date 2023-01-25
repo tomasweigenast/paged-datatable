@@ -39,9 +39,9 @@ class PagedDataTableConfigurationData {
   /// Defaults to 56
   final double columnsHeaderHeight;
 
-  /// The height of every row.
+  /// The height of every row. If null, it will size to content.
   /// Defaults to 52
-  final double rowHeight;
+  final double? rowHeight;
 
   /// The height of the filter bar.
   /// Defaults to 56

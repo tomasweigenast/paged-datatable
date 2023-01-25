@@ -1,3 +1,6 @@
+## 1.0.11
+* Add option to remove the size of the rows
+
 ## 1.0.10
 * Fix locales
 * Fix refresh current dataset
