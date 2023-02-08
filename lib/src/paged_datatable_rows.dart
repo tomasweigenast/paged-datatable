@@ -80,24 +80,22 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: state.columns
-                                .map((column) => Flexible(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16),
-                                        child: SizedBox(
-                                            width: column.sizeFactor == null
-                                                ? state
-                                                    ._nullSizeFactorColumnsWidth
-                                                : width * column.sizeFactor!,
-                                            child: Align(
-                                              alignment: column.isNumeric
-                                                  ? Alignment.centerRight
-                                                  : Alignment.centerLeft,
-                                              child: column.buildCell(
-                                                  model.item, model.rowIndex),
-                                              heightFactor: null,
-                                            )),
-                                      ),
+                                .map((column) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: SizedBox(
+                                          width: column.sizeFactor == null
+                                              ? state
+                                                  ._nullSizeFactorColumnsWidth
+                                              : width * column.sizeFactor!,
+                                          child: Align(
+                                            alignment: column.isNumeric
+                                                ? Alignment.centerRight
+                                                : Alignment.centerLeft,
+                                            child: column.buildCell(
+                                                model.item, model.rowIndex),
+                                            heightFactor: null,
+                                          )),
                                     ))
                                 .toList(),
                           ),

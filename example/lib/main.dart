@@ -63,7 +63,7 @@ class _MainViewState extends State<MainView> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
-        rowsSelectable: true,
+        rowsSelectable: false,
         configuration: const PagedDataTableConfigurationData(),
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {

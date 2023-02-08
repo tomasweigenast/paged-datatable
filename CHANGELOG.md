@@ -1,3 +1,6 @@
+## 1.0.13
+* Fix small bug
+
 ## 1.0.12
 * Add Flexible to every row
 
