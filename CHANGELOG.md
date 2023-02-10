@@ -1,3 +1,9 @@
+## 1.0.17
+* Add method to TableController to allow updating a row based on a predicate.
+
+## 1.0.16
+* Fix wrong header alignment
+
 ## 1.0.15
 * Header child now can take less width. Replaced Expanded with Flexible.
 

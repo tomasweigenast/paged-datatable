@@ -83,6 +83,25 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
     }
   }
 
+  /// Builds every row that matches [predicate].
+  void refreshRowWhere(bool Function(TResult element) predicate) {
+    var elements = _state._rowsState.where((state) => predicate(state.item));
+    for(var elem in elements) {
+      elem.refresh();
+    }
+  }
+
+  /// Updates every item from the current resultset that matches [predicate] and rebuilds it.
+  void modifyRowsValue(bool Function(TResult element) predicate, void Function(TResult item) update) {
+    var matched = _state.tableCache.currentResultset.where(predicate);
+    for(var match in matched) {
+      update(match);
+
+      // refresh state of that row.
+      _state._rowsState.firstWhere((element) => predicate(element.item)).refresh(); 
+    }
+  }
+
   /// Rebuilds the row at the specified [rowIndex] to reflect changes to the item.
   void refreshRow(int rowIndex) {
     try {
