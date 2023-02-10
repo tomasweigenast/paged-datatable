@@ -1,3 +1,6 @@
+## 1.0.15
+* Header child now can take less width. Replaced Expanded with Flexible.
+
 ## 1.0.14
 * Add method to get applied filters from controller
 

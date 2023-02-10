@@ -95,7 +95,7 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
               child: Row(
                 children: [
                   if (header != null)
-                    Expanded(child: header!)
+                    Flexible(child: header!)
                   else
                     const Spacer(),
 
