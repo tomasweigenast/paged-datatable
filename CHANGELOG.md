@@ -1,3 +1,6 @@
+## 1.0.14
+* Add method to get applied filters from controller
+
 ## 1.0.13
 * Fix small bug
 

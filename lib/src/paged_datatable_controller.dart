@@ -36,6 +36,16 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
     _state.removeFilters();
   }
 
+  /// Returns a Map where each key is the field name and its value the current field's value
+  Map<String, dynamic> getFilters() {
+    return _state.filters.map((key, value) => MapEntry(key, value.value));
+  }
+
+  /// Gets the value of a filter
+  dynamic getFilter(String filterName) {
+    return _state.filters[filterName]?.value;
+  }
+
   /// Gets all the selected rows in the current resultset
   List<TResult> getSelectedRows() {
     return _state.selectedRows.entries
