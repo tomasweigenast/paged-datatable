@@ -64,6 +64,8 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
     headerBackgroundColor: Color(0xFF80CBC4),
     filtersHeaderBackgroundColor: Color(0xFF80CBC4),
     footerBackgroundColor: Color(0xFF80CBC4),
+    // textStyle: TextStyle(decoration: TextDecoration.underline),
+    rowsTextStyle: TextStyle(decoration: TextDecoration.overline),
     chipTheme: ChipThemeData(
         backgroundColor: Colors.teal,
         labelStyle: TextStyle(color: Colors.white),
@@ -75,7 +77,7 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
 
 class _MainViewState extends State<MainView> {
   final tableController = PagedDataTableController<String, Post>();
-  PagedDataTableThemeData? theme;
+  PagedDataTableThemeData? theme = kCustomPagedDataTableTheme;
 
   @override
   Widget build(BuildContext context) {

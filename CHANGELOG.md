@@ -1,3 +1,7 @@
+## 1.1.1
+* Fix bugs while customizing text styles
+
+
 ## 1.1.0
 * Add better customization by placing a common widget or for a specific one using PagedDataTableTheme
 

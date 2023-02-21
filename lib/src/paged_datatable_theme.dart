@@ -50,9 +50,6 @@ class PagedDataTableThemeData extends Equatable {
   /// Defaults to [backgroundColor]
   final List<Color>? rowColors;
 
-  /// The [TextStyle] for the entire table.
-  final TextStyle textStyle;
-
   /// The [TextStyle] for each row.
   final TextStyle rowsTextStyle;
 
@@ -72,22 +69,29 @@ class PagedDataTableThemeData extends Equatable {
   /// Defaults to platform theme.
   final ChipThemeData? chipTheme;
 
-  const PagedDataTableThemeData({
-    this.configuration = const PagedDataTableConfiguration(),
-    this.backgroundColor = Colors.white,
-    this.textStyle =
-        const TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
-    this.headerBackgroundColor,
-    this.filtersHeaderBackgroundColor,
-    this.footerBackgroundColor,
-    this.footerTextStyle,
-    this.rowsTextStyle = const TextStyle(fontSize: 14),
-    this.headerTextStyle =
-        const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-    this.filtersHeaderTextStyle,
-    this.rowColors,
-    this.chipTheme,
-  });
+  /// The border of the table.
+  final ShapeBorder? border;
+
+  /// The color of the divider row.
+  final Color? rowDividerColor;
+
+  const PagedDataTableThemeData(
+      {this.configuration = const PagedDataTableConfiguration(),
+      this.backgroundColor = Colors.white,
+      this.headerBackgroundColor,
+      this.filtersHeaderBackgroundColor,
+      this.footerBackgroundColor,
+      this.footerTextStyle,
+      this.rowsTextStyle = const TextStyle(fontSize: 14),
+      this.headerTextStyle =
+          const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      this.filtersHeaderTextStyle,
+      this.rowColors,
+      this.chipTheme,
+      this.rowDividerColor,
+      this.border = const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          side: BorderSide(color: Color(0xffDADCE0)))});
 
   @override
   List<Object?> get props => [configuration, backgroundColor];
