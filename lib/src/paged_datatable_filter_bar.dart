@@ -40,9 +40,11 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
                                       _showFilterOverlay(details, context,
                                           state, localizations);
                                     },
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Icon(Icons.filter_list_rounded),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Icon(Icons.filter_list_rounded,
+                                    color: theme.buttonsColor),
                               ),
                             ),
                           ),
