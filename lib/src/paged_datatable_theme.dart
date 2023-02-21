@@ -76,7 +76,11 @@ class PagedDataTableThemeData extends Equatable {
   final ShapeBorder? border;
 
   /// The color of the divider row.
-  final Color? rowDividerColor;
+  final Color? dividerColor;
+
+  /// The color of the buttons in the footer.
+  /// Defaults to platform color.
+  final Color? footerButtonsColor;
 
   const PagedDataTableThemeData(
       {this.configuration = const PagedDataTableConfiguration(),
@@ -92,7 +96,8 @@ class PagedDataTableThemeData extends Equatable {
       this.filtersHeaderTextStyle,
       this.rowColors,
       this.chipTheme,
-      this.rowDividerColor,
+      this.dividerColor,
+      this.footerButtonsColor,
       this.border = const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
           side: BorderSide(color: Color(0xffDADCE0)))});

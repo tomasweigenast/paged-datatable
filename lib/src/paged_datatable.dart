@@ -95,12 +95,12 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
                     menu != null ||
                     state.filters.isNotEmpty) ...[
                   _PagedDataTableFilterTab<TKey, TResult>(menu, header),
-                  const Divider(height: 0),
+                  Divider(height: 0, color: localTheme.dividerColor),
                 ],
 
                 /* HEADER ROW */
                 _PagedDataTableHeaderRow<TKey, TResult>(rowsSelectable, width),
-                const Divider(height: 0),
+                Divider(height: 0, color: localTheme.dividerColor),
 
                 /* ITEMS */
                 Expanded(
@@ -113,7 +113,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
                 ),
 
                 /* FOOTER */
-                const Divider(height: 0),
+                Divider(height: 0, color: localTheme.dividerColor),
                 _PagedDataTableFooter<TKey, TResult>(footer)
               ],
             );

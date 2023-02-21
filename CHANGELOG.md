@@ -1,3 +1,7 @@
+## 1.1.3
+* Apply dividerColor on every divider line.
+* Add buttons theme
+
 ## 1.1.2
 * Revert old styling
 

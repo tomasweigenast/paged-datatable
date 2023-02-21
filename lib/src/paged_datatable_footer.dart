@@ -33,10 +33,15 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                             tooltip: localization.refreshText,
                             onPressed: () =>
                                 state._refresh(currentDataset: false),
-                            icon: const Icon(Icons.refresh_outlined)),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
-                            child: VerticalDivider(indent: 10, endIndent: 10)),
+                            icon: Icon(Icons.refresh_outlined,
+                                color: theme.footerButtonsColor)),
+                        Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: VerticalDivider(
+                                indent: 10,
+                                endIndent: 10,
+                                color: theme.dividerColor)),
                       ],
 
                       /* ROWS PER PAGE */
@@ -72,9 +77,13 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                             )
                           ],
                         ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
-                            child: VerticalDivider(indent: 10, endIndent: 10)),
+                        Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: VerticalDivider(
+                                indent: 10,
+                                endIndent: 10,
+                                color: theme.dividerColor)),
                       ],
 
                       /* CURRENT PAGE ELEMENTS */
@@ -84,15 +93,19 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                       else
                         Text(localization.pageIndicatorText(
                             state.tableCache.currentPageIndex)),
-                      const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: VerticalDivider(indent: 10, endIndent: 10)),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                              color: theme.dividerColor)),
 
                       /* PAGE BUTTONS */
                       IconButton(
                         tooltip: localization.previousPageButtonText,
                         splashRadius: 20,
-                        icon: const Icon(Icons.keyboard_arrow_left_rounded),
+                        icon: Icon(Icons.keyboard_arrow_left_rounded,
+                            color: theme.footerButtonsColor),
                         onPressed: (state.tableCache.canGoBack &&
                                 state.tableState != _TableState.loading)
                             ? () {
@@ -105,7 +118,8 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                       IconButton(
                         tooltip: localization.nextPageButtonText,
                         splashRadius: 20,
-                        icon: const Icon(Icons.keyboard_arrow_right_rounded),
+                        icon: Icon(Icons.keyboard_arrow_right_rounded,
+                            color: theme.footerButtonsColor),
                         onPressed: (state.tableCache.canGoNext &&
                                 state.tableState != _TableState.loading)
                             ? () {

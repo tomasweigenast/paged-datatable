@@ -53,9 +53,9 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
       int length = state.tableCache.currentLength;
       return ListView.separated(
           controller: state.rowsScrollController,
-          separatorBuilder: (_, __) => theme.rowDividerColor == null
+          separatorBuilder: (_, __) => theme.dividerColor == null
               ? const Divider(height: 0)
-              : Divider(height: 0, color: theme.rowDividerColor),
+              : Divider(height: 0, color: theme.dividerColor),
           itemCount: length,
           itemBuilder: (context, index) =>
               ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
@@ -122,9 +122,9 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
     } else {
       return ListView.separated(
           controller: state.rowsScrollController,
-          separatorBuilder: (_, __) => theme.rowDividerColor == null
+          separatorBuilder: (_, __) => theme.dividerColor == null
               ? const Divider(height: 0)
-              : Divider(height: 0, color: theme.rowDividerColor),
+              : Divider(height: 0, color: theme.dividerColor),
           itemCount: state.tableCache.currentResultset.length,
           itemBuilder: (context, index) =>
               ChangeNotifierProvider<_PagedDataTableRowState<TResult>>.value(
