@@ -64,7 +64,7 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
     headerBackgroundColor: Color(0xFF80CBC4),
     filtersHeaderBackgroundColor: Color(0xFF80CBC4),
     footerBackgroundColor: Color(0xFF80CBC4),
-    // textStyle: TextStyle(decoration: TextDecoration.underline),
+    textStyle: TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.normal),
     rowsTextStyle: TextStyle(decoration: TextDecoration.overline),
     chipTheme: ChipThemeData(
         backgroundColor: Colors.teal,

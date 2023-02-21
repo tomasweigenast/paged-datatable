@@ -50,6 +50,9 @@ class PagedDataTableThemeData extends Equatable {
   /// Defaults to [backgroundColor]
   final List<Color>? rowColors;
 
+  /// The [TextStyle] for the entire table.
+  final TextStyle textStyle;
+
   /// The [TextStyle] for each row.
   final TextStyle rowsTextStyle;
 
@@ -82,6 +85,7 @@ class PagedDataTableThemeData extends Equatable {
       this.filtersHeaderBackgroundColor,
       this.footerBackgroundColor,
       this.footerTextStyle,
+      this.textStyle = const TextStyle(color: Colors.black),
       this.rowsTextStyle = const TextStyle(fontSize: 14),
       this.headerTextStyle =
           const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),

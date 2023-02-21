@@ -83,6 +83,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
         Widget child = Material(
           color: localTheme.backgroundColor,
           elevation: 0,
+          textStyle: localTheme.textStyle,
           shape: theme?.border,
           child: LayoutBuilder(builder: (context, constraints) {
             var width = constraints.maxWidth - (columns.length * 32);
