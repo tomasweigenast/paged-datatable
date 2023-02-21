@@ -13,6 +13,8 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
 
   @override
   Widget build(BuildContext context) {
+    final theme = PagedDataTableTheme.of(context);
+
     return Selector<_PagedDataTableState<TKey, TResult>, int>(
       selector: (context, model) => model._rowsChange,
       builder: (context, _, child) {
@@ -22,17 +24,15 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
           opacity: state.tableState == _TableState.loading ? .3 : 1,
           child: DefaultTextStyle(
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 14),
-              child: _build(context, state)),
+              style: theme.rowsTextStyle,
+              child: _build(context, state, theme)),
         );
       },
     );
   }
 
-  Widget _build(
-      BuildContext context, _PagedDataTableState<TKey, TResult> state) {
-    var config = PagedDataTableConfiguration.of(context);
-
+  Widget _build(BuildContext context, _PagedDataTableState<TKey, TResult> state,
+      PagedDataTableThemeData theme) {
     if (state.tableCache.currentLength == 0 &&
         state.tableState == _TableState.displaying) {
       return noItemsFoundBuilder?.call(context) ??
@@ -60,8 +60,8 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                 value: state._rowsState[index],
                 child: Consumer<_PagedDataTableRowState<TResult>>(
                   builder: (context, model, child) {
-                    return SizedBox(
-                      height: config.rowHeight,
+                    Widget row = SizedBox(
+                      height: theme.configuration.rowHeight,
                       child: Ink(
                         padding: EdgeInsets.zero,
                         color: model._isSelected
@@ -102,6 +102,18 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                         ),
                       ),
                     );
+
+                    if (theme.rowColors != null) {
+                      row = DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: index % 2 == 0
+                                ? theme.rowColors![0]
+                                : theme.rowColors![1]),
+                        child: row,
+                      );
+                    }
+
+                    return row;
                   },
                 ),
               ));
@@ -117,12 +129,12 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                   builder: (context, model, child) {
                     if (customRowBuilder!.shouldUse(context, model.item)) {
                       return SizedBox(
-                        height: config.rowHeight,
+                        height: theme.configuration.rowHeight,
                         child: customRowBuilder!.builder(context, model.item),
                       );
                     }
 
-                    return SizedBox(
+                    Widget row = SizedBox(
                       height: 52,
                       child: Ink(
                         padding: EdgeInsets.zero,
@@ -164,6 +176,18 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                         ),
                       ),
                     );
+
+                    if (theme.rowColors != null) {
+                      row = DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: index % 2 == 0
+                                ? theme.rowColors![0]
+                                : theme.rowColors![1]),
+                        child: row,
+                      );
+                    }
+
+                    return row;
                   },
                 ),
               ));

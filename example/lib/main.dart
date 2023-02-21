@@ -55,8 +55,27 @@ class MainView extends StatefulWidget {
   State<StatefulWidget> createState() => _MainViewState();
 }
 
+const kCustomPagedDataTableTheme = PagedDataTableThemeData(
+    rowColors: [
+      Color(0xFFC4E6E3),
+      Color(0xFFE5EFEE),
+    ],
+    backgroundColor: Color(0xFFE0F2F1),
+    headerBackgroundColor: Color(0xFF80CBC4),
+    filtersHeaderBackgroundColor: Color(0xFF80CBC4),
+    footerBackgroundColor: Color(0xFF80CBC4),
+    chipTheme: ChipThemeData(
+        backgroundColor: Colors.teal,
+        labelStyle: TextStyle(color: Colors.white),
+        deleteIconColor: Colors.white),
+    configuration: PagedDataTableConfiguration(
+      allowRefresh: false,
+      pageSizes: null,
+    ));
+
 class _MainViewState extends State<MainView> {
   final tableController = PagedDataTableController<String, Post>();
+  PagedDataTableThemeData? theme;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +83,7 @@ class _MainViewState extends State<MainView> {
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, Post>(
         rowsSelectable: false,
-        configuration: const PagedDataTableConfigurationData(),
+        theme: theme,
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
           if (filtering.valueOrNull("authorName") == "error!") {
@@ -190,6 +209,19 @@ class _MainViewState extends State<MainView> {
         //   child: const Text("Im a footer button"),
         // ),
         menu: PagedDataTableFilterBarMenu(items: [
+          FilterMenuItem(
+            title: const Text("Apply new theme"),
+            onTap: () {
+              setState(() {
+                if (theme == null) {
+                  theme = kCustomPagedDataTableTheme;
+                } else {
+                  theme = null;
+                }
+              });
+            },
+          ),
+          const FilterMenuDivider(),
           FilterMenuItem(
             title: const Text("Remove row"),
             onTap: () {

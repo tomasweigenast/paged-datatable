@@ -9,9 +9,10 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object>
 
   @override
   Widget build(BuildContext context) {
-    var config = PagedDataTableConfiguration.of(context);
-    return SizedBox(
-      height: config.columnsHeaderHeight,
+    var theme = PagedDataTableTheme.of(context);
+
+    Widget child = SizedBox(
+      height: theme.configuration.columnsHeaderHeight,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -87,5 +88,14 @@ class _PagedDataTableHeaderRow<TKey extends Object, TResult extends Object>
         ],
       ),
     );
+
+    if (theme.headerBackgroundColor != null) {
+      child = DecoratedBox(
+        decoration: BoxDecoration(color: theme.headerBackgroundColor),
+        child: child,
+      );
+    }
+
+    return child;
   }
 }

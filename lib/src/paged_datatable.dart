@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,12 +8,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:paged_datatable/l10n/generated/l10n.dart';
 import 'package:provider/provider.dart';
+import 'package:equatable/equatable.dart';
 
 part 'controls.dart';
 part 'errors.dart';
 part 'paged_datatable_column.dart';
 part 'paged_datatable_column_header.dart';
-part 'paged_datatable_configuration.dart';
 part 'paged_datatable_controller.dart';
 part 'paged_datatable_filter.dart';
 part 'paged_datatable_filter_bar.dart';
@@ -24,6 +23,7 @@ part 'paged_datatable_menu.dart';
 part 'paged_datatable_row_state.dart';
 part 'paged_datatable_rows.dart';
 part 'paged_datatable_state.dart';
+part 'paged_datatable_theme.dart';
 part 'pagination_result.dart';
 part 'types.dart';
 
@@ -41,7 +41,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
   final Widget? footer, header;
   final ErrorBuilder? errorBuilder;
   final WidgetBuilder? noItemsFoundBuilder;
-  final PagedDataTableConfigurationData? configuration;
+  final PagedDataTableThemeData? theme;
   final bool rowsSelectable;
   final CustomRowBuilder<TResult>? customRowBuilder;
   final Stream? refreshListener;
@@ -55,7 +55,7 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
       this.controller,
       this.footer,
       this.header,
-      this.configuration,
+      this.theme,
       this.errorBuilder,
       this.noItemsFoundBuilder,
       this.rowsSelectable = false,
@@ -76,9 +76,13 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
           refreshListener: refreshListener),
       builder: (context, widget) {
         var state = context.read<_PagedDataTableState<TKey, TResult>>();
+        final localTheme = PagedDataTableTheme.maybeOf(context) ??
+            theme ??
+            _kDefaultPagedDataTableTheme;
 
         Widget child = Material(
-          color: Colors.white,
+          color: localTheme.backgroundColor,
+          textStyle: localTheme.textStyle,
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
               side: BorderSide(color: Color(0xffDADCE0))),
@@ -118,9 +122,17 @@ class PagedDataTable<TKey extends Object, TResult extends Object>
         );
 
         // apply configuration to this widget only
-        if (configuration != null) {
-          child =
-              PagedDataTableConfiguration(data: configuration!, child: child);
+        if (theme != null) {
+          child = PagedDataTableTheme(data: theme!, child: child);
+          assert(
+              theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
+              "rowColors must contain exactly two colors");
+        } else {
+          assert(
+              localTheme.rowColors != null
+                  ? localTheme.rowColors!.length == 2
+                  : true,
+              "rowColors must contain exactly two colors");
         }
 
         return child;

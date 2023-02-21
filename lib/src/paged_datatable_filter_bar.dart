@@ -10,10 +10,10 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
   @override
   Widget build(BuildContext context) {
     var localizations = PagedDataTableLocalization.of(context);
-    var config = PagedDataTableConfiguration.of(context);
+    var theme = PagedDataTableTheme.of(context);
 
-    return SizedBox(
-      height: config.filterBarHeight,
+    Widget child = SizedBox(
+      height: theme.configuration.filterBarHeight,
       child: Consumer<_PagedDataTableState<TKey, TResult>>(
           builder: (context, state, child) {
         return Row(
@@ -94,12 +94,10 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
             Flexible(
               child: Row(
                 children: [
-                  if (header != null)
-                    ...[
-                      const Spacer(),
-                      Flexible(child: header!)
-                    ]
-                  else
+                  if (header != null) ...[
+                    const Spacer(),
+                    Flexible(child: header!)
+                  ] else
                     const Spacer(),
 
                   /* MENU */
@@ -120,6 +118,27 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
         );
       }),
     );
+
+    if (theme.headerBackgroundColor != null) {
+      child = DecoratedBox(
+        decoration: BoxDecoration(color: theme.headerBackgroundColor),
+        child: child,
+      );
+    }
+
+    if (theme.chipTheme != null) {
+      child = ChipTheme(
+        data: theme.chipTheme!,
+        child: child,
+      );
+    }
+
+    if (theme.filtersHeaderTextStyle != null) {
+      child =
+          DefaultTextStyle(style: theme.filtersHeaderTextStyle!, child: child);
+    }
+
+    return child;
   }
 
   Future<void> _showFilterOverlay(

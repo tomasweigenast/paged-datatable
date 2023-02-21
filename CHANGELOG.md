@@ -1,3 +1,6 @@
+## 1.1.0
+* Add better customization by placing a common widget or for a specific one using PagedDataTableTheme
+
 ## 1.0.17
 * Add method to TableController to allow updating a row based on a predicate.
 
