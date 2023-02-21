@@ -34,7 +34,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                             onPressed: () =>
                                 state._refresh(currentDataset: false),
                             icon: Icon(Icons.refresh_outlined,
-                                color: theme.footerButtonsColor)),
+                                color: theme.buttonsColor)),
                         Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
@@ -105,7 +105,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                         tooltip: localization.previousPageButtonText,
                         splashRadius: 20,
                         icon: Icon(Icons.keyboard_arrow_left_rounded,
-                            color: theme.footerButtonsColor),
+                            color: theme.buttonsColor),
                         onPressed: (state.tableCache.canGoBack &&
                                 state.tableState != _TableState.loading)
                             ? () {
@@ -119,7 +119,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                         tooltip: localization.nextPageButtonText,
                         splashRadius: 20,
                         icon: Icon(Icons.keyboard_arrow_right_rounded,
-                            color: theme.footerButtonsColor),
+                            color: theme.buttonsColor),
                         onPressed: (state.tableCache.canGoNext &&
                                 state.tableState != _TableState.loading)
                             ? () {

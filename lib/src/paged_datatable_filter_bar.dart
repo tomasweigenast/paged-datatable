@@ -106,7 +106,7 @@ class _PagedDataTableFilterTab<TKey extends Object, TResult extends Object>
                       splashRadius: 20,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       tooltip: menu!.tooltip,
-                      icon: const Icon(Icons.more_vert),
+                      icon: Icon(Icons.more_vert, color: theme.buttonsColor),
                       onPressed: () {
                         _showMenu(context: context, items: menu!.items);
                       },
