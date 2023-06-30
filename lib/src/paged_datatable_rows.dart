@@ -1,15 +1,14 @@
 part of 'paged_datatable.dart';
 
-class _PagedDataTableRows<TKey extends Object, TResult extends Object>
-    extends StatelessWidget {
+class _PagedDataTableRows<TKey extends Object, TResult extends Object> extends StatelessWidget {
   final WidgetBuilder? noItemsFoundBuilder;
   final ErrorBuilder? errorBuilder;
   final bool rowsSelectable;
   final double width;
   final CustomRowBuilder<TResult>? customRowBuilder;
 
-  const _PagedDataTableRows(this.rowsSelectable, this.customRowBuilder,
-      this.noItemsFoundBuilder, this.errorBuilder, this.width);
+  const _PagedDataTableRows(this.rowsSelectable, this.customRowBuilder, this.noItemsFoundBuilder,
+      this.errorBuilder, this.width);
 
   @override
   Widget build(BuildContext context) {
@@ -33,19 +32,15 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
 
   Widget _build(BuildContext context, _PagedDataTableState<TKey, TResult> state,
       PagedDataTableThemeData theme) {
-    if (state.tableCache.currentLength == 0 &&
-        state.tableState == _TableState.displaying) {
+    if (state.tableCache.currentLength == 0 && state.tableState == _TableState.displaying) {
       return noItemsFoundBuilder?.call(context) ??
-          Center(
-              child: Text(
-                  PagedDataTableLocalization.of(context).noItemsFoundText));
+          Center(child: Text(PagedDataTableLocalization.of(context).noItemsFoundText));
     }
 
     if (state.tableState == _TableState.error) {
       return errorBuilder?.call(state.currentError!) ??
           Center(
-              child: Text("An error ocurred.\n${state.currentError}",
-                  textAlign: TextAlign.center));
+              child: Text("An error ocurred.\n${state.currentError}", textAlign: TextAlign.center));
     }
 
     // a little bit of verbose is better than checking this on every row
@@ -66,37 +61,30 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                       height: theme.configuration.rowHeight,
                       child: Ink(
                         padding: EdgeInsets.zero,
-                        color: model._isSelected
-                            ? Theme.of(context).primaryColorLight
-                            : null,
+                        color: model._isSelected ? Theme.of(context).primaryColorLight : null,
                         child: InkWell(
                           onTap: rowsSelectable ? () {} : null,
                           onDoubleTap: rowsSelectable
                               ? () {
-                                  state.selectedRows[index] =
-                                      !(state.selectedRows[index] ?? false);
-                                  model.selected =
-                                      state.selectedRows[index] ?? false;
+                                  state.selectedRows[index] = !(state.selectedRows[index] ?? false);
+                                  model.selected = state.selectedRows[index] ?? false;
                                 }
                               : null,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: state.columns
                                 .map((column) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
                                       child: SizedBox(
                                           width: column.sizeFactor == null
-                                              ? state
-                                                  ._nullSizeFactorColumnsWidth
+                                              ? state._nullSizeFactorColumnsWidth
                                               : width * column.sizeFactor!,
                                           child: Align(
                                             alignment: column.isNumeric
                                                 ? Alignment.centerRight
                                                 : Alignment.centerLeft,
-                                            child: column.buildCell(
-                                                model.item, model.rowIndex),
                                             heightFactor: null,
+                                            child: column.buildCell(model.item, model.rowIndex),
                                           )),
                                     ))
                                 .toList(),
@@ -108,9 +96,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                     if (theme.rowColors != null) {
                       row = DecoratedBox(
                         decoration: BoxDecoration(
-                            color: index % 2 == 0
-                                ? theme.rowColors![0]
-                                : theme.rowColors![1]),
+                            color: index % 2 == 0 ? theme.rowColors![0] : theme.rowColors![1]),
                         child: row,
                       );
                     }
@@ -142,37 +128,30 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                       height: 52,
                       child: Ink(
                         padding: EdgeInsets.zero,
-                        color: model._isSelected
-                            ? Theme.of(context).primaryColorLight
-                            : null,
+                        color: model._isSelected ? Theme.of(context).primaryColorLight : null,
                         child: InkWell(
                           onTap: rowsSelectable ? () {} : null,
                           onDoubleTap: rowsSelectable
                               ? () {
-                                  state.selectedRows[index] =
-                                      !(state.selectedRows[index] ?? false);
-                                  model.selected =
-                                      state.selectedRows[index] ?? false;
+                                  state.selectedRows[index] = !(state.selectedRows[index] ?? false);
+                                  model.selected = state.selectedRows[index] ?? false;
                                 }
                               : null,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: state.columns
                                 .map((column) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
                                       child: SizedBox(
                                           width: column.sizeFactor == null
-                                              ? state
-                                                  ._nullSizeFactorColumnsWidth
+                                              ? state._nullSizeFactorColumnsWidth
                                               : width * column.sizeFactor!,
                                           child: Align(
                                             alignment: column.isNumeric
                                                 ? Alignment.centerRight
                                                 : Alignment.centerLeft,
-                                            child: column.buildCell(
-                                                model.item, model.rowIndex),
                                             heightFactor: null,
+                                            child: column.buildCell(model.item, model.rowIndex),
                                           )),
                                     ))
                                 .toList(),
@@ -184,9 +163,7 @@ class _PagedDataTableRows<TKey extends Object, TResult extends Object>
                     if (theme.rowColors != null) {
                       row = DecoratedBox(
                         decoration: BoxDecoration(
-                            color: index % 2 == 0
-                                ? theme.rowColors![0]
-                                : theme.rowColors![1]),
+                            color: index % 2 == 0 ? theme.rowColors![0] : theme.rowColors![1]),
                         child: row,
                       );
                     }
