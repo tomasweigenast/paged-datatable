@@ -118,12 +118,14 @@ class _DateTimeRangePicker extends HookWidget {
     );
   }
 
-  String _format(DateFormat dateFormat, ObjectRef<DateTimeRange?> currentValueRef) {
+  String _format(
+      DateFormat dateFormat, ObjectRef<DateTimeRange?> currentValueRef) {
     return "${dateFormat.format(currentValueRef.value!.start)} - ${dateFormat.format(currentValueRef.value!.end)}";
   }
 }
 
-class _DropdownButtonCell<TType extends Object, T extends Object> extends HookWidget {
+class _DropdownButtonCell<TType extends Object, T extends Object>
+    extends HookWidget {
   final T? initialValue;
   final List<DropdownMenuItem<T>> items;
   final InputDecoration? decoration;
@@ -151,7 +153,8 @@ class _DropdownButtonCell<TType extends Object, T extends Object> extends HookWi
       child: DropdownButtonFormField<T>(
         focusNode: focusNode,
         items: items,
-        decoration: decoration ?? const InputDecoration(border: InputBorder.none),
+        decoration:
+            decoration ?? const InputDecoration(border: InputBorder.none),
         value: currentValueRef.value,
         onChanged: isLoadingN.value
             ? null
@@ -343,8 +346,10 @@ class _EditableTextField extends HookWidget {
                     message: currentValueRef.value,
                     margin: tooltipMargin,
                     padding: tooltipPadding,
-                    child: Text(currentValueRef.value, overflow: TextOverflow.ellipsis))
-                : Text(currentValueRef.value, overflow: TextOverflow.ellipsis)));
+                    child: Text(currentValueRef.value,
+                        overflow: TextOverflow.ellipsis))
+                : Text(currentValueRef.value,
+                    overflow: TextOverflow.ellipsis)));
   }
 }
 
