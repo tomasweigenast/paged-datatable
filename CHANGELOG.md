@@ -1,3 +1,8 @@
+## 1.3.0
+
+- Add option to completely remove the footer.
+- Improve `PagedDataTableTheme` documentation.
+
 ## 1.2.0
 
 - Upgrade Flutter version

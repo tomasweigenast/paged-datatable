@@ -105,8 +105,10 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
                 ),
 
                 /* FOOTER */
-                Divider(height: 0, color: localTheme.dividerColor),
-                _PagedDataTableFooter<TKey, TResult>(footer)
+                if (theme?.configuration.footer.visible ?? true) ...[
+                  Divider(height: 0, color: localTheme.dividerColor),
+                  _PagedDataTableFooter<TKey, TResult>(footer)
+                ]
               ],
             );
           }),
