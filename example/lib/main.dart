@@ -213,7 +213,7 @@ class _MainViewState extends State<MainView> {
           FilterMenuItem(
             title: const Text("Remove row"),
             onTap: () {
-              tableController.removeRow(tableController.currentDataset.first);
+              tableController.removeRow(tableController.currentDataset.first.id);
             },
           ),
           FilterMenuItem(

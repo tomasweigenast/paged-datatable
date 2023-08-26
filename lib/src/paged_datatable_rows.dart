@@ -71,8 +71,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                         onTap: rowsSelectable ? () {} : null,
                         onDoubleTap: rowsSelectable
                             ? () {
-                                final newState = !(state.selectedRows[model.itemId] ?? false);
-                                state.selectedRows[model.itemId] = newState;
+                                final newState = !(state.selectedRows[model.itemId] == null);
+                                state.selectedRows.remove(model.itemId);
                                 model.selected = newState;
                               }
                             : null,

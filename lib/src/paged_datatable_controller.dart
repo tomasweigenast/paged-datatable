@@ -62,25 +62,28 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
     return _state.filters[filterName]?.value;
   }
 
-  /// Returns a list of the selected rows id.
-  List<TResultId> getSelectedRows() {
-    return _state.selectedRows.keys.toList();
+  /// Returns a list of the selected items.
+  List<TResult> getSelectedRows() {
+    return _state.selectedRows.values.map((e) => _state._items[e]).toList(growable: false);
   }
 
   /// Unselects any selected row in the current resultset
   void unselectAllRows() {
-    _state.selectedRows.clear();
-    for (var rowState in _state._rowsState) {
-      if (rowState._isSelected) {
-        rowState.selected = false;
-      }
+    for (final rowIndex in _state.selectedRows.values) {
+      _state._rowsState[rowIndex].selected = false;
     }
+    _state.selectedRows.clear();
   }
 
   /// Marks the row at [index] as selected
-  void selectRow(TResultId key) {
-    _state.selectedRows[key] = true;
-    _state._rowsState.firstWhere((element) => element.itemId == key).selected = true;
+  void selectRow(TResultId itemId) {
+    final rowIndex = _state._rowsStateMapper[itemId];
+    if (rowIndex == null) {
+      throw TableError('Item with key "$itemId" is not in the current dataset.');
+    }
+
+    _state.selectedRows[itemId] = rowIndex;
+    _state._rowsState[rowIndex].selected = true;
   }
 
   /// Builds every row that matches [predicate].
@@ -92,6 +95,8 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   }
 
   /// Updates every item from the current resultset that matches [predicate] and rebuilds it.
+  ///
+  /// Keep in mind this method will iterate over every item in the current dataset, so, if the dataset is large, it can be costly.
   void modifyRowsValue(
       bool Function(TResult element) predicate, void Function(TResult item) update) {
     int index = 0;
@@ -107,39 +112,42 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
 
   /// Updates an item from the current resultset with the id [itemId] and rebuilds the row.
   void modifyRowValue(TResultId itemId, void Function(TResult item) update) {
-    try {
-      final row = _state._rowsState.firstWhere((element) => element.itemId == itemId);
-      final item = _state._items[row.index];
-      update(item);
-
-      // refresh state of that row.
-      row.refresh();
-    } catch (_) {
-      throw TableError("There is no row with id $itemId.");
+    final rowIndex = _state._rowsStateMapper[itemId];
+    if (rowIndex == null) {
+      throw TableError('Item with key "$itemId" is not in the current dataset.');
     }
+
+    final row = _state._rowsState[rowIndex];
+    final item = _state._items[row.index];
+    update(item);
+
+    // refresh state of that row.
+    row.refresh();
   }
 
   /// Rebuilds the row which has the specified [itemId] to reflect changes to the item.
   void refreshRow(TResultId itemId) {
-    try {
-      // refresh state of that row.
-      _state._rowsState.firstWhere((element) => element.itemId == itemId).refresh();
-    } catch (_) {
-      throw TableError("There is not item with id $itemId.");
+    final rowIndex = _state._rowsStateMapper[itemId];
+    if (rowIndex == null) {
+      throw TableError('Item with key "$itemId" is not in the current dataset.');
     }
+
+    _state._rowsState[rowIndex].refresh();
   }
 
-  /// Removes the row containing [element].
-  /// Keep in mind this will work only if [TResult] defines a custom hashcode implementation.
-  void removeRow(TResult element) {
-    var rowStateIndex = _state._rowsState.indexWhere((elem) => elem.item == element);
-    if (rowStateIndex != -1) {
-      _state._rowsState.removeAt(rowStateIndex);
-      _state._items.removeAt(rowStateIndex);
-      _state._rowsChange = rowStateIndex;
-      // ignore: invalid_use_of_visible_for_testing_member
-      _state.notifyListeners();
+  /// Removes the row containing an element whose id is [itemId]
+  void removeRow(TResultId itemId) {
+    final rowIndex = _state._rowsStateMapper[itemId];
+    if (rowIndex == null) {
+      throw TableError('Item with key "$itemId" is not in the current dataset.');
     }
+
+    _state._rowsState.removeAt(rowIndex);
+    _state._items.removeAt(rowIndex);
+    _state._rowsStateMapper.remove(itemId);
+    _state._rowsChange = rowIndex;
+    // ignore: invalid_use_of_visible_for_testing_member
+    _state.notifyListeners();
   }
 
   /// Disposes the controller.

@@ -11,6 +11,9 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
   // A map that contains the state of the rows in the current resultset
   List<_PagedDataTableRowState<TResultId, TResult>> _rowsState = const [];
 
+  /// Maps an item id with its index in the [_rowsState] list.
+  Map<TResultId, int> _rowsStateMapper = const {};
+
   /// The list of items in the current resulset.
   List<TResult> _items = const [];
 
@@ -48,7 +51,7 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
   late final int lengthColumnsWithoutSizeFactor;
 
   /// Contains a list of selected rows. If the page changes, this remain untouched.
-  final Map<TResultId, bool> selectedRows = {};
+  final Map<TResultId, int> selectedRows = {};
 
   _TableState get tableState => _state;
   bool get hasSortModel => _sortModel != null;
@@ -200,9 +203,15 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
       _state = _TableState.displaying;
       _rowsChange++;
       _items = pageIndicator.elements;
-      _rowsState = _items
-          .mapIndexed((i, e) => _PagedDataTableRowState(i, e, idGetter))
-          .toList(growable: false);
+      _rowsState = [];
+      _rowsStateMapper = {};
+      int index = 0;
+      for (final item in _items) {
+        final itemId = idGetter(item);
+        _rowsState.add(_PagedDataTableRowState(index, item, itemId));
+        _rowsStateMapper[itemId] = index;
+        index++;
+      }
       notifyListeners();
 
       if (rowsScrollController.hasClients) {

@@ -3,10 +3,8 @@ part of 'paged_datatable.dart';
 class _PagedDataTableRowState<TResultId extends Comparable, TResult extends Object>
     extends ChangeNotifier {
   final TResult item;
+  final TResultId itemId;
   final int index;
-  final ModelIdGetter<TResultId, TResult> idGetter;
-
-  TResultId? _itemId;
 
   bool _isSelected = false;
   set selected(bool newValue) {
@@ -14,9 +12,7 @@ class _PagedDataTableRowState<TResultId extends Comparable, TResult extends Obje
     notifyListeners();
   }
 
-  TResultId get itemId => _itemId ??= idGetter(item);
-
-  _PagedDataTableRowState(this.index, this.item, this.idGetter);
+  _PagedDataTableRowState(this.index, this.item, this.itemId);
 
   void refresh() {
     notifyListeners();
