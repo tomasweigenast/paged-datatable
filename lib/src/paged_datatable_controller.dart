@@ -7,19 +7,35 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
     TResult extends Object> {
   late final _PagedDataTableState<TKey, TResultId, TResult> _state;
 
-  /// Returns the current showing dataset elements.
-  Iterable<TResult> get currentDataset => _state._rowsState.map((e) => e.item);
+  /// Returns the current showing dataset elements as an unmodifiable list.
+  List<TResult> get currentDataset => UnmodifiableListView(_state._items);
 
-  void dispose() {
-    _state.dispose();
-  }
+  /// Returns the actual pagination info
+  PagedDataTablePaginationInfo get paginationInfo => PagedDataTablePaginationInfo._(
+      currentPage: _state.currentPage,
+      currentPageSize: _state._items.length,
+      hasNextPage: _state.hasNextPage,
+      rowsPerPage: _state._pageSize,
+      hasPreviousPage: _state.hasPreviousPage);
 
   /// Refreshes the table fetching from source again.
   /// If [currentDataset] is true, it will only refresh the current viewing resultset, otherwise,
   /// it will start from page 1.
-  void refresh({bool currentDataset = true}) {
-    _state._refresh(initial: !currentDataset);
-  }
+  ///
+  /// The future completes when the fetch is done.
+  Future<void> refresh({bool currentDataset = true}) => _state._refresh(initial: !currentDataset);
+
+  /// Advances to the next page.
+  ///
+  /// If there is no next page, this method will fail.
+  /// The future completes when the fetch is done.
+  Future<void> advancePage() => _state.nextPage();
+
+  /// Backs off to the previous page.
+  ///
+  /// If there is no previous page, this method will fail.
+  /// The future completes when the fetch is done.
+  Future<void> backPage() => _state.previousPage();
 
   /// Sets a filter and fetches items from source.
   void setFilter(String id, dynamic value) {
@@ -125,4 +141,23 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
       _state.notifyListeners();
     }
   }
+
+  /// Disposes the controller.
+  ///
+  /// After this method is called, the DataTable is disposed and cannot be used.
+  void dispose() {
+    _state.dispose();
+  }
+}
+
+class PagedDataTablePaginationInfo {
+  final bool hasNextPage, hasPreviousPage;
+  final int currentPageSize, currentPage, rowsPerPage;
+
+  PagedDataTablePaginationInfo._(
+      {required this.hasNextPage,
+      required this.hasPreviousPage,
+      required this.currentPageSize,
+      required this.currentPage,
+      required this.rowsPerPage});
 }
