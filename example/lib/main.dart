@@ -61,6 +61,7 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
     headerBackgroundColor: Color(0xFF80CBC4),
     filtersHeaderBackgroundColor: Color(0xFF80CBC4),
     footerBackgroundColor: Color(0xFF80CBC4),
+    footerTextStyle: TextStyle(color: Colors.white),
     textStyle: TextStyle(fontWeight: FontWeight.normal),
     buttonsColor: Colors.white,
     chipTheme: ChipThemeData(
@@ -68,7 +69,10 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
         labelStyle: TextStyle(color: Colors.white),
         deleteIconColor: Colors.white),
     configuration: PagedDataTableConfiguration(
-        allowRefresh: true, pageSizes: [50, 75, 100], initialPageSize: 50));
+        footer: PagedDataTableFooterConfiguration(footerVisible: true),
+        allowRefresh: true,
+        pageSizes: [50, 75, 100],
+        initialPageSize: 50));
 
 class _MainViewState extends State<MainView> {
   final tableController = PagedDataTableController<String, int, Post>();

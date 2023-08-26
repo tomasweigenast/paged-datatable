@@ -152,8 +152,10 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
                 ),
 
                 /* FOOTER */
-                Divider(height: 0, color: localTheme.dividerColor),
-                _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
+                if (localTheme.configuration.footer.footerVisible) ...[
+                  Divider(height: 0, color: localTheme.dividerColor),
+                  _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
+                ]
               ],
             );
           }),

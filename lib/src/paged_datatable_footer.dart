@@ -56,7 +56,8 @@ class _PagedDataTableFooter<TKey extends Comparable, TResultId extends Comparabl
                                       contentPadding:
                                           EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                                       border: OutlineInputBorder()),
-                                  style: const TextStyle(fontSize: 14),
+                                  style: theme.footerTextStyle?.copyWith(fontSize: 14) ??
+                                      const TextStyle(fontSize: 14),
                                   onChanged: state.tableState == _TableState.loading
                                       ? null
                                       : (newPageSize) {
