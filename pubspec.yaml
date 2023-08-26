@@ -1,10 +1,10 @@
 name: paged_datatable
 description: A brand new way of creating paginated DataTables in Flutter with sorting and filters
-version: 1.4.2
+version: 1.4.3
 homepage: https://github.com/tomasweigenast/paged-datatable
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
+  sdk: "^3.0.0"
 
 dependencies:
   flutter:
@@ -13,17 +13,14 @@ dependencies:
     sdk: flutter
   provider: ^6.0.5
   intl: ^0.18.0
-  stream_transform: ^2.1.0
   equatable: ^2.0.5
   collection: ^1.17.1
-  calendar_date_picker2: ^0.5.2
-  flutter_hooks: ^0.18.6
+  calendar_date_picker2: ^0.5.3
+  flutter_hooks: ^0.20.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_lints: ^2.0.2
-  intl_utils: ^2.8.3
+  intl_utils: ^2.8.4
 
 flutter:
   generate: true

@@ -164,14 +164,10 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
         // apply configuration to this widget only
         if (theme != null) {
           child = PagedDataTableTheme(data: theme!, child: child);
-          assert(
-              theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
+          assert(theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
               "rowColors must contain exactly two colors");
         } else {
-          assert(
-              localTheme.rowColors != null
-                  ? localTheme.rowColors!.length == 2
-                  : true,
+          assert(localTheme.rowColors != null ? localTheme.rowColors!.length == 2 : true,
               "rowColors must contain exactly two colors");
         }
 

@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: calendar_date_picker2
-      sha256: f7ecd632260f2af6cfb72f6b7878f847b0a61821d50f26df9bd00b0a336d0cac
+      sha256: b91d51b8d0928f9745e0113e86d06b161ac48c52b7530337a3b77283cbc6be27
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.2"
+    version: "0.5.3"
   characters:
     dependency: transitive
     description:
@@ -114,10 +114,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_hooks
-      sha256: "6a126f703b89499818d73305e4ce1e3de33b4ae1c5512e3b8eab4b986f46774c"
+      sha256: "9eab8fd7aa752c3c1c0a364f9825851d410eb935243411682f4b1b0a4c569d71"
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.6"
+    version: "0.20.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -222,7 +222,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.4.2"
+    version: "1.4.3"
   path:
     dependency: transitive
     description:
@@ -340,14 +340,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  stream_transform:
-    dependency: transitive
-    description:
-      name: stream_transform
-      sha256: "14a00e794c7c11aa145a170587321aedce29769c08d7f58b1d141da75e3b1c6f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   string_scanner:
     dependency: transitive
     description:
@@ -405,5 +397,5 @@ packages:
     source: hosted
     version: "0.2.0+3"
 sdks:
-  dart: ">=3.0.0-0 <4.0.0"
+  dart: ">=3.0.0 <4.0.0"
   flutter: ">=3.0.0"

@@ -1,3 +1,8 @@
+## 1.4.3
+
+- Update dependencies
+- Format dart code
+
 ## 1.4.2
 
 - Packages version upgrade
