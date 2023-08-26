@@ -1,3 +1,12 @@
+## 1.3.0
+
+- Remove internal memory cache.
+- Display checkbox as the first column if the table allows row selection
+- Bug fixes related to theming
+- Add pagination methods to controller
+- Improve drawing performance
+- Better pub.dev documentation incoming
+
 ## 1.2.0
 
 - Upgrade Flutter version
