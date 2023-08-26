@@ -1,3 +1,11 @@
+## 1.4.2
+
+- Packages version upgrade
+
+## 1.4.1
+
+- Improve documentation
+
 ## 1.4.0
 
 - Remove internal memory cache.
