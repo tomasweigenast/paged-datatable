@@ -192,10 +192,10 @@ class _MainViewState extends State<MainView> {
             lastDate: DateTime.now(),
           )
         ],
-        // footer: TextButton(
-        //   onPressed: () {},
-        //   child: const Text("Im a footer button"),
-        // ),
+        footer: TextButton(
+          onPressed: () {},
+          child: const Text("Im a footer button"),
+        ),
         menu: PagedDataTableFilterBarMenu(items: [
           FilterMenuItem(
             title: const Text("Apply new theme"),
@@ -234,8 +234,7 @@ class _MainViewState extends State<MainView> {
                 var selectedPosts = tableController.getSelectedRows();
                 debugPrint("SELECTED ROWS ----------------------------");
                 debugPrint(selectedPosts
-                    .map((e) => e)
-                    // .map((e) => "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
+                    .map((e) => "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
                     .join("\n"));
                 debugPrint("------------------------------------------");
               }),
@@ -247,14 +246,15 @@ class _MainViewState extends State<MainView> {
           FilterMenuItem(
               title: const Text("Select random row"),
               onTap: () {
-                tableController
-                    .selectRow(Random(DateTime.now().microsecondsSinceEpoch).nextInt(10));
+                final random = Random.secure();
+                tableController.selectRow(tableController
+                    .currentDataset[random.nextInt(tableController.currentDataset.length)].id);
               }),
           const FilterMenuDivider(),
           FilterMenuItem(
               title: const Text("Update first row's gender and number"),
               onTap: () {
-                tableController.modifyRowValue(0, (item) {
+                tableController.modifyRowValue(1, (item) {
                   item.authorGender = Gender.male;
                   item.number = 1;
                   item.author = "Tomas";

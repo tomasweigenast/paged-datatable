@@ -33,19 +33,53 @@ part 'types.dart';
 /// [TResult] is the type of data the data table will show.
 class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TResult extends Object>
     extends StatelessWidget {
+  /// The callback that gets executed when a page is fetched.
   final FetchCallback<TKey, TResult> fetchPage;
+
+  /// The initial page to fetch.
   final TKey initialPage;
+
+  /// The list of filters to show.
   final List<TableFilter>? filters;
+
+  /// A custom controller used to programatically control the table.
   final PagedDataTableController<TKey, TResultId, TResult>? controller;
+
+  /// The list of columns to display.
   final List<BaseTableColumn<TResult>> columns;
+
+  /// A custom menu tooltip to show in the filter bar.
   final PagedDataTableFilterBarMenu? menu;
-  final Widget? footer, header;
+
+  /// A custom widget to build in the footer, aligned to the left.
+  ///
+  /// Navigation widgets remain untouched.
+  final Widget? footer;
+
+  /// A custom widget to build in the footer, aligned to the left.
+  ///
+  /// Filter widgets remain untouched.
+  final Widget? header;
+
+  /// A custom builder that display any error.
   final ErrorBuilder? errorBuilder;
+
+  /// A custom builder that builds when no item is found.
   final WidgetBuilder? noItemsFoundBuilder;
+
+  /// A custom theme to apply only to this DataTable instance.
   final PagedDataTableThemeData? theme;
+
+  /// Indicates if the table allows the user to select rows.
   final bool rowsSelectable;
+
+  /// A custom builder that builds a row.
   final CustomRowBuilder<TResult>? customRowBuilder;
+
+  /// A stream to listen and refresh the table when any update is received.
   final Stream? refreshListener;
+
+  /// A function that returns the id of an item.
   final ModelIdGetter<TResultId, TResult> idGetter;
 
   const PagedDataTable(
