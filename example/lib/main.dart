@@ -33,13 +33,16 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          colorScheme: const ColorScheme.light(primary: Colors.deepPurple, secondary: Colors.teal),
+          colorScheme: const ColorScheme.light(
+              primary: Colors.deepPurple, secondary: Colors.teal),
           textTheme: GoogleFonts.robotoTextTheme(),
           cardTheme: CardTheme(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           ),
           popupMenuTheme: PopupMenuThemeData(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)))),
       home: const MainView(),
     );
   }
@@ -111,7 +114,8 @@ class _MainViewState extends State<MainView> {
             cellBuilder: (item) => Text(item.id.toString()),
             sizeFactor: .05,
           ),
-          TableColumn(title: "Author", cellBuilder: (item) => Text(item.author)),
+          TableColumn(
+              title: "Author", cellBuilder: (item) => Text(item.author)),
           LargeTextTableColumn(
               title: "Content",
               getter: (post) => post.content,
@@ -125,7 +129,8 @@ class _MainViewState extends State<MainView> {
               id: "createdAt",
               title: "Created At",
               sortable: true,
-              cellBuilder: (item) => Text(DateFormat.yMd().format(item.createdAt))),
+              cellBuilder: (item) =>
+                  Text(DateFormat.yMd().format(item.createdAt))),
           DropdownTableColumn<Post, Gender>(
             title: "Gender",
             sizeFactor: null,
@@ -138,7 +143,8 @@ class _MainViewState extends State<MainView> {
             items: const [
               DropdownMenuItem(value: Gender.male, child: Text("Male")),
               DropdownMenuItem(value: Gender.female, child: Text("Female")),
-              DropdownMenuItem(value: Gender.unespecified, child: Text("Unspecified")),
+              DropdownMenuItem(
+                  value: Gender.unespecified, child: Text("Unspecified")),
             ],
           ),
           TableColumn(
@@ -168,20 +174,26 @@ class _MainViewState extends State<MainView> {
                 return true;
               }),
           TableColumn(
-              title: "Fixed Value", cellBuilder: (item) => const Text("abc"), sizeFactor: null),
+              title: "Fixed Value",
+              cellBuilder: (item) => const Text("abc"),
+              sizeFactor: null),
         ],
         filters: [
           TextTableFilter(
-              id: "authorName", title: "Author's name", chipFormatter: (text) => "By $text"),
+              id: "authorName",
+              title: "Author's name",
+              chipFormatter: (text) => "By $text"),
           DropdownTableFilter<Gender>(
               id: "gender",
               title: "Gender",
               defaultValue: Gender.male,
-              chipFormatter: (gender) => 'Only ${gender.name.toLowerCase()} posts',
+              chipFormatter: (gender) =>
+                  'Only ${gender.name.toLowerCase()} posts',
               items: const [
                 DropdownMenuItem(value: Gender.male, child: Text("Male")),
                 DropdownMenuItem(value: Gender.female, child: Text("Female")),
-                DropdownMenuItem(value: Gender.unespecified, child: Text("Unspecified")),
+                DropdownMenuItem(
+                    value: Gender.unespecified, child: Text("Unspecified")),
               ]),
           DatePickerTableFilter(
             id: "date",
@@ -241,7 +253,8 @@ class _MainViewState extends State<MainView> {
                 var selectedPosts = tableController.getSelectedRows();
                 debugPrint("SELECTED ROWS ----------------------------");
                 debugPrint(selectedPosts
-                    .map((e) => "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
+                    .map((e) =>
+                        "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
                     .join("\n"));
                 debugPrint("------------------------------------------");
               }),
