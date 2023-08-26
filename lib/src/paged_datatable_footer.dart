@@ -1,7 +1,7 @@
 part of 'paged_datatable.dart';
 
-class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
-    extends StatelessWidget {
+class _PagedDataTableFooter<TKey extends Comparable, TResultId extends Comparable,
+    TResult extends Object> extends StatelessWidget {
   final Widget? footer;
 
   const _PagedDataTableFooter(this.footer);
@@ -11,7 +11,7 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
     final theme = PagedDataTableTheme.of(context);
     final localization = PagedDataTableLocalization.of(context);
 
-    return Consumer<_PagedDataTableState<TKey, TResult>>(
+    return Consumer<_PagedDataTableState<TKey, TResultId, TResult>>(
       builder: (context, state, child) {
         Widget child = SizedBox(
             height: 56,
@@ -31,17 +31,12 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                         IconButton(
                             splashRadius: 20,
                             tooltip: localization.refreshText,
-                            onPressed: () =>
-                                state._refresh(currentDataset: false),
-                            icon: Icon(Icons.refresh_outlined,
-                                color: theme.buttonsColor)),
+                            onPressed: () => state._refresh(),
+                            icon: Icon(Icons.refresh_outlined, color: theme.buttonsColor)),
                         Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: VerticalDivider(
-                                indent: 10,
-                                endIndent: 10,
-                                color: theme.dividerColor)),
+                                indent: 10, endIndent: 10, color: theme.dividerColor)),
                       ],
 
                       /* ROWS PER PAGE */
@@ -58,74 +53,58 @@ class _PagedDataTableFooter<TKey extends Object, TResult extends Object>
                                   value: theme.configuration.initialPageSize,
                                   decoration: const InputDecoration(
                                       isCollapsed: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 6, vertical: 8),
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                                       border: OutlineInputBorder()),
-                                  style: const TextStyle(fontSize: 14),
-                                  onChanged:
-                                      state.tableState == _TableState.loading
-                                          ? null
-                                          : (newPageSize) {
-                                              if (newPageSize != null) {
-                                                state.setPageSize(newPageSize);
-                                              }
-                                            },
+                                  style: theme.footerTextStyle?.copyWith(fontSize: 14) ??
+                                      const TextStyle(fontSize: 14),
+                                  onChanged: state.tableState == _TableState.loading
+                                      ? null
+                                      : (newPageSize) {
+                                          if (newPageSize != null) {
+                                            state.setPageSize(newPageSize);
+                                          }
+                                        },
                                   items: theme.configuration.pageSizes!
-                                      .map((e) => DropdownMenuItem(
-                                          value: e, child: Text(e.toString())))
+                                      .map((e) =>
+                                          DropdownMenuItem(value: e, child: Text(e.toString())))
                                       .toList()),
                             )
                           ],
                         ),
                         Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: VerticalDivider(
-                                indent: 10,
-                                endIndent: 10,
-                                color: theme.dividerColor)),
+                                indent: 10, endIndent: 10, color: theme.dividerColor)),
                       ],
 
                       /* CURRENT PAGE ELEMENTS */
                       if (theme.configuration.footer.showTotalElements)
-                        Text(localization
-                            .totalElementsText(state.tableCache.currentLength))
+                        Text(localization.totalElementsText(state._rowsState.length))
                       else
-                        Text(localization.pageIndicatorText(
-                            state.tableCache.currentPageIndex)),
+                        Text(localization.pageIndicatorText(state.currentPage)),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: VerticalDivider(
-                              indent: 10,
-                              endIndent: 10,
-                              color: theme.dividerColor)),
+                              indent: 10, endIndent: 10, color: theme.dividerColor)),
 
                       /* PAGE BUTTONS */
                       IconButton(
                         tooltip: localization.previousPageButtonText,
                         splashRadius: 20,
-                        icon: Icon(Icons.keyboard_arrow_left_rounded,
-                            color: theme.buttonsColor),
-                        onPressed: (state.tableCache.canGoBack &&
-                                state.tableState != _TableState.loading)
-                            ? () {
-                                state.navigate(
-                                    state.tableCache.currentPageIndex - 1);
-                              }
-                            : null,
+                        icon: Icon(Icons.keyboard_arrow_left_rounded, color: theme.buttonsColor),
+                        onPressed:
+                            (state.hasPreviousPage && state.tableState != _TableState.loading)
+                                ? state.previousPage
+                                : null,
                       ),
                       const SizedBox(width: 16),
                       IconButton(
                         tooltip: localization.nextPageButtonText,
                         splashRadius: 20,
-                        icon: Icon(Icons.keyboard_arrow_right_rounded,
-                            color: theme.buttonsColor),
-                        onPressed: (state.tableCache.canGoNext &&
-                                state.tableState != _TableState.loading)
-                            ? () {
-                                state.navigate(
-                                    state.tableCache.currentPageIndex + 1);
-                              }
+                        icon: Icon(Icons.keyboard_arrow_right_rounded, color: theme.buttonsColor),
+                        onPressed: (state.hasNextPage && state.tableState != _TableState.loading)
+                            ? state.nextPage
                             : null,
                       )
                     ],

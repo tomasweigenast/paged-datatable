@@ -64,30 +64,32 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
     headerBackgroundColor: Color(0xFF80CBC4),
     filtersHeaderBackgroundColor: Color(0xFF80CBC4),
     footerBackgroundColor: Color(0xFF80CBC4),
-    textStyle: TextStyle(
-        decoration: TextDecoration.underline, fontWeight: FontWeight.normal),
-    rowsTextStyle: TextStyle(decoration: TextDecoration.overline),
+    footerTextStyle: TextStyle(color: Colors.white),
+    textStyle: TextStyle(fontWeight: FontWeight.normal),
     buttonsColor: Colors.white,
     chipTheme: ChipThemeData(
         backgroundColor: Colors.teal,
         labelStyle: TextStyle(color: Colors.white),
         deleteIconColor: Colors.white),
     configuration: PagedDataTableConfiguration(
-      allowRefresh: false,
-      pageSizes: null,
-    ));
+        footer: PagedDataTableFooterConfiguration(footerVisible: true),
+        allowRefresh: true,
+        pageSizes: [50, 75, 100],
+        initialPageSize: 50));
 
 class _MainViewState extends State<MainView> {
-  final tableController = PagedDataTableController<String, Post>();
-  PagedDataTableThemeData? theme = kCustomPagedDataTableTheme;
+  final tableController = PagedDataTableController<String, int, Post>();
+  PagedDataTableThemeData? theme;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: const Color.fromARGB(255, 208, 208, 208),
       padding: const EdgeInsets.all(20.0),
-      child: PagedDataTable<String, Post>(
-        rowsSelectable: false,
+      child: PagedDataTable<String, int, Post>(
+        rowsSelectable: true,
         theme: theme,
+        idGetter: (post) => post.id,
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
           if (filtering.valueOrNull("authorName") == "error!") {
@@ -147,6 +149,7 @@ class _MainViewState extends State<MainView> {
           ),
           TableColumn(
               title: "Enabled",
+              sizeFactor: null,
               cellBuilder: (item) => Text(item.isEnabled ? "Yes" : "No")),
           TextTableColumn(
               title: "Number",
@@ -208,10 +211,10 @@ class _MainViewState extends State<MainView> {
             lastDate: DateTime.now(),
           )
         ],
-        // footer: TextButton(
-        //   onPressed: () {},
-        //   child: const Text("Im a footer button"),
-        // ),
+        footer: TextButton(
+          onPressed: () {},
+          child: const Text("Im a footer button"),
+        ),
         menu: PagedDataTableFilterBarMenu(items: [
           FilterMenuItem(
             title: const Text("Apply new theme"),
@@ -229,7 +232,7 @@ class _MainViewState extends State<MainView> {
           FilterMenuItem(
             title: const Text("Remove row"),
             onTap: () {
-              tableController.removeRow(tableController.currentDataset.first);
+              tableController.removeRow(tableController.currentDataset.first.id);
             },
           ),
           FilterMenuItem(
@@ -263,14 +266,15 @@ class _MainViewState extends State<MainView> {
           FilterMenuItem(
               title: const Text("Select random row"),
               onTap: () {
-                tableController.selectRow(
-                    Random(DateTime.now().microsecondsSinceEpoch).nextInt(10));
+                final random = Random.secure();
+                tableController.selectRow(tableController
+                    .currentDataset[random.nextInt(tableController.currentDataset.length)].id);
               }),
           const FilterMenuDivider(),
           FilterMenuItem(
               title: const Text("Update first row's gender and number"),
               onTap: () {
-                tableController.modifyRowValue(0, (item) {
+                tableController.modifyRowValue(1, (item) {
                   item.authorGender = Gender.male;
                   item.number = 1;
                   item.author = "Tomas";

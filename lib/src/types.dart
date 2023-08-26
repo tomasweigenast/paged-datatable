@@ -9,8 +9,10 @@ typedef FetchCallback<TKey extends Object, TResult extends Object>
 typedef ErrorBuilder = Widget Function(Object error);
 typedef WidgetBuilder = Widget Function(BuildContext context);
 
-typedef Getter<T extends Object, TValue extends Object> = TValue? Function(
-    T item);
+typedef ModelIdGetter<TResultId extends Comparable, TResult extends Object> = TResultId Function(
+    TResult item);
+
+typedef Getter<T extends Object, TValue extends Object> = TValue? Function(T item);
 typedef Setter<T extends Object, TValue> = FutureOr<bool> Function(
     T item, TValue newValue, int rowIndex);
 
@@ -55,8 +57,7 @@ class Filtering {
   }
 }
 
-typedef RowBuilder<TResult extends Object> = Widget Function(
-    BuildContext context, TResult item);
+typedef RowBuilder<TResult extends Object> = Widget Function(BuildContext context, TResult item);
 
 /// Allows you to pass a custom [RowBuilder] method.
 class CustomRowBuilder<TResult extends Object> {

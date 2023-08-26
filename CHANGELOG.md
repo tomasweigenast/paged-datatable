@@ -1,3 +1,20 @@
+## 1.4.2
+
+- Packages version upgrade
+
+## 1.4.1
+
+- Improve documentation
+
+## 1.4.0
+
+- Remove internal memory cache.
+- Display checkbox as the first column if the table allows row selection
+- Bug fixes related to theming
+- Add pagination methods to controller
+- Improve drawing performance
+- Better pub.dev documentation incoming
+
 ## 1.3.0
 
 - Add option to completely remove the footer.

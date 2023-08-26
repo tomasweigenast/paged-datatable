@@ -6,17 +6,14 @@ const _kDefaultPagedDataTableTheme = PagedDataTableThemeData();
 class PagedDataTableTheme extends InheritedWidget {
   final PagedDataTableThemeData data;
 
-  const PagedDataTableTheme(
-      {required this.data, required super.child, super.key});
+  const PagedDataTableTheme({required this.data, required super.child, super.key});
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
       data != (oldWidget as PagedDataTableTheme).data;
 
   static PagedDataTableThemeData? maybeOf(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<PagedDataTableTheme>()
-        ?.data;
+    return context.dependOnInheritedWidgetOfExactType<PagedDataTableTheme>()?.data;
   }
 
   /// Lookups for a [PagedDataTableTheme] widget in the widget tree, if not found, then default [PagedDataTableThemeData] is returned.
@@ -110,8 +107,7 @@ class PagedDataTableThemeData extends Equatable {
       this.footerTextStyle,
       this.textStyle = const TextStyle(color: Colors.black),
       this.rowsTextStyle = const TextStyle(fontSize: 14),
-      this.headerTextStyle =
-          const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      this.headerTextStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       this.filtersHeaderTextStyle,
       this.rowColors,
       this.chipTheme,
@@ -184,13 +180,13 @@ class PagedDataTableFooterConfiguration extends Equatable {
   /// Defaults to false.
   final bool showTotalElements;
 
-  /// A flag that indicates if the footer bar is shown or not.
+  /// A flag that indicates if the footer should be visible.
   ///
   /// Defaults to true.
-  final bool visible;
+  final bool footerVisible;
 
   const PagedDataTableFooterConfiguration(
-      {this.showTotalElements = false, this.visible = true});
+      {this.showTotalElements = false, this.footerVisible = true});
 
   @override
   List<Object?> get props => [showTotalElements];

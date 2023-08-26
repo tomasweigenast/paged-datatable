@@ -11,7 +11,6 @@ Designed to follow Google's Material You style.
 
 ## Features
 
-- **Page caching** allowing you to keep already fetched pages in memory for offline-use.
 - **Row updating on demand**, preventing you to create other views for updating fields of a class. Now you can update an object from the table directly.
 - **Cursor and offset pagination**, you decide how to paginate your data.
 - **Filtering** by date, text, number, whatever you want!
@@ -40,12 +39,18 @@ Everything you need is a **PagedDataTable\<TKey, TValue>** widget, which accepts
 
 ### Setup widget
 
-Create a new `PagedDataTable<TKey, TValue>` and fill the required parameters
+Create a new `PagedDataTable<TKey, TResultId, TResult>` and fill the required parameters
+
+- `TKey` represents the type of key you use as page indicator. For example, if you use cursor pagination, it will be a `String`.
+- `TResultId` is the type of the property your `TResult` has as primary key.
+- `TResult` is the type of object you are showing.
+
+> Both `TKey` and `TResultId` must extends `Comparable`.
 
 ```dart
-PagedDataTable<String, User>(
+PagedDataTable<String, String, User>(
     fetchPage: (pageToken, pageSize, sortBy, filtering) async {
-        return MyRepository.getUsres(
+        return MyRepository.getUsers(
             pageToken: pageToken,
             limit: pageSize,
             sortByFieldName: sortBy?.columnId,
@@ -53,6 +58,7 @@ PagedDataTable<String, User>(
             byGender: filtering.valueOrNullAs<Gender>("gender")
         );
     },
+    idGetter: (user) => user.id,
     initialPage: "",
     columns: [],
 )
@@ -95,7 +101,7 @@ If you want your users to be able to sort the resultset based on a column, set `
 Filters allows your users to, well, filter your dataset. It's rendered like a dialog. To get started, define them in the `PagedDataTable` widget:
 
 ```dart
-PagedDataTable<String, User>(
+PagedDataTable<String, String, User>(
     ...
     filters: [
         TextTableFilter(
@@ -122,7 +128,7 @@ Every filter type requires an `id`, a `title` and a `chipFormatter`. You will us
 You can display a popup menu at the top right corner:
 
 ```dart
-PagedDataTable<String, User>(
+PagedDataTable<String, String, User>(
     ...
     menu: PagedDataTableFilterBarMenu(
         items: [
@@ -141,21 +147,23 @@ PagedDataTable<String, User>(
 
 ### Selecting rows
 
-If you want your users to be able to select rows by double-clicking them:
+If you want your users to be able to select rows:
 
 ```dart
-PagedDataTable<String, User>(
+PagedDataTable<String, String, User>(
     ...
     rowsSelectable: true
 )
 ```
+
+This will display a checkbox in every row that allows the user to select the row.
 
 ### Other customizations
 
 You can render custom widgets in the space left in the table's header and footer. Also, you can configure aspects of the table with the `configuration` field.
 
 ```dart
-PagedDataTable<String, User>(
+PagedDataTable<String, String, User>(
     ...
     footer: TextButton(),
     header: Row(),
@@ -167,17 +175,19 @@ PagedDataTable<String, User>(
 
 ### Controller
 
-By using a `PagedDataTableController<TKey, TValue>` (being `TKey` and `TValue` the same as the `PagedDataTable` widget) you can control the data table programatically. It allows you to:
+By using a `PagedDataTableController<TKey, TResultId, TResult>` (being `TKey`, `TResultId` and `TResult` the same as the `PagedDataTable` widget) you can control the data table programatically. It allows you to:
 
 - `refresh()` the entire table, clearing the cache and fetching from source.
 - `setFilter(String id, dynamic value)` apply a filter
 - `removeFilter(String id)` remove a filter
 - `removeFilters()` remove all filters
-- `getSelectedRows()` returns a `List<TValue>` with the selected rows.
+- `getSelectedRows()` returns a `List<TResult>` with the selected rows.
 - `unselectAllRows()` unselects all selected rows.
-- `selectRow(int index)` marks the row at `index` as selected.
-- `modifyRowValue(int rowIndex, void Function(TResult item) update)` allows to modify a row's value by applying `update` to the cached value.
-- `refreshRow(int rowIndex)` refresh a row to reflect the changes made to the object its displaying (if it's not a deep copy.)
+- `selectAllRows()` selects all the rows.
+- `unselectRow(TResultId itemId)` unselects the row whose id is `itemId`.
+- `selectRow(TResultId itemId)` selects the row whose id is `itemId`.
+- `modifyRowValue(TResultId itemId, void Function(TResult item) update)` allows to modify a row's value by applying `update` to the cached value.
+- `refreshRow(TResultId itemId)` refresh a row to reflect the changes made to the object its displaying (if it's not a deep copy.)
 
 ## Customization
 
