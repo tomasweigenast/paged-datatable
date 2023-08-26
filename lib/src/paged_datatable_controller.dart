@@ -3,8 +3,9 @@
 part of 'paged_datatable.dart';
 
 /// Represents a controller of a [PagedDataTable]
-class PagedDataTableController<TKey extends Object, TResult extends Object> {
-  late final _PagedDataTableState<TKey, TResult> _state;
+class PagedDataTableController<TKey extends Comparable, TResultId extends Comparable,
+    TResult extends Object> {
+  late final _PagedDataTableState<TKey, TResultId, TResult> _state;
 
   /// Returns the current showing dataset elements.
   Iterable<TResult> get currentDataset => _state._rowsState.map((e) => e.item);
@@ -13,12 +14,11 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
     _state.dispose();
   }
 
-  /// Refreshes the table clearing the cache and fetching from source again.
+  /// Refreshes the table fetching from source again.
   /// If [currentDataset] is true, it will only refresh the current viewing resultset, otherwise,
-  /// it will clear the local cache and start from page 1.
+  /// it will start from page 1.
   void refresh({bool currentDataset = true}) {
-    _state._refresh(currentDataset: currentDataset);
-    // _controller.add(_ControllerEvent(_ControllerEventType.refresh, null));
+    _state._refresh(initial: !currentDataset);
   }
 
   /// Sets a filter and fetches items from source.
@@ -46,12 +46,9 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
     return _state.filters[filterName]?.value;
   }
 
-  /// Gets all the selected rows in the current resultset
-  List<TResult> getSelectedRows() {
-    return _state.selectedRows.entries
-        .where((element) => element.value)
-        .map((e) => _state.tableCache.currentResultset[e.key])
-        .toList();
+  /// Returns a list of the selected rows id.
+  List<TResultId> getSelectedRows() {
+    return _state.selectedRows.keys.toList();
   }
 
   /// Unselects any selected row in the current resultset
@@ -65,22 +62,9 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
   }
 
   /// Marks the row at [index] as selected
-  void selectRow(int index) {
-    _state.selectedRows[index] = true;
-    _state._rowsState[index].selected = true;
-  }
-
-  /// Updates an item from the current resultset located at [rowIndex] and rebuilds the row.
-  void modifyRowValue(int rowIndex, void Function(TResult item) update) {
-    try {
-      var row = _state.tableCache.currentResultset[rowIndex];
-      update(row);
-
-      // refresh state of that row.
-      _state._rowsState[rowIndex].refresh();
-    } catch (_) {
-      throw TableError("There is no row at index $rowIndex.");
-    }
+  void selectRow(TResultId key) {
+    _state.selectedRows[key] = true;
+    _state._rowsState.firstWhere((element) => element.itemId == key).selected = true;
   }
 
   /// Builds every row that matches [predicate].
@@ -92,37 +76,50 @@ class PagedDataTableController<TKey extends Object, TResult extends Object> {
   }
 
   /// Updates every item from the current resultset that matches [predicate] and rebuilds it.
-  void modifyRowsValue(bool Function(TResult element) predicate,
-      void Function(TResult item) update) {
-    var matched = _state.tableCache.currentResultset.where(predicate);
-    for (var match in matched) {
-      update(match);
+  void modifyRowsValue(
+      bool Function(TResult element) predicate, void Function(TResult item) update) {
+    int index = 0;
+    for (final item in _state._items) {
+      if (predicate(item)) {
+        update(item);
+        _state._rowsState[index].refresh();
+      }
 
-      // refresh state of that row.
-      _state._rowsState
-          .firstWhere((element) => predicate(element.item))
-          .refresh();
+      index++;
     }
   }
 
-  /// Rebuilds the row at the specified [rowIndex] to reflect changes to the item.
-  void refreshRow(int rowIndex) {
+  /// Updates an item from the current resultset with the id [itemId] and rebuilds the row.
+  void modifyRowValue(TResultId itemId, void Function(TResult item) update) {
+    try {
+      final row = _state._rowsState.firstWhere((element) => element.itemId == itemId);
+      final item = _state._items[row.index];
+      update(item);
+
+      // refresh state of that row.
+      row.refresh();
+    } catch (_) {
+      throw TableError("There is no row with id $itemId.");
+    }
+  }
+
+  /// Rebuilds the row which has the specified [itemId] to reflect changes to the item.
+  void refreshRow(TResultId itemId) {
     try {
       // refresh state of that row.
-      _state._rowsState[rowIndex].refresh();
+      _state._rowsState.firstWhere((element) => element.itemId == itemId).refresh();
     } catch (_) {
-      throw TableError("There is no row at index $rowIndex.");
+      throw TableError("There is not item with id $itemId.");
     }
   }
 
   /// Removes the row containing [element].
   /// Keep in mind this will work only if [TResult] defines a custom hashcode implementation.
   void removeRow(TResult element) {
-    var rowStateIndex =
-        _state._rowsState.indexWhere((elem) => elem.item == element);
+    var rowStateIndex = _state._rowsState.indexWhere((elem) => elem.item == element);
     if (rowStateIndex != -1) {
-      _state.tableCache.deleteFromCurrentDataset(element);
       _state._rowsState.removeAt(rowStateIndex);
+      _state._items.removeAt(rowStateIndex);
       _state._rowsChange = rowStateIndex;
       // ignore: invalid_use_of_visible_for_testing_member
       _state.notifyListeners();

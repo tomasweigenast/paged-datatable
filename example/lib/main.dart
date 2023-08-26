@@ -61,29 +61,28 @@ const kCustomPagedDataTableTheme = PagedDataTableThemeData(
     headerBackgroundColor: Color(0xFF80CBC4),
     filtersHeaderBackgroundColor: Color(0xFF80CBC4),
     footerBackgroundColor: Color(0xFF80CBC4),
-    textStyle: TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.normal),
-    rowsTextStyle: TextStyle(decoration: TextDecoration.overline),
+    textStyle: TextStyle(fontWeight: FontWeight.normal),
     buttonsColor: Colors.white,
     chipTheme: ChipThemeData(
         backgroundColor: Colors.teal,
         labelStyle: TextStyle(color: Colors.white),
         deleteIconColor: Colors.white),
     configuration: PagedDataTableConfiguration(
-      allowRefresh: false,
-      pageSizes: null,
-    ));
+        allowRefresh: true, pageSizes: [50, 75, 100], initialPageSize: 50));
 
 class _MainViewState extends State<MainView> {
-  final tableController = PagedDataTableController<String, Post>();
-  PagedDataTableThemeData? theme = kCustomPagedDataTableTheme;
+  final tableController = PagedDataTableController<String, int, Post>();
+  PagedDataTableThemeData? theme;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: const Color.fromARGB(255, 208, 208, 208),
       padding: const EdgeInsets.all(20.0),
-      child: PagedDataTable<String, Post>(
-        rowsSelectable: false,
+      child: PagedDataTable<String, int, Post>(
+        rowsSelectable: true,
         theme: theme,
+        idGetter: (post) => post.id,
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
           if (filtering.valueOrNull("authorName") == "error!") {
@@ -235,7 +234,8 @@ class _MainViewState extends State<MainView> {
                 var selectedPosts = tableController.getSelectedRows();
                 debugPrint("SELECTED ROWS ----------------------------");
                 debugPrint(selectedPosts
-                    .map((e) => "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
+                    .map((e) => e)
+                    // .map((e) => "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
                     .join("\n"));
                 debugPrint("------------------------------------------");
               }),

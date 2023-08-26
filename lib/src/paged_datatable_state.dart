@@ -1,38 +1,61 @@
 part of 'paged_datatable.dart';
 
-class _PagedDataTableState<TKey extends Object, TResult extends Object>
-    extends ChangeNotifier {
+/// [_PagedDataTableState] represents the "current" state of the table.
+class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable,
+    TResult extends Object> extends ChangeNotifier {
   int _pageSize = 100;
-  SortBy? _sortBy;
-  _TableState _state = _TableState.loading;
+  SortBy? _sortModel;
   Object? _currentError;
-  List<_PagedDataTableRowState<TResult>> _rowsState = [];
-  double _availableWidth = 0; // the available width for the table
-  double _nullSizeFactorColumnsWidth =
-      0; // the width applied to every column that has sizeFactor = null
+  _TableState _state = _TableState.loading;
 
-  int _sortChange =
-      0; // an int which changes when the sort column should update
+  // A map that contains the state of the rows in the current resultset
+  List<_PagedDataTableRowState<TResultId, TResult>> _rowsState = const [];
+
+  /// The list of items in the current resulset.
+  List<TResult> _items = const [];
+
+  /// The list of pagination keys used
+  Map<int, TKey> _paginationKeys;
+
+  /// The current page token
+  int _currentPageIndex = 0;
+
+  /// Indicates if there is another page after [_currentPageIndex]
+  bool _hasNextPage = false;
+
+  // the available width for the table
+  double _availableWidth = 0;
+
+  // the width applied to every column that has sizeFactor = null
+  double _nullSizeFactorColumnsWidth = 0;
+
+  // an int which changes when the sort column should update
+  int _sortChange = 0;
   int _rowsChange = 0;
   StreamSubscription? _refreshListenerSubscription;
 
+  final TKey initialPage;
   final Stream? refreshListener;
   final ScrollController filterChipsScrollController = ScrollController();
   final ScrollController rowsScrollController = ScrollController();
-  final PagedDataTableController<TKey, TResult> controller;
+  final PagedDataTableController<TKey, TResultId, TResult> controller;
   final FetchCallback<TKey, TResult> fetchCallback;
   final List<BaseTableColumn<TResult>> columns;
   final Map<String, TableFilterState> filters;
+  final ModelIdGetter<TResultId, TResult> idGetter;
   final GlobalKey<FormState> filtersFormKey = GlobalKey();
-  final _TableCache<TKey, TResult> tableCache;
-  final Map<int, bool> selectedRows =
-      {}; // key is the index of the item in the current resultset, and the value is just a boolean indicating if its selected or not
   late final double columnsSizeFactor;
   late final int lengthColumnsWithoutSizeFactor;
 
+  /// Contains a list of selected rows. If the page changes, this remain untouched.
+  final Map<TResultId, bool> selectedRows = {};
+
   _TableState get tableState => _state;
-  bool get isSorted => _sortBy != null;
+  bool get hasSortModel => _sortModel != null;
+  int get currentPage => _currentPageIndex + 1;
   Object? get currentError => _currentError;
+  bool get hasPreviousPage => _currentPageIndex > 0;
+  bool get hasNextPage => _hasNextPage;
 
   set availableWidth(double newWidth) {
     _availableWidth = newWidth;
@@ -45,55 +68,55 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
 
   _PagedDataTableState(
       {required this.fetchCallback,
-      required TKey initialPage,
+      required this.initialPage,
       required this.columns,
+      required this.idGetter,
       required List<TableFilter>? filters,
-      required PagedDataTableController<TKey, TResult>? controller,
+      required PagedDataTableController<TKey, TResultId, TResult>? controller,
       required bool rowsSelectable,
       required this.refreshListener})
       : controller = controller ?? PagedDataTableController(),
-        tableCache = _TableCache(initialPage),
-        filters = filters == null
-            ? {}
-            : {for (var v in filters) v.id: TableFilterState._internal(v)} {
+        _paginationKeys = {0: initialPage},
+        filters =
+            filters == null ? {} : {for (var v in filters) v.id: TableFilterState._internal(v)} {
     _init();
   }
 
   void setPageSize(int pageSize) {
     _pageSize = pageSize;
-    tableCache.emptyCache(); // cache must be cleared before changing page size
     notifyListeners();
+    _resetPagination();
     _dispatchCallback();
   }
 
   void setSortBy(String columnId, bool descending) {
-    if (_sortBy?.columnId == columnId && _sortBy?.descending == descending) {
+    if (_sortModel?.columnId == columnId && _sortModel?.descending == descending) {
       return;
     }
 
-    _sortBy = SortBy._internal(columnId: columnId, descending: descending);
-    tableCache.emptyCache(); // cache must be cleared before applying sorting
+    _sortModel = SortBy._internal(columnId: columnId, descending: descending);
     _sortChange++;
     notifyListeners();
+    _resetPagination();
     _dispatchCallback();
   }
 
   void swapSortBy(String columnId) {
-    if (_sortBy != null && _sortBy!.columnId == columnId) {
-      _sortBy!._descending = !_sortBy!.descending;
+    if (_sortModel != null && _sortModel!.columnId == columnId) {
+      _sortModel!._descending = !_sortModel!.descending;
     } else {
-      _sortBy = SortBy._internal(columnId: columnId, descending: true);
+      _sortModel = SortBy._internal(columnId: columnId, descending: true);
     }
-    tableCache.emptyCache(); // cache must be cleared before applying sorting
     _sortChange++;
     notifyListeners();
+    _resetPagination();
     _dispatchCallback();
   }
 
   void applyFilters() {
     if (filters.values.any((element) => element.hasValue)) {
-      tableCache.emptyCache(); // cache must be cleared before applying filters
       notifyListeners();
+      _resetPagination();
       _dispatchCallback();
     }
   }
@@ -105,8 +128,8 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     }
 
     filter.value = value;
-    tableCache.emptyCache();
     notifyListeners();
+    _resetPagination();
     _dispatchCallback();
   }
 
@@ -120,18 +143,22 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     }
 
     if (changed) {
-      tableCache.emptyCache(); // cache must be cleared before applying filters
       notifyListeners();
+      _resetPagination();
       _dispatchCallback();
     }
   }
 
   void removeFilter(String filterId) {
     filters[filterId]?.value = null;
-    tableCache.emptyCache(); // cache must be cleared before applying filters
     notifyListeners();
+    _resetPagination();
     _dispatchCallback();
   }
+
+  Future<void> nextPage() => _dispatchCallback(page: _currentPageIndex + 1);
+
+  Future<void> previousPage() => _dispatchCallback(page: _currentPageIndex - 1);
 
   @override
   void dispose() {
@@ -141,72 +168,41 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     super.dispose();
   }
 
-  void navigate(int page) {
-    _dispatchCallback(page: page);
-  }
-
-  Future<void> _dispatchCallback({int page = 1, bool goNext = true}) async {
+  /// Calls [fetchCallback].
+  ///
+  /// [page] indicates the index of the page in the [_paginationKeys] list.
+  Future<void> _dispatchCallback({int page = 0}) async {
     _state = _TableState.loading;
     _rowsChange++;
     _currentError = null;
     selectedRows.clear();
     notifyListeners();
 
+    TKey lookupKey = _paginationKeys[page]!;
+
     try {
-      bool goOnline = true;
+      // fetch elements
+      var pageIndicator =
+          await fetchCallback(lookupKey, _pageSize, _sortModel, Filtering._internal(filters));
 
-      // try to lookup key in cache
-      var key = tableCache.getKey(page);
-
-      // key found, lookup data in cache
-      if (key != null && goNext) {
-        var data = tableCache.cache[key];
-
-        // data found, display it
-        if (data != null) {
-          tableCache.currentPageIndex = page;
-          tableCache.currentKey = key;
-          tableCache.nextKey = data.nextPageToken;
-          goOnline = false;
-          debugPrint("Page $page fetched from cache.");
-        }
+      // if has errors, throw it and let "catch" handle it
+      if (pageIndicator.hasError) {
+        throw pageIndicator.error;
       }
 
-      if (goOnline) {
-        TKey lookupKey = goNext
-            ? (tableCache.nextKey ?? tableCache.currentKey)
-            : tableCache.currentKey;
-
-        // fetch elements
-        var pageIndicator = await fetchCallback(
-            lookupKey, _pageSize, _sortBy, Filtering._internal(filters));
-
-        // if has errors, throw it and let "catch" handle it
-        if (pageIndicator.hasError) {
-          throw pageIndicator.error;
-        }
-
-        // store page in cache
-        tableCache.cache[lookupKey] = pageIndicator;
-        tableCache.currentKey = goNext
-            ? (tableCache.nextKey ?? tableCache.currentKey)
-            : tableCache
-                .currentKey; // now currentKey is the nextKey of the previous fetch
-        if (goNext) {
-          tableCache.keys.add(tableCache.currentKey);
-        }
-        tableCache.nextKey = pageIndicator.nextPageToken;
-        tableCache.currentPageIndex++;
-        debugPrint("Page $page fetched from source.");
+      if (pageIndicator.hasNextPageToken) {
+        _paginationKeys[page + 1] = pageIndicator.nextPageToken!;
       }
+      _hasNextPage = pageIndicator.hasNextPageToken;
+      _currentPageIndex = page;
 
       // change state and notify listeners of update
       _state = _TableState.displaying;
       _rowsChange++;
-      _rowsState = List.generate(
-          tableCache.currentLength,
-          (index) => _PagedDataTableRowState(
-              tableCache.currentResultset[index], index));
+      _items = pageIndicator.elements;
+      _rowsState = _items
+          .mapIndexed((i, e) => _PagedDataTableRowState(i, e, idGetter))
+          .toList(growable: false);
       notifyListeners();
 
       if (rowsScrollController.hasClients) {
@@ -214,8 +210,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
             duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
       }
     } catch (err, stack) {
-      debugPrint(
-          "An error ocurred trying to fetch elements from source. Error: $err");
+      debugPrint('An error ocurred trying to fetch elements from key "$lookupKey". Error: $err');
       debugPrint(stack.toString());
 
       // store the error so the errorBuilder can display it
@@ -226,17 +221,15 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     }
   }
 
-  Future<void> _refresh({required bool currentDataset}) {
-    int page = 1;
-    if (!currentDataset) {
-      tableCache.emptyCache();
-    } else {
-      page = tableCache.currentPageIndex;
+  /// Refreshes the datatable
+  Future<void> _refresh({bool initial = false}) {
+    if (initial) {
+      _resetPagination();
     }
-
-    return _dispatchCallback(page: page, goNext: !currentDataset);
+    return _dispatchCallback();
   }
 
+  @pragma("vm:prefer-inline")
   void _init() {
     _initSizes();
     _setDefaultFilters();
@@ -245,11 +238,12 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
 
     if (refreshListener != null) {
       _refreshListenerSubscription = refreshListener!.listen((event) {
-        _refresh(currentDataset: true);
+        _refresh();
       });
     }
   }
 
+  @pragma("vm:prefer-inline")
   void _setDefaultFilters() {
     for (var filter in filters.values) {
       if (filter._filter.defaultValue != null) {
@@ -258,6 +252,7 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     }
   }
 
+  @pragma("vm:prefer-inline")
   void _initSizes() {
     int withoutSizeFactor = 0;
     double sizeFactorSum = 0;
@@ -274,50 +269,11 @@ class _PagedDataTableState<TKey extends Object, TResult extends Object>
     assert(columnsSizeFactor <= 1,
         "the sum of all sizeFactor must be less than or equals to 1, given $columnsSizeFactor");
   }
-}
 
-class _TableCache<TKey extends Object, TResult extends Object> {
-  final TKey initialPageKey;
-
-  Map<TKey, PaginationResult<TKey, TResult>> cache =
-      {}; // caches the elements and their keys
-  List<TKey> keys =
-      []; // store the list of keys so when a previous page is requested, the page index looks up here, then in cache
-  TKey currentKey; // the page token that represents the current resultset
-  TKey? nextKey; // the next page token
-  int currentPageIndex = 0; // the current page index, being 1-offset
-
-  bool get hasResultset => cache[currentKey] != null;
-  List<TResult> get currentResultset => cache[currentKey]?.elements ?? const [];
-  int get currentLength => currentResultset.length;
-
-  bool get canGoBack => currentPageIndex > 1;
-  bool get canGoNext => nextKey != null;
-
-  _TableCache(this.initialPageKey)
-      : currentKey = initialPageKey,
-        nextKey = initialPageKey;
-
-  void emptyCache() {
-    // its faster to create a new map instead of clearing
-    cache = {};
-    keys = [];
-    currentPageIndex = 0;
-    currentKey = initialPageKey;
-    nextKey = initialPageKey;
-    debugPrint("TableCache cleared.");
-  }
-
-  TKey? getKey(int pageIndex) {
-    try {
-      return keys[pageIndex - 1];
-    } catch (_) {
-      return null;
-    }
-  }
-
-  void deleteFromCurrentDataset(TResult element) {
-    cache[currentKey]?._elements?.remove(element);
+  @pragma("vm:prefer-inline")
+  void _resetPagination() {
+    _paginationKeys = {0: initialPage};
+    _currentPageIndex = 0;
   }
 }
 

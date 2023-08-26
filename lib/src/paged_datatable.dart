@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,11 +31,12 @@ part 'types.dart';
 /// A paginated DataTable that allows page caching and filtering
 /// [TKey] is the type of the page token
 /// [TResult] is the type of data the data table will show.
-class PagedDataTable<TKey extends Object, TResult extends Object> extends StatelessWidget {
+class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TResult extends Object>
+    extends StatelessWidget {
   final FetchCallback<TKey, TResult> fetchPage;
   final TKey initialPage;
   final List<TableFilter>? filters;
-  final PagedDataTableController<TKey, TResult>? controller;
+  final PagedDataTableController<TKey, TResultId, TResult>? controller;
   final List<BaseTableColumn<TResult>> columns;
   final PagedDataTableFilterBarMenu? menu;
   final Widget? footer, header;
@@ -44,11 +46,13 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
   final bool rowsSelectable;
   final CustomRowBuilder<TResult>? customRowBuilder;
   final Stream? refreshListener;
+  final ModelIdGetter<TResultId, TResult> idGetter;
 
   const PagedDataTable(
       {required this.fetchPage,
       required this.initialPage,
       required this.columns,
+      required this.idGetter,
       this.filters,
       this.menu,
       this.controller,
@@ -64,17 +68,18 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<_PagedDataTableState<TKey, TResult>>(
+    return ChangeNotifierProvider<_PagedDataTableState<TKey, TResultId, TResult>>(
       create: (context) => _PagedDataTableState(
           columns: columns,
           rowsSelectable: rowsSelectable,
           filters: filters,
+          idGetter: idGetter,
           controller: controller,
           fetchCallback: fetchPage,
           initialPage: initialPage,
           refreshListener: refreshListener),
       builder: (context, widget) {
-        var state = context.read<_PagedDataTableState<TKey, TResult>>();
+        var state = context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
         final localTheme =
             PagedDataTableTheme.maybeOf(context) ?? theme ?? _kDefaultPagedDataTableTheme;
 
@@ -90,23 +95,31 @@ class PagedDataTable<TKey extends Object, TResult extends Object> extends Statel
               children: [
                 /* FILTER TAB */
                 if (header != null || menu != null || state.filters.isNotEmpty) ...[
-                  _PagedDataTableFilterTab<TKey, TResult>(menu, header),
+                  _PagedDataTableFilterTab<TKey, TResultId, TResult>(menu, header),
                   Divider(height: 0, color: localTheme.dividerColor),
                 ],
 
                 /* HEADER ROW */
-                _PagedDataTableHeaderRow<TKey, TResult>(rowsSelectable, width),
+                _PagedDataTableHeaderRow<TKey, TResultId, TResult>(rowsSelectable, width),
                 Divider(height: 0, color: localTheme.dividerColor),
 
                 /* ITEMS */
                 Expanded(
-                  child: _PagedDataTableRows<TKey, TResult>(
-                      rowsSelectable, customRowBuilder, noItemsFoundBuilder, errorBuilder, width),
+                  child: _PagedDataTableRows<TKey, TResultId, TResult>(
+                      rowsSelectable,
+                      customRowBuilder ??
+                          CustomRowBuilder<TResult>(
+                              builder: (context, item) =>
+                                  throw UnimplementedError("This does not build nothing"),
+                              shouldUse: (context, item) => false),
+                      noItemsFoundBuilder,
+                      errorBuilder,
+                      width),
                 ),
 
                 /* FOOTER */
                 Divider(height: 0, color: localTheme.dividerColor),
-                _PagedDataTableFooter<TKey, TResult>(footer)
+                _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
               ],
             );
           }),
