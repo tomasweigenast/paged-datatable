@@ -70,6 +70,9 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   /// Unselects any selected row in the current resultset
   void unselectAllRows() => _state.unselectAllRows();
 
+  /// Selects all the rows in the current resultset
+  void selectAllRows() => _state.selectAllRows();
+
   /// Marks the row whose id is [itemId] as unselected
   void unselectRow(TResultId itemId) => _state.unselectRow(itemId);
 
