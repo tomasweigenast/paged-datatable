@@ -1,4 +1,4 @@
-## 1.3.0
+## 1.4.0
 
 - Remove internal memory cache.
 - Display checkbox as the first column if the table allows row selection
@@ -6,6 +6,11 @@
 - Add pagination methods to controller
 - Improve drawing performance
 - Better pub.dev documentation incoming
+
+## 1.3.0
+
+- Add option to completely remove the footer.
+- Improve `PagedDataTableTheme` documentation.
 
 ## 1.2.0
 
