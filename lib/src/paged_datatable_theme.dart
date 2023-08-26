@@ -27,55 +27,74 @@ class PagedDataTableThemeData extends Equatable {
   final PagedDataTableConfiguration configuration;
 
   /// The background color of the entire table.
+  ///
   /// Defaults to [Colors.white]
   final Color backgroundColor;
 
   /// The color of the header row.
+  ///
   /// Defaults to [backgroundColor]
   final Color? headerBackgroundColor;
 
   /// The color of the filters header row.
+  ///
   /// Defalts to [backgroundColor]
   final Color? filtersHeaderBackgroundColor;
 
   /// The color of the footer row.
+  ///
   /// Defaults to [backgroundColor].
   final Color? footerBackgroundColor;
 
   /// The list of colors to iterate between them when rendering rows.
   /// The list must contain exactly two elements. To disable this, set to null.
+  ///
   /// Defaults to [backgroundColor]
   final List<Color>? rowColors;
 
   /// The [TextStyle] for the entire table.
+  ///
+  /// Defaults to a [TextStyle] with a [Colors.black] color.
   final TextStyle textStyle;
 
   /// The [TextStyle] for each row.
+  ///
+  /// Defaults to a [TextStyle] with a 14 font size.
   final TextStyle rowsTextStyle;
 
   /// The [TextStyle] for the header row.
+  ///
   /// Defaults to [textStyle].
   final TextStyle? headerTextStyle;
 
   /// The [TextStyle] for the filters header row.
+  ///
   /// Defaults to [textStyle].
   final TextStyle? filtersHeaderTextStyle;
 
   /// The [TextStyle] for the footer row.
+  ///
   /// Defaults to [textStyle].
   final TextStyle? footerTextStyle;
 
   /// The theme applied to filter chips.
+  ///
   /// Defaults to platform theme.
   final ChipThemeData? chipTheme;
 
   /// The border of the table.
+  ///
+  /// Defaults to a [RoundedRectangleBorder] with a circular [BorderRadius] of radius 4,
+  /// and a [BorderSide] with a [Color(0xffDADCE0)] color.
   final ShapeBorder? border;
 
   /// The color of the divider row.
+  ///
+  /// Defaults to platform color.
   final Color? dividerColor;
 
   /// The color of every button in the table.
+  ///
   /// Defaults to platform color.
   final Color? buttonsColor;
 
@@ -104,6 +123,7 @@ class PagedDataTableThemeData extends Equatable {
 
 class PagedDataTableConfiguration extends Equatable {
   /// A flag that indicates if the current dataset of the table can be refreshed.
+  /// A refresh button will be rendered.
   final bool allowRefresh;
 
   /// The list of available page sizes the user can select.
@@ -115,14 +135,17 @@ class PagedDataTableConfiguration extends Equatable {
   final int initialPageSize;
 
   /// The height of the columns header
-  /// Defaults to 56
+  ///
+  /// Defaults to 56.
   final double columnsHeaderHeight;
 
   /// The height of every row. If null, it will size to content.
-  /// Defaults to 52
+  ///
+  /// Defaults to 52.
   final double? rowHeight;
 
   /// The height of the filter bar.
+  ///
   /// Defaults to 56
   final double filterBarHeight;
 
@@ -153,9 +176,13 @@ class PagedDataTableConfiguration extends Equatable {
 class PagedDataTableFooterConfiguration extends Equatable {
   /// If true, the footer will show the current total elements of the table, otherwise, it will show
   /// the current page's index.
+  ///
+  /// Defaults to false.
   final bool showTotalElements;
 
   /// A flag that indicates if the footer should be visible.
+  ///
+  /// Defaults to true.
   final bool footerVisible;
 
   const PagedDataTableFooterConfiguration(

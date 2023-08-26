@@ -8,8 +8,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
   final double width;
   final CustomRowBuilder<TResult> customRowBuilder;
 
-  const _PagedDataTableRows(this.rowsSelectable, this.customRowBuilder, this.noItemsFoundBuilder,
-      this.errorBuilder, this.width);
+  const _PagedDataTableRows(this.rowsSelectable, this.customRowBuilder,
+      this.noItemsFoundBuilder, this.errorBuilder, this.width);
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +35,16 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
       PagedDataTableThemeData theme) {
     if (state._rowsState.isEmpty && state.tableState == _TableState.displaying) {
       return noItemsFoundBuilder?.call(context) ??
-          Center(child: Text(PagedDataTableLocalization.of(context).noItemsFoundText));
+          Center(
+              child: Text(
+                  PagedDataTableLocalization.of(context).noItemsFoundText));
     }
 
     if (state.tableState == _TableState.error) {
       return errorBuilder?.call(state.currentError!) ??
           Center(
-              child: Text("An error ocurred.\n${state.currentError}", textAlign: TextAlign.center));
+              child: Text("An error ocurred.\n${state.currentError}",
+                  textAlign: TextAlign.center));
     }
 
     return ListView.separated(

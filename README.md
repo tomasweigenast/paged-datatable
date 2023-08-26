@@ -181,6 +181,13 @@ By using a `PagedDataTableController<TKey, TValue>` (being `TKey` and `TValue` t
 
 ## Customization
 
+### Theming
+
+You can configure every `PagedDataTable` widget by providing a `PagedDataTableTheme` to your
+widget tree, or configure individual widgets by setting the `theme` property to the `PagedDataTable` you want to configure.
+
+Every property in the `PagedDataTableThemeData` is well documented.
+
 ### Custom column
 
 If you want to make a custom column, that is not editable, extend the `BaseTableColumn<TType>` class and render you widget in the `buildCell` method. It gives you the `item` that is going to be displayed and the `index` of the row.
