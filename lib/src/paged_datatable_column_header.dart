@@ -97,6 +97,13 @@ class _PagedDataTableHeaderRow<TKey extends Comparable, TResultId extends Compar
       );
     }
 
+    if (theme.headerTextStyle != null) {
+      child = DefaultTextStyle(
+        style: theme.headerTextStyle!,
+        child: child,
+      );
+    }
+
     return child;
   }
 }
