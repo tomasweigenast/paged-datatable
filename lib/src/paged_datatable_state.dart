@@ -35,6 +35,7 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
   // an int which changes when the sort column should update
   int _sortChange = 0;
   int _rowsChange = 0;
+  int _rowsSelectionChange = 0;
   StreamSubscription? _refreshListenerSubscription;
 
   final TKey initialPage;
@@ -47,6 +48,7 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
   final Map<String, TableFilterState> filters;
   final ModelIdGetter<TResultId, TResult> idGetter;
   final GlobalKey<FormState> filtersFormKey = GlobalKey();
+  final bool rowsSelectable;
   late final double columnsSizeFactor;
   late final int lengthColumnsWithoutSizeFactor;
 
@@ -74,9 +76,9 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
       required this.initialPage,
       required this.columns,
       required this.idGetter,
+      required this.rowsSelectable,
       required List<TableFilter>? filters,
       required PagedDataTableController<TKey, TResultId, TResult>? controller,
-      required bool rowsSelectable,
       required this.refreshListener})
       : controller = controller ?? PagedDataTableController(),
         _paginationKeys = {0: initialPage},
@@ -157,6 +159,48 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
     notifyListeners();
     _resetPagination();
     _dispatchCallback();
+  }
+
+  void selectRow(TResultId itemId) {
+    final itemIndex = _rowsStateMapper[itemId];
+    if (itemIndex == null) {
+      return;
+    }
+
+    selectedRows[itemId] = itemIndex;
+    _rowsState[itemIndex].selected = true;
+    _rowsSelectionChange = itemIndex;
+    notifyListeners();
+  }
+
+  void unselectRow(TResultId itemId) {
+    final itemIndex = _rowsStateMapper[itemId];
+    if (itemIndex == null) {
+      return;
+    }
+
+    selectedRows.remove(itemId);
+    _rowsState[itemIndex].selected = false;
+    _rowsSelectionChange = itemIndex;
+    notifyListeners();
+  }
+
+  void selectAllRows() {
+    for (var element in _rowsState) {
+      selectedRows[element.itemId] = element.index;
+      element.selected = true;
+    }
+    _rowsSelectionChange = -1;
+    notifyListeners();
+  }
+
+  void unselectAllRows() {
+    for (var element in _rowsState) {
+      selectedRows.remove(element.itemId);
+      element.selected = false;
+    }
+    _rowsSelectionChange = -2;
+    notifyListeners();
   }
 
   Future<void> nextPage() => _dispatchCallback(page: _currentPageIndex + 1);
@@ -263,8 +307,9 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
 
   @pragma("vm:prefer-inline")
   void _initSizes() {
-    int withoutSizeFactor = 0;
+    int withoutSizeFactor = rowsSelectable ? 1 : 0;
     double sizeFactorSum = 0;
+
     for (var column in columns) {
       if (column.sizeFactor == null) {
         withoutSizeFactor++;

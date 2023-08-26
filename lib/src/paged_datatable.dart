@@ -123,7 +123,7 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
           textStyle: localTheme.textStyle,
           shape: theme?.border,
           child: LayoutBuilder(builder: (context, constraints) {
-            var width = constraints.maxWidth - (columns.length * 32);
+            var width = constraints.maxWidth - (columns.length * 32) - (rowsSelectable ? 32 : 0);
             state.availableWidth = width;
             return Column(
               children: [

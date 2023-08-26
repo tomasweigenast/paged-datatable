@@ -68,23 +68,13 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   }
 
   /// Unselects any selected row in the current resultset
-  void unselectAllRows() {
-    for (final rowIndex in _state.selectedRows.values) {
-      _state._rowsState[rowIndex].selected = false;
-    }
-    _state.selectedRows.clear();
-  }
+  void unselectAllRows() => _state.unselectAllRows();
 
-  /// Marks the row at [index] as selected
-  void selectRow(TResultId itemId) {
-    final rowIndex = _state._rowsStateMapper[itemId];
-    if (rowIndex == null) {
-      throw TableError('Item with key "$itemId" is not in the current dataset.');
-    }
+  /// Marks the row whose id is [itemId] as unselected
+  void unselectRow(TResultId itemId) => _state.unselectRow(itemId);
 
-    _state.selectedRows[itemId] = rowIndex;
-    _state._rowsState[rowIndex].selected = true;
-  }
+  /// Marks the row whose id is [itemId] as selected
+  void selectRow(TResultId itemId) => _state.selectRow(itemId);
 
   /// Builds every row that matches [predicate].
   void refreshRowWhere(bool Function(TResult element) predicate) {

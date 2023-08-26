@@ -2,7 +2,8 @@ part of 'paged_datatable.dart';
 
 abstract class BaseTableColumn<TType extends Object> {
   final String? id;
-  final String title;
+  final String? title;
+  final Widget Function(BuildContext context)? titleBuilder;
   final bool sortable;
   final bool isNumeric;
   final double? sizeFactor;
@@ -10,9 +11,12 @@ abstract class BaseTableColumn<TType extends Object> {
   const BaseTableColumn(
       {required this.id,
       required this.title,
+      required this.titleBuilder,
       required this.sortable,
       required this.isNumeric,
-      required this.sizeFactor});
+      required this.sizeFactor})
+      : assert(title != null || titleBuilder != null,
+            "Either title or titleBuilder should be provided.");
 
   Widget buildCell(TType item, int rowIndex);
 }
@@ -33,6 +37,7 @@ abstract class EditableTableColumn<TType extends Object, TValue extends Object>
       required this.getter,
       required super.id,
       required super.title,
+      required super.titleBuilder,
       required super.sortable,
       required super.isNumeric,
       required super.sizeFactor});
@@ -49,7 +54,8 @@ class TableColumn<TType extends Object> extends BaseTableColumn<TType> {
       super.isNumeric = false,
       super.sortable = false,
       super.id})
-      : assert(!sortable || id != null, "sortable columns must define an id");
+      : assert(!sortable || id != null, "sortable columns must define an id"),
+        super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) => cellBuilder(item);
@@ -70,7 +76,8 @@ class DropdownTableColumn<TType extends Object, TValue extends Object>
       super.id,
       super.sortable = false,
       super.isNumeric = false,
-      super.sizeFactor = .1});
+      super.sizeFactor = .1})
+      : super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) {
@@ -85,8 +92,7 @@ class DropdownTableColumn<TType extends Object, TValue extends Object>
 }
 
 /// Defines an [EditableTableColumn] that renders a text field when double-clicked
-class TextTableColumn<TType extends Object>
-    extends EditableTableColumn<TType, String> {
+class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, String> {
   final InputDecoration? decoration;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -99,7 +105,8 @@ class TextTableColumn<TType extends Object>
       super.id,
       super.sortable = false,
       super.isNumeric = false,
-      super.sizeFactor = .1});
+      super.sizeFactor = .1})
+      : super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) {
@@ -116,8 +123,7 @@ class TextTableColumn<TType extends Object>
 
 /// Defines an [EditableTableColumn] that renders the text of a field and when double-clicked, an overlay with a multiline, bigger text field
 /// is shown.
-class LargeTextTableColumn<TType extends Object>
-    extends EditableTableColumn<TType, String> {
+class LargeTextTableColumn<TType extends Object> extends EditableTableColumn<TType, String> {
   final InputDecoration? decoration;
   final String? label;
   final bool tooltipText;
@@ -137,7 +143,8 @@ class LargeTextTableColumn<TType extends Object>
       super.id,
       super.sortable = false,
       super.isNumeric = false,
-      super.sizeFactor = .1});
+      super.sizeFactor = .1})
+      : super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) {
@@ -149,7 +156,7 @@ class LargeTextTableColumn<TType extends Object>
         setter: (newValue) => setter(item, newValue, rowIndex),
         validator: null,
         decoration: decoration,
-        label: label ?? title,
+        label: label ?? title!,
         formatters: inputFormatters);
   }
 }

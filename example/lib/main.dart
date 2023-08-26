@@ -141,7 +141,10 @@ class _MainViewState extends State<MainView> {
               DropdownMenuItem(value: Gender.unespecified, child: Text("Unspecified")),
             ],
           ),
-          TableColumn(title: "Enabled", cellBuilder: (item) => Text(item.isEnabled ? "Yes" : "No")),
+          TableColumn(
+              title: "Enabled",
+              sizeFactor: null,
+              cellBuilder: (item) => Text(item.isEnabled ? "Yes" : "No")),
           TextTableColumn(
               title: "Number",
               id: "number",

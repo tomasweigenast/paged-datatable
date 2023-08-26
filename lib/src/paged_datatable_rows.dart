@@ -68,32 +68,42 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                       padding: EdgeInsets.zero,
                       color: model._isSelected ? Theme.of(context).primaryColorLight : null,
                       child: InkWell(
-                        onTap: rowsSelectable ? () {} : null,
-                        onDoubleTap: rowsSelectable
-                            ? () {
-                                final newState = !(state.selectedRows[model.itemId] == null);
-                                state.selectedRows.remove(model.itemId);
-                                model.selected = newState;
-                              }
-                            : null,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: state.columns
-                              .map((column) => Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    child: SizedBox(
-                                        width: column.sizeFactor == null
-                                            ? state._nullSizeFactorColumnsWidth
-                                            : width * column.sizeFactor!,
-                                        child: Align(
-                                          alignment: column.isNumeric
-                                              ? Alignment.centerRight
-                                              : Alignment.centerLeft,
-                                          heightFactor: null,
-                                          child: column.buildCell(model.item, model.index),
-                                        )),
-                                  ))
-                              .toList(),
+                          children: [
+                            if (rowsSelectable)
+                              if (rowsSelectable)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: SizedBox(
+                                    width: width * .05,
+                                    child: _RowSelectorCheckbox(
+                                        isSelected: model._isSelected,
+                                        setSelected: (newValue) {
+                                          // model.selected = newValue;
+                                          if (newValue) {
+                                            state.selectRow(model.itemId);
+                                          } else {
+                                            state.unselectRow(model.itemId);
+                                          }
+                                        }),
+                                  ),
+                                ),
+                            ...state.columns.map((column) => Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: SizedBox(
+                                      width: column.sizeFactor == null
+                                          ? state._nullSizeFactorColumnsWidth
+                                          : width * column.sizeFactor!,
+                                      child: Align(
+                                        alignment: column.isNumeric
+                                            ? Alignment.centerRight
+                                            : Alignment.centerLeft,
+                                        heightFactor: null,
+                                        child: column.buildCell(model.item, model.index),
+                                      )),
+                                ))
+                          ],
                         ),
                       ),
                     ),
@@ -111,5 +121,21 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                 },
               ),
             ));
+  }
+}
+
+class _RowSelectorCheckbox<TResultId extends Comparable, TResult extends Object>
+    extends HookWidget {
+  final bool isSelected;
+  final void Function(bool newValue) setSelected;
+
+  const _RowSelectorCheckbox({required this.isSelected, required this.setSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+        value: isSelected,
+        tristate: false,
+        onChanged: (newValue) => setSelected(newValue ?? false));
   }
 }

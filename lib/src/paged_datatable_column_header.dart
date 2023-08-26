@@ -21,57 +21,93 @@ class _PagedDataTableHeaderRow<TKey extends Comparable, TResultId extends Compar
               selector: (context, state) => state._sortChange,
               builder: (context, isSorted, child) {
                 var state = context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
-                return Row(
-                  children: [
-                    // if(rowsSelectable)
-                    //   Padding(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    //     child: SizedBox(
-                    //       wid
-                    //     ),
-                    //   )
-                    ...state.columns.map((column) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: SizedBox(
-                              width: column.sizeFactor == null
-                                  ? state._nullSizeFactorColumnsWidth
-                                  : width * column.sizeFactor!,
-                              child: Tooltip(
-                                  message: column.title,
-                                  child: MouseRegion(
-                                    cursor: column.sortable
-                                        ? SystemMouseCursors.click
-                                        : SystemMouseCursors.basic,
-                                    child: GestureDetector(
-                                      onTap: column.sortable
-                                          ? () {
-                                              state.swapSortBy(column.id!);
-                                            }
-                                          : null,
-                                      child: Row(
-                                        mainAxisAlignment: column.isNumeric
-                                            ? MainAxisAlignment.end
-                                            : MainAxisAlignment.start,
-                                        children: [
-                                          if (state.hasSortModel &&
-                                              state._sortModel!.columnId == column.id) ...[
-                                            state._sortModel!._descending
-                                                ? const Icon(Icons.arrow_downward_rounded)
-                                                : const Icon(Icons.arrow_upward_rounded),
-                                            const SizedBox(width: 8)
-                                          ],
-                                          Flexible(
-                                              child: Text(column.title,
-                                                  style:
-                                                      const TextStyle(fontWeight: FontWeight.bold),
-                                                  overflow: TextOverflow.ellipsis))
-                                        ],
-                                      ),
-                                    ),
-                                  ))),
-                        ))
-                  ],
-                );
+                return Row(children: [
+                  if (rowsSelectable)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Selector<_PagedDataTableState<TKey, TResultId, TResult>, int>(
+                          selector: (context, model) => model._rowsSelectionChange,
+                          builder: (context, value, child) {
+                            return SizedBox(
+                              width: width * .05,
+                              child: HookBuilder(
+                                builder: (context) {
+                                  return Checkbox(
+                                    value: state.selectedRows.isEmpty
+                                        ? false
+                                        : state.selectedRows.length == state._items.length
+                                            ? true
+                                            : null,
+                                    tristate: true,
+                                    onChanged: (newValue) {
+                                      // currentValue.value = newValue;
+                                      switch (newValue) {
+                                        case true:
+                                          state.selectAllRows();
+                                          break;
+
+                                        case false:
+                                          state.unselectAllRows();
+                                          break;
+
+                                        case null:
+                                          if (state.selectedRows.length == state._items.length) {
+                                            state.unselectAllRows();
+                                          }
+                                          break;
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          }),
+                    ),
+                  ...state.columns.map((column) {
+                    Widget child = MouseRegion(
+                      cursor: column.sortable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                      child: GestureDetector(
+                        onTap: column.sortable
+                            ? () {
+                                state.swapSortBy(column.id!);
+                              }
+                            : null,
+                        child: Row(
+                          mainAxisAlignment:
+                              column.isNumeric ? MainAxisAlignment.end : MainAxisAlignment.start,
+                          children: [
+                            if (state.hasSortModel && state._sortModel!.columnId == column.id) ...[
+                              state._sortModel!._descending
+                                  ? const Icon(Icons.arrow_downward_rounded)
+                                  : const Icon(Icons.arrow_upward_rounded),
+                              const SizedBox(width: 8)
+                            ],
+                            Flexible(
+                                child: column.title != null
+                                    ? Text(column.title!,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                        overflow: TextOverflow.ellipsis)
+                                    : column.titleBuilder!(context))
+                          ],
+                        ),
+                      ),
+                    );
+
+                    if (column.title != null) {
+                      child = Tooltip(message: column.title, child: child);
+                    }
+
+                    child = Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                          width: column.sizeFactor == null
+                              ? state._nullSizeFactorColumnsWidth
+                              : width * column.sizeFactor!,
+                          child: child),
+                    );
+                    return child;
+                  })
+                ]);
               }),
 
           /* LOADING INDICATOR */
