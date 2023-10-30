@@ -3,7 +3,7 @@ part of 'paged_datatable.dart';
 /// [_PagedDataTableState] represents the "current" state of the table.
 class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable,
     TResult extends Object> extends ChangeNotifier {
-  int _pageSize = 100;
+  int _pageSize;
   SortBy? _sortModel;
   Object? _currentError;
   _TableState _state = _TableState.loading;
@@ -79,8 +79,10 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
       required this.rowsSelectable,
       required List<TableFilter>? filters,
       required PagedDataTableController<TKey, TResultId, TResult>? controller,
-      required this.refreshListener})
+      required this.refreshListener,
+      required int pageSize})
       : controller = controller ?? PagedDataTableController(),
+        _pageSize = pageSize,
         _paginationKeys = {0: initialPage},
         filters =
             filters == null ? {} : {for (var v in filters) v.id: TableFilterState._internal(v)} {
