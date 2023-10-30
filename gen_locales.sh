@@ -1,2 +1,2 @@
 #!/bin/bash
-flutter pub run intl_utils:generate
+fvm flutter pub run intl_utils:generate
