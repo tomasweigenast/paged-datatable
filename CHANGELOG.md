@@ -1,3 +1,8 @@
+## 1.4.4
+
+- Add support for 'de' locale
+- Fix initialPageSize is ignored when setup the widget
+
 ## 1.4.3
 
 - Update dependencies
