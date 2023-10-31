@@ -3,7 +3,7 @@ part of 'paged_datatable.dart';
 class _PagedDataTableMenu extends StatelessWidget {
   final List<BaseFilterMenuItem> items;
 
-  const _PagedDataTableMenu({Key? key, required this.items}) : super(key: key);
+  const _PagedDataTableMenu({required this.items});
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -32,12 +32,10 @@ class _PagedDataTableMenu extends StatelessWidget {
   }
 }
 
-void _showMenu(
-    {required BuildContext context, required List<BaseFilterMenuItem> items}) {
+void _showMenu({required BuildContext context, required List<BaseFilterMenuItem> items}) {
   final RenderBox button = context.findRenderObject() as RenderBox;
   var offset = button.localToGlobal(Offset.zero);
-  var position = RelativeRect.fromLTRB(
-      offset.dx + 10, offset.dy + button.size.height - 10, 0, 0);
+  var position = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + button.size.height - 10, 0, 0);
 
   // var rect = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + size.height - 10, 0, 0);
 
@@ -47,10 +45,8 @@ void _showMenu(
       _PopupMenuRoute(
           items: items,
           position: position,
-          barrierLabel:
-              MaterialLocalizations.of(context).modalBarrierDismissLabel,
-          capturedThemes:
-              InheritedTheme.capture(from: context, to: navigator.context)));
+          barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+          capturedThemes: InheritedTheme.capture(from: context, to: navigator.context)));
 }
 
 class _PopupMenuRoute<T> extends PopupRoute<T> {
@@ -98,8 +94,8 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
   final String barrierLabel;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
+  Widget buildPage(
+      BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     final menu = _PagedDataTableMenu(items: items);
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     return MediaQuery.removePadding(
@@ -166,14 +162,12 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 
     if (x < _kMenuScreenPadding + padding.left) {
       x = _kMenuScreenPadding + padding.left;
-    } else if (x + childSize.width >
-        size.width - _kMenuScreenPadding - padding.right) {
+    } else if (x + childSize.width > size.width - _kMenuScreenPadding - padding.right) {
       x = size.width - childSize.width - _kMenuScreenPadding - padding.right;
     }
     if (y < _kMenuScreenPadding + padding.top) {
       y = _kMenuScreenPadding + padding.top;
-    } else if (y + childSize.height >
-        size.height - _kMenuScreenPadding - padding.bottom) {
+    } else if (y + childSize.height > size.height - _kMenuScreenPadding - padding.bottom) {
       y = size.height - padding.bottom - _kMenuScreenPadding - childSize.height;
     }
 
@@ -198,17 +192,14 @@ class _AutoAnimatedSize extends StatefulWidget {
   final Duration startAfterDuration;
   final AlignmentGeometry alignment;
   const _AutoAnimatedSize(
-      {Key? key,
-      required this.child,
+      {required this.child,
       this.alignment = Alignment.center,
-      this.startAfterDuration = const Duration(milliseconds: 50)})
-      : super(key: key);
+      this.startAfterDuration = const Duration(milliseconds: 50)});
   @override
   State<StatefulWidget> createState() => _AutoAnimatedSizeState();
 }
 
-class _AutoAnimatedSizeState extends State<_AutoAnimatedSize>
-    with SingleTickerProviderStateMixin {
+class _AutoAnimatedSizeState extends State<_AutoAnimatedSize> with SingleTickerProviderStateMixin {
   bool showChild = false;
 
   @override

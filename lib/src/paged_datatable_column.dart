@@ -92,7 +92,8 @@ class DropdownTableColumn<TType extends Object, TValue extends Object>
 }
 
 /// Defines an [EditableTableColumn] that renders a text field when double-clicked
-class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, String> {
+class TextTableColumn<TType extends Object>
+    extends EditableTableColumn<TType, String> {
   final InputDecoration? decoration;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -123,7 +124,8 @@ class TextTableColumn<TType extends Object> extends EditableTableColumn<TType, S
 
 /// Defines an [EditableTableColumn] that renders the text of a field and when double-clicked, an overlay with a multiline, bigger text field
 /// is shown.
-class LargeTextTableColumn<TType extends Object> extends EditableTableColumn<TType, String> {
+class LargeTextTableColumn<TType extends Object>
+    extends EditableTableColumn<TType, String> {
   final InputDecoration? decoration;
   final String? label;
   final bool tooltipText;
