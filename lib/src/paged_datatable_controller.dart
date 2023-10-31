@@ -3,27 +3,29 @@
 part of 'paged_datatable.dart';
 
 /// Represents a controller of a [PagedDataTable]
-class PagedDataTableController<TKey extends Comparable, TResultId extends Comparable,
-    TResult extends Object> {
+class PagedDataTableController<TKey extends Comparable,
+    TResultId extends Comparable, TResult extends Object> {
   late final _PagedDataTableState<TKey, TResultId, TResult> _state;
 
   /// Returns the current showing dataset elements as an unmodifiable list.
   List<TResult> get currentDataset => UnmodifiableListView(_state._items);
 
   /// Returns the actual pagination info
-  PagedDataTablePaginationInfo get paginationInfo => PagedDataTablePaginationInfo._(
-      currentPage: _state.currentPage,
-      currentPageSize: _state._items.length,
-      hasNextPage: _state.hasNextPage,
-      rowsPerPage: _state._pageSize,
-      hasPreviousPage: _state.hasPreviousPage);
+  PagedDataTablePaginationInfo get paginationInfo =>
+      PagedDataTablePaginationInfo._(
+          currentPage: _state.currentPage,
+          currentPageSize: _state._items.length,
+          hasNextPage: _state.hasNextPage,
+          rowsPerPage: _state._pageSize,
+          hasPreviousPage: _state.hasPreviousPage);
 
   /// Refreshes the table fetching from source again.
   /// If [currentDataset] is true, it will only refresh the current viewing resultset, otherwise,
   /// it will start from page 1.
   ///
   /// The future completes when the fetch is done.
-  Future<void> refresh({bool currentDataset = true}) => _state._refresh(initial: !currentDataset);
+  Future<void> refresh({bool currentDataset = true}) =>
+      _state._refresh(initial: !currentDataset);
 
   /// Advances to the next page.
   ///
@@ -64,7 +66,9 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
 
   /// Returns a list of the selected items.
   List<TResult> getSelectedRows() {
-    return _state.selectedRows.values.map((e) => _state._items[e]).toList(growable: false);
+    return _state.selectedRows.values
+        .map((e) => _state._items[e])
+        .toList(growable: false);
   }
 
   /// Unselects any selected row in the current resultset
@@ -90,8 +94,8 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   /// Updates every item from the current resultset that matches [predicate] and rebuilds it.
   ///
   /// Keep in mind this method will iterate over every item in the current dataset, so, if the dataset is large, it can be costly.
-  void modifyRowsValue(
-      bool Function(TResult element) predicate, void Function(TResult item) update) {
+  void modifyRowsValue(bool Function(TResult element) predicate,
+      void Function(TResult item) update) {
     int index = 0;
     for (final item in _state._items) {
       if (predicate(item)) {
@@ -107,7 +111,8 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   void modifyRowValue(TResultId itemId, void Function(TResult item) update) {
     final rowIndex = _state._rowsStateMapper[itemId];
     if (rowIndex == null) {
-      throw TableError('Item with key "$itemId" is not in the current dataset.');
+      throw TableError(
+          'Item with key "$itemId" is not in the current dataset.');
     }
 
     final row = _state._rowsState[rowIndex];
@@ -122,7 +127,8 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   void refreshRow(TResultId itemId) {
     final rowIndex = _state._rowsStateMapper[itemId];
     if (rowIndex == null) {
-      throw TableError('Item with key "$itemId" is not in the current dataset.');
+      throw TableError(
+          'Item with key "$itemId" is not in the current dataset.');
     }
 
     _state._rowsState[rowIndex].refresh();
@@ -132,7 +138,8 @@ class PagedDataTableController<TKey extends Comparable, TResultId extends Compar
   void removeRow(TResultId itemId) {
     final rowIndex = _state._rowsStateMapper[itemId];
     if (rowIndex == null) {
-      throw TableError('Item with key "$itemId" is not in the current dataset.');
+      throw TableError(
+          'Item with key "$itemId" is not in the current dataset.');
     }
 
     _state._rowsState.removeAt(rowIndex);

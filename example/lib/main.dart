@@ -232,7 +232,8 @@ class _MainViewState extends State<MainView> {
           FilterMenuItem(
             title: const Text("Remove row"),
             onTap: () {
-              tableController.removeRow(tableController.currentDataset.first.id);
+              tableController
+                  .removeRow(tableController.currentDataset.first.id);
             },
           ),
           FilterMenuItem(
@@ -268,7 +269,9 @@ class _MainViewState extends State<MainView> {
               onTap: () {
                 final random = Random.secure();
                 tableController.selectRow(tableController
-                    .currentDataset[random.nextInt(tableController.currentDataset.length)].id);
+                    .currentDataset[
+                        random.nextInt(tableController.currentDataset.length)]
+                    .id);
               }),
           const FilterMenuDivider(),
           FilterMenuItem(

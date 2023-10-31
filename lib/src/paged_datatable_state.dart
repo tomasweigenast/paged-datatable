@@ -1,7 +1,9 @@
 part of 'paged_datatable.dart';
 
 /// [_PagedDataTableState] represents the "current" state of the table.
-class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable,
+class _PagedDataTableState<
+    TKey extends Comparable,
+    TResultId extends Comparable,
     TResult extends Object> extends ChangeNotifier {
   int _pageSize;
   SortBy? _sortModel;
@@ -84,8 +86,9 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
       : controller = controller ?? PagedDataTableController(),
         _pageSize = pageSize,
         _paginationKeys = {0: initialPage},
-        filters =
-            filters == null ? {} : {for (var v in filters) v.id: TableFilterState._internal(v)} {
+        filters = filters == null
+            ? {}
+            : {for (var v in filters) v.id: TableFilterState._internal(v)} {
     _init();
   }
 
@@ -97,7 +100,8 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
   }
 
   void setSortBy(String columnId, bool descending) {
-    if (_sortModel?.columnId == columnId && _sortModel?.descending == descending) {
+    if (_sortModel?.columnId == columnId &&
+        _sortModel?.descending == descending) {
       return;
     }
 
@@ -231,8 +235,8 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
 
     try {
       // fetch elements
-      var pageIndicator =
-          await fetchCallback(lookupKey, _pageSize, _sortModel, Filtering._internal(filters));
+      var pageIndicator = await fetchCallback(
+          lookupKey, _pageSize, _sortModel, Filtering._internal(filters));
 
       // if has errors, throw it and let "catch" handle it
       if (pageIndicator.hasError) {
@@ -265,7 +269,8 @@ class _PagedDataTableState<TKey extends Comparable, TResultId extends Comparable
             duration: const Duration(milliseconds: 200), curve: Curves.easeIn);
       }
     } catch (err, stack) {
-      debugPrint('An error ocurred trying to fetch elements from key "$lookupKey". Error: $err');
+      debugPrint(
+          'An error ocurred trying to fetch elements from key "$lookupKey". Error: $err');
       debugPrint(stack.toString());
 
       // store the error so the errorBuilder can display it

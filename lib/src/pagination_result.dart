@@ -17,7 +17,9 @@ class PaginationResult<TPaginationKey extends Object, TResult extends Object> {
   TPaginationKey? get nextPageToken => _nextPageToken;
 
   PaginationResult.items(
-      {required List<TResult> elements, TPaginationKey? nextPageToken, int? size})
+      {required List<TResult> elements,
+      TPaginationKey? nextPageToken,
+      int? size})
       : _nextPageToken = nextPageToken,
         _elements = List.from(
             elements), // Creates a new list because we need to maintain our own cache in order to allow row deletion
