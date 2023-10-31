@@ -22,9 +22,6 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   intl_utils: ^2.8.5
 
-dependency_overrides:
-  watcher: 1.1.0
-
 flutter:
   generate: true
 
