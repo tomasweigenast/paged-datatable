@@ -3,7 +3,7 @@ part of 'paged_datatable.dart';
 class _PagedDataTableMenu extends StatelessWidget {
   final List<BaseFilterMenuItem> items;
 
-  const _PagedDataTableMenu({Key? key, required this.items}) : super(key: key);
+  const _PagedDataTableMenu({required this.items});
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -198,11 +198,9 @@ class _AutoAnimatedSize extends StatefulWidget {
   final Duration startAfterDuration;
   final AlignmentGeometry alignment;
   const _AutoAnimatedSize(
-      {Key? key,
-      required this.child,
+      {required this.child,
       this.alignment = Alignment.center,
-      this.startAfterDuration = const Duration(milliseconds: 50)})
-      : super(key: key);
+      this.startAfterDuration = const Duration(milliseconds: 50)});
   @override
   State<StatefulWidget> createState() => _AutoAnimatedSizeState();
 }

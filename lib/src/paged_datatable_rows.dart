@@ -18,7 +18,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
     return Selector<_PagedDataTableState<TKey, TResultId, TResult>, int>(
       selector: (context, model) => model._rowsChange,
       builder: (context, _, child) {
-        var state = context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
+        var state =
+            context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
         return AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
           opacity: state.tableState == _TableState.loading ? .3 : 1,
@@ -31,9 +32,12 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
     );
   }
 
-  Widget _build(BuildContext context, _PagedDataTableState<TKey, TResultId, TResult> state,
+  Widget _build(
+      BuildContext context,
+      _PagedDataTableState<TKey, TResultId, TResult> state,
       PagedDataTableThemeData theme) {
-    if (state._rowsState.isEmpty && state.tableState == _TableState.displaying) {
+    if (state._rowsState.isEmpty &&
+        state.tableState == _TableState.displaying) {
       return noItemsFoundBuilder?.call(context) ??
           Center(
               child: Text(
@@ -53,8 +57,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
             ? const Divider(height: 0)
             : Divider(height: 0, color: theme.dividerColor),
         itemCount: state._rowsState.length,
-        itemBuilder: (context, index) =>
-            ChangeNotifierProvider<_PagedDataTableRowState<TResultId, TResult>>.value(
+        itemBuilder: (context, index) => ChangeNotifierProvider<
+                _PagedDataTableRowState<TResultId, TResult>>.value(
               value: state._rowsState[index],
               child: Consumer<_PagedDataTableRowState<TResultId, TResult>>(
                 builder: (context, model, child) {
@@ -69,7 +73,9 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                     height: 52,
                     child: Ink(
                       padding: EdgeInsets.zero,
-                      color: model._isSelected ? Theme.of(context).primaryColorLight : null,
+                      color: model._isSelected
+                          ? Theme.of(context).primaryColorLight
+                          : null,
                       child: InkWell(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -77,7 +83,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                             if (rowsSelectable)
                               if (rowsSelectable)
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
                                   child: SizedBox(
                                     width: width * .05,
                                     child: _RowSelectorCheckbox(
@@ -93,7 +100,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                                   ),
                                 ),
                             ...state.columns.map((column) => Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   child: SizedBox(
                                       width: column.sizeFactor == null
                                           ? state._nullSizeFactorColumnsWidth
@@ -103,7 +111,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                                             ? Alignment.centerRight
                                             : Alignment.centerLeft,
                                         heightFactor: null,
-                                        child: column.buildCell(model.item, model.index),
+                                        child: column.buildCell(
+                                            model.item, model.index),
                                       )),
                                 ))
                           ],
@@ -115,7 +124,9 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                   if (theme.rowColors != null) {
                     row = DecoratedBox(
                       decoration: BoxDecoration(
-                          color: index % 2 == 0 ? theme.rowColors![0] : theme.rowColors![1]),
+                          color: index % 2 == 0
+                              ? theme.rowColors![0]
+                              : theme.rowColors![1]),
                       child: row,
                     );
                   }
@@ -132,7 +143,8 @@ class _RowSelectorCheckbox<TResultId extends Comparable, TResult extends Object>
   final bool isSelected;
   final void Function(bool newValue) setSelected;
 
-  const _RowSelectorCheckbox({required this.isSelected, required this.setSelected});
+  const _RowSelectorCheckbox(
+      {required this.isSelected, required this.setSelected});
 
   @override
   Widget build(BuildContext context) {

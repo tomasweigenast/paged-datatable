@@ -1,7 +1,7 @@
 part of 'paged_datatable.dart';
 
-class _PagedDataTableRowState<TResultId extends Comparable, TResult extends Object>
-    extends ChangeNotifier {
+class _PagedDataTableRowState<TResultId extends Comparable,
+    TResult extends Object> extends ChangeNotifier {
   final TResult item;
   final TResultId itemId;
   final int index;
