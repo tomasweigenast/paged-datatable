@@ -9,7 +9,7 @@
     "refreshedAtText": "Zuletzt aktualisiert um {time}",
     "@refreshedAtText": {
         "placeholders": {
-            "Zeit": {}
+            "time": {}
         }
     },
     "rowsPagePageText": "Zeilen pro Seite",
