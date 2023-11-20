@@ -70,7 +70,7 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                   }
 
                   Widget row = SizedBox(
-                    height: 52,
+                    height: theme.configuration.rowHeight,
                     child: Ink(
                       padding: EdgeInsets.zero,
                       color: model._isSelected
