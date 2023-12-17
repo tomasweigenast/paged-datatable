@@ -104,6 +104,11 @@ class PagedDataTableThemeData extends Equatable {
   /// Defaults to platform color.
   final Color? buttonsColor;
 
+  /// The color of the selected row.
+  ///
+  /// Defaults to platform color
+  final Color? selectedRowColor;
+
   const PagedDataTableThemeData({
     this.configuration = const PagedDataTableConfiguration(),
     this.backgroundColor,
@@ -119,6 +124,7 @@ class PagedDataTableThemeData extends Equatable {
     this.chipTheme,
     this.dividerColor,
     this.buttonsColor,
+    this.selectedRowColor,
     this.border = const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(4),

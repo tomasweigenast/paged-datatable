@@ -86,7 +86,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
               child: Ink(
                 padding: EdgeInsets.zero,
                 color: model._isSelected
-                    ? Theme.of(context).primaryColorLight
+                    ? theme.selectedRowColor ??
+                        Theme.of(context).primaryColorLight
                     : null,
                 child: InkWell(
                   child: Row(
