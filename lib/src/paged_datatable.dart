@@ -54,7 +54,7 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
   /// A custom widget to build in the footer, aligned to the left.
   ///
   /// Navigation widgets remain untouched.
-  final Widget? footer;
+  final Widget Function(List<TResult>? selectedRows)? footer;
 
   /// A custom widget to build in the footer, aligned to the left.
   ///

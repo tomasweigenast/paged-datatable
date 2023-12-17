@@ -170,6 +170,7 @@ class _PagedDataTableState<
   void selectRow(TResultId itemId) {
     final itemIndex = _rowsStateMapper[itemId];
     if (itemIndex == null) {
+      print("Item $itemId not found");
       return;
     }
 
@@ -182,6 +183,7 @@ class _PagedDataTableState<
   void unselectRow(TResultId itemId) {
     final itemIndex = _rowsStateMapper[itemId];
     if (itemIndex == null) {
+      print("Item $itemId not found");
       return;
     }
 

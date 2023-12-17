@@ -4,7 +4,7 @@ class _PagedDataTableFooter<
     TKey extends Comparable,
     TResultId extends Comparable,
     TResult extends Object> extends StatelessWidget {
-  final Widget? footer;
+  final Widget Function(List<TResult>? selectedRows)? footer;
 
   const _PagedDataTableFooter(this.footer);
 
@@ -23,7 +23,10 @@ class _PagedDataTableFooter<
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 /* USER DEFINED CONTROLS */
-                if (footer != null) footer! else const SizedBox.shrink(),
+                if (footer != null)
+                  footer!.call(state.controller.getSelectedRows())
+                else
+                  const SizedBox.shrink(),
 
                 /* PAGINATION CONTROLS */
                 Row(
@@ -122,8 +125,10 @@ class _PagedDataTableFooter<
                     IconButton(
                       tooltip: localization.previousPageButtonText,
                       splashRadius: 20,
-                      icon: Icon(Icons.keyboard_arrow_left_rounded,
-                          color: theme.buttonsColor),
+                      icon: Icon(
+                        Icons.keyboard_arrow_left_rounded,
+                        color: theme.buttonsColor,
+                      ),
                       onPressed: (state.hasPreviousPage &&
                               state.tableState != _TableState.loading)
                           ? state.previousPage
@@ -133,8 +138,10 @@ class _PagedDataTableFooter<
                     IconButton(
                       tooltip: localization.nextPageButtonText,
                       splashRadius: 20,
-                      icon: Icon(Icons.keyboard_arrow_right_rounded,
-                          color: theme.buttonsColor),
+                      icon: Icon(
+                        Icons.keyboard_arrow_right_rounded,
+                        color: theme.buttonsColor,
+                      ),
                       onPressed: (state.hasNextPage &&
                               state.tableState != _TableState.loading)
                           ? state.nextPage
@@ -157,7 +164,6 @@ class _PagedDataTableFooter<
         if (theme.footerTextStyle != null) {
           child = DefaultTextStyle(style: theme.footerTextStyle!, child: child);
         }
-
         return child;
       },
     );

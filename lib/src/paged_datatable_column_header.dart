@@ -37,6 +37,8 @@ class _PagedDataTableHeaderRow<
                             width: width * .05,
                             child: HookBuilder(
                               builder: (context) {
+                                print(
+                                    "Rebuilding checkbox ${state.selectedRows.length}");
                                 return Checkbox(
                                   value: state.selectedRows.isEmpty
                                       ? false
@@ -51,11 +53,9 @@ class _PagedDataTableHeaderRow<
                                       case true:
                                         state.selectAllRows();
                                         break;
-
                                       case false:
                                         state.unselectAllRows();
                                         break;
-
                                       case null:
                                         if (state.selectedRows.length ==
                                             state._items.length) {

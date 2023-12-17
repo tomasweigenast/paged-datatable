@@ -94,24 +94,24 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (rowsSelectable)
-                        if (rowsSelectable)
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: SizedBox(
-                              width: width * .05,
-                              child: _RowSelectorCheckbox(
-                                  isSelected: model._isSelected,
-                                  setSelected: (newValue) {
-                                    // model.selected = newValue;
-                                    if (newValue) {
-                                      state.selectRow(model.itemId);
-                                    } else {
-                                      state.unselectRow(model.itemId);
-                                    }
-                                  }),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: SizedBox(
+                            width: width * .05,
+                            child: _RowSelectorCheckbox(
+                              isSelected: model._isSelected,
+                              setSelected: (newValue) {
+                                // model.selected = newValue;
+                                if (newValue == null) return;
+                                if (newValue) {
+                                  state.selectRow(model.itemId);
+                                } else {
+                                  state.unselectRow(model.itemId);
+                                }
+                              },
                             ),
                           ),
+                        ),
                       ...state.columns.map(
                         (column) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -156,17 +156,19 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
 class _RowSelectorCheckbox<TResultId extends Comparable, TResult extends Object>
     extends HookWidget {
   final bool isSelected;
-  final void Function(bool newValue) setSelected;
+  final void Function(bool?)? setSelected;
 
-  const _RowSelectorCheckbox(
-      {required this.isSelected, required this.setSelected});
+  const _RowSelectorCheckbox({
+    required this.isSelected,
+    required this.setSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Checkbox(
       value: isSelected,
       tristate: false,
-      onChanged: (newValue) => setSelected(newValue ?? false),
+      onChanged: setSelected,
     );
   }
 }

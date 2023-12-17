@@ -184,9 +184,11 @@ class _MainViewState extends State<MainView> {
             lastDate: DateTime.now(),
           )
         ],
-        footer: TextButton(
+        footer: (selectedRows) => TextButton(
           onPressed: () {},
-          child: const Text("Im a footer button"),
+          child: Text(
+            "Im a footer button, I have ${selectedRows?.length} selected rows.",
+          ),
         ),
         menu: PagedDataTableFilterBarMenu(
           items: [
