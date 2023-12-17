@@ -6,8 +6,11 @@ const _kDefaultPagedDataTableTheme = PagedDataTableThemeData();
 class PagedDataTableTheme extends InheritedWidget {
   final PagedDataTableThemeData data;
 
-  const PagedDataTableTheme(
-      {required this.data, required super.child, super.key});
+  const PagedDataTableTheme({
+    required this.data,
+    required super.child,
+    super.key,
+  });
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
@@ -32,7 +35,7 @@ class PagedDataTableThemeData extends Equatable {
   /// The background color of the entire table.
   ///
   /// Defaults to [Colors.white]
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// The color of the header row.
   ///
@@ -58,12 +61,12 @@ class PagedDataTableThemeData extends Equatable {
   /// The [TextStyle] for the entire table.
   ///
   /// Defaults to a [TextStyle] with a [Colors.black] color.
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
 
   /// The [TextStyle] for each row.
   ///
   /// Defaults to a [TextStyle] with a 14 font size.
-  final TextStyle rowsTextStyle;
+  final TextStyle? rowsTextStyle;
 
   /// The [TextStyle] for the header row.
   ///
@@ -101,25 +104,30 @@ class PagedDataTableThemeData extends Equatable {
   /// Defaults to platform color.
   final Color? buttonsColor;
 
-  const PagedDataTableThemeData(
-      {this.configuration = const PagedDataTableConfiguration(),
-      this.backgroundColor = Colors.white,
-      this.headerBackgroundColor,
-      this.filtersHeaderBackgroundColor,
-      this.footerBackgroundColor,
-      this.footerTextStyle,
-      this.textStyle = const TextStyle(color: Colors.black),
-      this.rowsTextStyle = const TextStyle(fontSize: 14),
-      this.headerTextStyle =
-          const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-      this.filtersHeaderTextStyle,
-      this.rowColors,
-      this.chipTheme,
-      this.dividerColor,
-      this.buttonsColor,
-      this.border = const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-          side: BorderSide(color: Color(0xffDADCE0)))});
+  const PagedDataTableThemeData({
+    this.configuration = const PagedDataTableConfiguration(),
+    this.backgroundColor,
+    this.headerBackgroundColor,
+    this.filtersHeaderBackgroundColor,
+    this.footerBackgroundColor,
+    this.footerTextStyle,
+    this.textStyle,
+    this.rowsTextStyle,
+    this.headerTextStyle,
+    this.filtersHeaderTextStyle,
+    this.rowColors,
+    this.chipTheme,
+    this.dividerColor,
+    this.buttonsColor,
+    this.border = const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(4),
+      ),
+      side: BorderSide(
+        color: Color(0xffDADCE0),
+      ),
+    ),
+  });
 
   @override
   List<Object?> get props => [configuration, backgroundColor];
@@ -156,14 +164,15 @@ class PagedDataTableConfiguration extends Equatable {
   /// Configuration related to the footer of the table.
   final PagedDataTableFooterConfiguration footer;
 
-  const PagedDataTableConfiguration(
-      {this.allowRefresh = true,
-      this.pageSizes = const [10, 20, 50, 100],
-      this.columnsHeaderHeight = 56.0,
-      this.filterBarHeight = 56.0,
-      this.rowHeight = 52.0,
-      this.initialPageSize = 100,
-      this.footer = const PagedDataTableFooterConfiguration()});
+  const PagedDataTableConfiguration({
+    this.allowRefresh = true,
+    this.pageSizes = const [10, 20, 50, 100],
+    this.columnsHeaderHeight = 56.0,
+    this.filterBarHeight = 56.0,
+    this.rowHeight = 52.0,
+    this.initialPageSize = 100,
+    this.footer = const PagedDataTableFooterConfiguration(),
+  });
 
   @override
   List<Object?> get props => [
@@ -189,8 +198,10 @@ class PagedDataTableFooterConfiguration extends Equatable {
   /// Defaults to true.
   final bool footerVisible;
 
-  const PagedDataTableFooterConfiguration(
-      {this.showTotalElements = false, this.footerVisible = true});
+  const PagedDataTableFooterConfiguration({
+    this.showTotalElements = false,
+    this.footerVisible = true,
+  });
 
   @override
   List<Object?> get props => [showTotalElements];

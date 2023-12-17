@@ -32,15 +32,16 @@ abstract class EditableTableColumn<TType extends Object, TValue extends Object>
   /// A function that returns the value that is going to be edited.
   final Getter<TType, TValue> getter;
 
-  const EditableTableColumn(
-      {required this.setter,
-      required this.getter,
-      required super.id,
-      required super.title,
-      required super.titleBuilder,
-      required super.sortable,
-      required super.isNumeric,
-      required super.sizeFactor});
+  const EditableTableColumn({
+    required this.setter,
+    required this.getter,
+    required super.id,
+    required super.title,
+    required super.titleBuilder,
+    required super.sortable,
+    required super.isNumeric,
+    required super.sizeFactor,
+  });
 }
 
 /// Defines a simple [BaseTableColumn] that renders a cell based on [cellBuilder]

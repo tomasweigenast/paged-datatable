@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
@@ -32,17 +31,14 @@ class MyApp extends StatelessWidget {
       locale: const Locale("en"),
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.blue,
+      ),
       theme: ThemeData(
-          colorScheme: const ColorScheme.light(
-              primary: Colors.deepPurple, secondary: Colors.teal),
-          textTheme: GoogleFonts.robotoTextTheme(),
-          cardTheme: CardTheme(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          ),
-          popupMenuTheme: PopupMenuThemeData(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)))),
+        primarySwatch: Colors.blue,
+      ),
       home: const MainView(),
     );
   }
@@ -55,28 +51,6 @@ class MainView extends StatefulWidget {
   State<StatefulWidget> createState() => _MainViewState();
 }
 
-const kCustomPagedDataTableTheme = PagedDataTableThemeData(
-    rowColors: [
-      Color(0xFFC4E6E3),
-      Color(0xFFE5EFEE),
-    ],
-    backgroundColor: Color(0xFFE0F2F1),
-    headerBackgroundColor: Color(0xFF80CBC4),
-    filtersHeaderBackgroundColor: Color(0xFF80CBC4),
-    footerBackgroundColor: Color(0xFF80CBC4),
-    footerTextStyle: TextStyle(color: Colors.white),
-    textStyle: TextStyle(fontWeight: FontWeight.normal),
-    buttonsColor: Colors.white,
-    chipTheme: ChipThemeData(
-        backgroundColor: Colors.teal,
-        labelStyle: TextStyle(color: Colors.white),
-        deleteIconColor: Colors.white),
-    configuration: PagedDataTableConfiguration(
-        footer: PagedDataTableFooterConfiguration(footerVisible: true),
-        allowRefresh: true,
-        pageSizes: [50, 75, 100],
-        initialPageSize: 50));
-
 class _MainViewState extends State<MainView> {
   final tableController = PagedDataTableController<String, int, Post>();
   PagedDataTableThemeData? theme;
@@ -84,7 +58,6 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 208, 208, 208),
       padding: const EdgeInsets.all(20.0),
       child: PagedDataTable<String, int, Post>(
         rowsSelectable: true,
@@ -96,7 +69,7 @@ class _MainViewState extends State<MainView> {
             throw Exception("This is an unexpected error, wow!");
           }
 
-          var result = await PostsRepository.getPosts(
+          final result = await PostsRepository.getPosts(
               pageSize: pageSize,
               pageToken: pageToken,
               sortBy: sortBy?.columnId,
@@ -215,89 +188,79 @@ class _MainViewState extends State<MainView> {
           onPressed: () {},
           child: const Text("Im a footer button"),
         ),
-        menu: PagedDataTableFilterBarMenu(items: [
-          FilterMenuItem(
-            title: const Text("Apply new theme"),
-            onTap: () {
-              setState(() {
-                if (theme == null) {
-                  theme = kCustomPagedDataTableTheme;
-                } else {
-                  theme = null;
-                }
-              });
-            },
-          ),
-          const FilterMenuDivider(),
-          FilterMenuItem(
-            title: const Text("Remove row"),
-            onTap: () {
-              tableController
-                  .removeRow(tableController.currentDataset.first.id);
-            },
-          ),
-          FilterMenuItem(
-            title: const Text("Remove filters"),
-            onTap: () {
-              tableController.removeFilters();
-            },
-          ),
-          FilterMenuItem(
-              title: const Text("Add filter"),
+        menu: PagedDataTableFilterBarMenu(
+          items: [
+            const FilterMenuDivider(),
+            FilterMenuItem(
+              title: const Text("Remove row"),
               onTap: () {
-                tableController.setFilter("gender", Gender.male);
-              }),
-          const FilterMenuDivider(),
-          FilterMenuItem(
-              title: const Text("Print selected rows"),
+                tableController
+                    .removeRow(tableController.currentDataset.first.id);
+              },
+            ),
+            FilterMenuItem(
+              title: const Text("Remove filters"),
               onTap: () {
-                var selectedPosts = tableController.getSelectedRows();
-                debugPrint("SELECTED ROWS ----------------------------");
-                debugPrint(selectedPosts
-                    .map((e) =>
-                        "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
-                    .join("\n"));
-                debugPrint("------------------------------------------");
-              }),
-          FilterMenuItem(
-              title: const Text("Unselect all rows"),
+                tableController.removeFilters();
+              },
+            ),
+            FilterMenuItem(
+                title: const Text("Add filter"),
+                onTap: () {
+                  tableController.setFilter("gender", Gender.male);
+                }),
+            const FilterMenuDivider(),
+            FilterMenuItem(
+                title: const Text("Print selected rows"),
+                onTap: () {
+                  final selectedPosts = tableController.getSelectedRows();
+                  debugPrint("SELECTED ROWS ----------------------------");
+                  debugPrint(selectedPosts
+                      .map((e) =>
+                          "Id [${e.id}] Author [${e.author}] Gender [${e.authorGender.name}]")
+                      .join("\n"));
+                  debugPrint("------------------------------------------");
+                }),
+            FilterMenuItem(
+                title: const Text("Unselect all rows"),
+                onTap: () {
+                  tableController.unselectAllRows();
+                }),
+            FilterMenuItem(
+                title: const Text("Select random row"),
+                onTap: () {
+                  final random = Random.secure();
+                  tableController.selectRow(tableController
+                      .currentDataset[
+                          random.nextInt(tableController.currentDataset.length)]
+                      .id);
+                }),
+            const FilterMenuDivider(),
+            FilterMenuItem(
+                title: const Text("Update first row's gender and number"),
+                onTap: () {
+                  tableController.modifyRowValue(1, (item) {
+                    item.authorGender = Gender.male;
+                    item.number = 1;
+                    item.author = "Tomas";
+                    item.content = "empty content";
+                  });
+                }),
+            const FilterMenuDivider(),
+            FilterMenuItem(
+              title: const Text("Refresh cache"),
               onTap: () {
-                tableController.unselectAllRows();
-              }),
-          FilterMenuItem(
-              title: const Text("Select random row"),
+                tableController.refresh(currentDataset: false);
+              },
+            ),
+            FilterMenuItem(
+              title: const Text("Refresh current dataset"),
               onTap: () {
-                final random = Random.secure();
-                tableController.selectRow(tableController
-                    .currentDataset[
-                        random.nextInt(tableController.currentDataset.length)]
-                    .id);
-              }),
-          const FilterMenuDivider(),
-          FilterMenuItem(
-              title: const Text("Update first row's gender and number"),
-              onTap: () {
-                tableController.modifyRowValue(1, (item) {
-                  item.authorGender = Gender.male;
-                  item.number = 1;
-                  item.author = "Tomas";
-                  item.content = "empty content";
-                });
-              }),
-          const FilterMenuDivider(),
-          FilterMenuItem(
-            title: const Text("Refresh cache"),
-            onTap: () {
-              tableController.refresh(currentDataset: false);
-            },
-          ),
-          FilterMenuItem(
-            title: const Text("Refresh current dataset"),
-            onTap: () {
-              tableController.refresh();
-            },
-          ),
-        ]),
+                tableController.refresh();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

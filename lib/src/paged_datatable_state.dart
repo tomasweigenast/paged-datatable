@@ -73,22 +73,22 @@ class _PagedDataTableState<
         _availableWidth / lengthColumnsWithoutSizeFactor; // equally distributed
   }
 
-  _PagedDataTableState(
-      {required this.fetchCallback,
-      required this.initialPage,
-      required this.columns,
-      required this.idGetter,
-      required this.rowsSelectable,
-      required List<TableFilter>? filters,
-      required PagedDataTableController<TKey, TResultId, TResult>? controller,
-      required this.refreshListener,
-      required int pageSize})
-      : controller = controller ?? PagedDataTableController(),
+  _PagedDataTableState({
+    required this.fetchCallback,
+    required this.initialPage,
+    required this.columns,
+    required this.idGetter,
+    required this.rowsSelectable,
+    required List<TableFilter>? filters,
+    required PagedDataTableController<TKey, TResultId, TResult>? controller,
+    required this.refreshListener,
+    required int pageSize,
+  })  : controller = controller ?? PagedDataTableController(),
         _pageSize = pageSize,
         _paginationKeys = {0: initialPage},
         filters = filters == null
             ? {}
-            : {for (var v in filters) v.id: TableFilterState._internal(v)} {
+            : {for (final v in filters) v.id: TableFilterState._internal(v)} {
     _init();
   }
 
@@ -133,7 +133,7 @@ class _PagedDataTableState<
   }
 
   void applyFilter(String filterId, dynamic value) {
-    var filter = filters[filterId];
+    final filter = filters[filterId];
     if (filter == null) {
       throw TableError("Filter $filterId not found.");
     }
@@ -146,7 +146,7 @@ class _PagedDataTableState<
 
   void removeFilters() {
     bool changed = false;
-    for (var filterState in filters.values) {
+    for (final filterState in filters.values) {
       if (filterState.hasValue) {
         filterState.value = null;
         changed = true;
@@ -192,7 +192,7 @@ class _PagedDataTableState<
   }
 
   void selectAllRows() {
-    for (var element in _rowsState) {
+    for (final element in _rowsState) {
       selectedRows[element.itemId] = element.index;
       element.selected = true;
     }
@@ -201,7 +201,7 @@ class _PagedDataTableState<
   }
 
   void unselectAllRows() {
-    for (var element in _rowsState) {
+    for (final element in _rowsState) {
       selectedRows.remove(element.itemId);
       element.selected = false;
     }
@@ -235,8 +235,12 @@ class _PagedDataTableState<
 
     try {
       // fetch elements
-      var pageIndicator = await fetchCallback(
-          lookupKey, _pageSize, _sortModel, Filtering._internal(filters));
+      final pageIndicator = await fetchCallback(
+        lookupKey,
+        _pageSize,
+        _sortModel,
+        Filtering._internal(filters),
+      );
 
       // if has errors, throw it and let "catch" handle it
       if (pageIndicator.hasError) {
@@ -270,7 +274,8 @@ class _PagedDataTableState<
       }
     } catch (err, stack) {
       debugPrint(
-          'An error ocurred trying to fetch elements from key "$lookupKey". Error: $err');
+        'An error ocurred trying to fetch elements from key "$lookupKey". Error: $err',
+      );
       debugPrint(stack.toString());
 
       // store the error so the errorBuilder can display it
@@ -305,7 +310,7 @@ class _PagedDataTableState<
 
   @pragma("vm:prefer-inline")
   void _setDefaultFilters() {
-    for (var filter in filters.values) {
+    for (final filter in filters.values) {
       if (filter._filter.defaultValue != null) {
         filter.value = filter._filter.defaultValue;
       }
@@ -317,7 +322,7 @@ class _PagedDataTableState<
     int withoutSizeFactor = rowsSelectable ? 1 : 0;
     double sizeFactorSum = 0;
 
-    for (var column in columns) {
+    for (final column in columns) {
       if (column.sizeFactor == null) {
         withoutSizeFactor++;
       } else {

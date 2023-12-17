@@ -8,13 +8,14 @@ class PagedDataTableFilterBarMenu {
   final void Function(dynamic value)? onSelected;
   final ShapeBorder? shape;
 
-  const PagedDataTableFilterBarMenu(
-      {required this.items,
-      this.tooltip,
-      this.elevation,
-      this.constraints,
-      this.onSelected,
-      this.shape});
+  const PagedDataTableFilterBarMenu({
+    required this.items,
+    this.tooltip,
+    this.elevation,
+    this.constraints,
+    this.onSelected,
+    this.shape,
+  });
 }
 
 abstract class BaseFilterMenuItem {

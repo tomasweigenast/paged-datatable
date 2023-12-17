@@ -85,8 +85,9 @@ class PagedDataTableController<TKey extends Comparable,
 
   /// Builds every row that matches [predicate].
   void refreshRowWhere(bool Function(TResult element) predicate) {
-    var elements = _state._rowsState.where((state) => predicate(state.item));
-    for (var elem in elements) {
+    Iterable<_PagedDataTableRowState<TResultId, TResult>> elements =
+        _state._rowsState.where((state) => predicate(state.item));
+    for (final elem in elements) {
       elem.refresh();
     }
   }
@@ -162,10 +163,11 @@ class PagedDataTablePaginationInfo {
   final bool hasNextPage, hasPreviousPage;
   final int currentPageSize, currentPage, rowsPerPage;
 
-  PagedDataTablePaginationInfo._(
-      {required this.hasNextPage,
-      required this.hasPreviousPage,
-      required this.currentPageSize,
-      required this.currentPage,
-      required this.rowsPerPage});
+  PagedDataTablePaginationInfo._({
+    required this.hasNextPage,
+    required this.hasPreviousPage,
+    required this.currentPageSize,
+    required this.currentPage,
+    required this.rowsPerPage,
+  });
 }

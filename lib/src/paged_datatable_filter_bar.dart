@@ -11,8 +11,9 @@ class _PagedDataTableFilterTab<
 
   @override
   Widget build(BuildContext context) {
-    var localizations = PagedDataTableLocalization.of(context);
-    var theme = PagedDataTableTheme.of(context);
+    PagedDataTableLocalization localizations =
+        PagedDataTableLocalization.of(context);
+    PagedDataTableThemeData theme = PagedDataTableTheme.of(context);
 
     Widget child = SizedBox(
       height: theme.configuration.filterBarHeight,
@@ -151,10 +152,10 @@ class _PagedDataTableFilterTab<
       _PagedDataTableState<TKey, TResultId, TResult> state,
       PagedDataTableLocalization localizations) async {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    var offset = renderBox.localToGlobal(Offset.zero);
-    var size = renderBox.size;
+    Offset offset = renderBox.localToGlobal(Offset.zero);
+    Size size = renderBox.size;
 
-    var rect = RelativeRect.fromLTRB(
+    RelativeRect rect = RelativeRect.fromLTRB(
         offset.dx + 10, offset.dy + size.height - 10, 0, 0);
 
     await showDialog(
@@ -183,95 +184,113 @@ class _FiltersDialog<TKey extends Comparable, TResultId extends Comparable,
       fit: StackFit.loose,
       children: [
         Positioned(
-            top: rect.top,
-            left: rect.left,
-            child: Container(
-              width: MediaQuery.of(context).size.width / 3,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [BoxShadow(blurRadius: 3, color: Colors.black54)],
-                  borderRadius: BorderRadius.all(Radius.circular(4))),
-              child: Material(
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4))),
-                elevation: 0,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8.0),
-                      child: Form(
-                        key: state.filtersFormKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(localizations.filterByTitle,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
-                            ...state.filters.entries
-                                .where(
-                                    (element) => element.value._filter.visible)
-                                .map((entry) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 6),
-                                      child: entry.value._filter
-                                          .buildPicker(context, entry.value),
-                                    ))
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 0),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        children: [
-                          TextButton(
-                            style: TextButton.styleFrom(
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 20)),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              state.removeFilters();
-                            },
-                            child:
-                                Text(localizations.removeAllFiltersButtonText),
-                          ),
-                          const Spacer(),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 20)),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child:
-                                Text(localizations.cancelFilteringButtonText),
-                          ),
-                          const SizedBox(width: 10),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 20)),
-                            onPressed: () {
-                              // to ensure onSaved is called
-                              state.filtersFormKey.currentState!.save();
-                              Navigator.pop(context);
-                              state.applyFilters();
-                            },
-                            child: Text(localizations.applyFilterButtonText),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+          top: rect.top,
+          left: rect.left,
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(blurRadius: 3, color: Colors.black54),
+              ],
+              borderRadius: BorderRadius.all(
+                Radius.circular(4),
+              ),
+            ),
+            child: Material(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(4),
                 ),
               ),
-            )),
+              elevation: 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8.0),
+                    child: Form(
+                      key: state.filtersFormKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            localizations.filterByTitle,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          ...state.filters.entries
+                              .where((element) => element.value._filter.visible)
+                              .map(
+                                (entry) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  child: entry.value._filter
+                                      .buildPicker(context, entry.value),
+                                ),
+                              ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 0),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      children: [
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 20,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            state.removeFilters();
+                          },
+                          child: Text(localizations.removeAllFiltersButtonText),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 20,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(localizations.cancelFilteringButtonText),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 20,
+                            ),
+                          ),
+                          onPressed: () {
+                            // to ensure onSaved is called
+                            state.filtersFormKey.currentState!.save();
+                            Navigator.pop(context);
+                            state.applyFilters();
+                          },
+                          child: Text(localizations.applyFilterButtonText),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

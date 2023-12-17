@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:collection/collection.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:paged_datatable/l10n/generated/l10n.dart';
 import 'package:provider/provider.dart';
-import 'package:equatable/equatable.dart';
 
 part 'controls.dart';
 part 'errors.dart';
@@ -82,23 +82,24 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
   /// A function that returns the id of an item.
   final ModelIdGetter<TResultId, TResult> idGetter;
 
-  const PagedDataTable(
-      {required this.fetchPage,
-      required this.initialPage,
-      required this.columns,
-      required this.idGetter,
-      this.filters,
-      this.menu,
-      this.controller,
-      this.footer,
-      this.header,
-      this.theme,
-      this.errorBuilder,
-      this.noItemsFoundBuilder,
-      this.rowsSelectable = false,
-      this.customRowBuilder,
-      this.refreshListener,
-      super.key});
+  const PagedDataTable({
+    required this.fetchPage,
+    required this.initialPage,
+    required this.columns,
+    required this.idGetter,
+    this.filters,
+    this.menu,
+    this.controller,
+    this.footer,
+    this.header,
+    this.theme,
+    this.errorBuilder,
+    this.noItemsFoundBuilder,
+    this.rowsSelectable = false,
+    this.customRowBuilder,
+    this.refreshListener,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -108,17 +109,18 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
     return ChangeNotifierProvider<
         _PagedDataTableState<TKey, TResultId, TResult>>(
       create: (context) => _PagedDataTableState(
-          columns: columns,
-          rowsSelectable: rowsSelectable,
-          filters: filters,
-          idGetter: idGetter,
-          controller: controller,
-          fetchCallback: fetchPage,
-          initialPage: initialPage,
-          pageSize: localTheme.configuration.initialPageSize,
-          refreshListener: refreshListener),
+        columns: columns,
+        rowsSelectable: rowsSelectable,
+        filters: filters,
+        idGetter: idGetter,
+        controller: controller,
+        fetchCallback: fetchPage,
+        initialPage: initialPage,
+        pageSize: localTheme.configuration.initialPageSize,
+        refreshListener: refreshListener,
+      ),
       builder: (context, widget) {
-        var state =
+        final state =
             context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
 
         Widget child = Material(
@@ -127,7 +129,7 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
           textStyle: localTheme.textStyle,
           shape: theme?.border,
           child: LayoutBuilder(builder: (context, constraints) {
-            var width = constraints.maxWidth -
+            final width = constraints.maxWidth -
                 (columns.length * 32) -
                 (rowsSelectable ? 32 : 0);
             state.availableWidth = width;
@@ -150,16 +152,17 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
                 /* ITEMS */
                 Expanded(
                   child: _PagedDataTableRows<TKey, TResultId, TResult>(
-                      rowsSelectable,
-                      customRowBuilder ??
-                          CustomRowBuilder<TResult>(
-                              builder: (context, item) =>
-                                  throw UnimplementedError(
-                                      "This does not build nothing"),
-                              shouldUse: (context, item) => false),
-                      noItemsFoundBuilder,
-                      errorBuilder,
-                      width),
+                    rowsSelectable,
+                    customRowBuilder ??
+                        CustomRowBuilder<TResult>(
+                            builder: (context, item) =>
+                                throw UnimplementedError(
+                                    "This does not build nothing"),
+                            shouldUse: (context, item) => false),
+                    noItemsFoundBuilder,
+                    errorBuilder,
+                    width,
+                  ),
                 ),
 
                 /* FOOTER */
