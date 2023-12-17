@@ -62,6 +62,8 @@ class _PagedDataTableHeaderRow<
                                           state.unselectAllRows();
                                         }
                                         break;
+                                      default:
+                                        state.unselectAllRows();
                                     }
                                   },
                                 );
@@ -97,10 +99,13 @@ class _PagedDataTableHeaderRow<
                               ],
                               Flexible(
                                 child: column.title != null
-                                    ? Text(column.title!,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis)
+                                    ? Text(
+                                        column.title!,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
                                     : column.titleBuilder!(context),
                               )
                             ],

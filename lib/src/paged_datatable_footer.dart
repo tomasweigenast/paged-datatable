@@ -31,11 +31,14 @@ class _PagedDataTableFooter<
                     /* REFRESH */
                     if (theme.configuration.allowRefresh) ...[
                       IconButton(
-                          splashRadius: 20,
-                          tooltip: localization.refreshText,
-                          onPressed: () => state._refresh(),
-                          icon: Icon(Icons.refresh_outlined,
-                              color: theme.buttonsColor)),
+                        splashRadius: 20,
+                        tooltip: localization.refreshText,
+                        onPressed: () => state._refresh(),
+                        icon: Icon(
+                          Icons.refresh_outlined,
+                          color: theme.buttonsColor,
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: VerticalDivider(
@@ -144,9 +147,9 @@ class _PagedDataTableFooter<
           ),
         );
 
-        if (theme.headerBackgroundColor != null) {
+        if (theme.footerBackgroundColor != null) {
           child = DecoratedBox(
-            decoration: BoxDecoration(color: theme.headerBackgroundColor),
+            decoration: BoxDecoration(color: theme.footerBackgroundColor),
             child: child,
           );
         }
