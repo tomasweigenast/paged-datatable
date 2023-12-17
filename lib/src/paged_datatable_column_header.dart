@@ -37,8 +37,6 @@ class _PagedDataTableHeaderRow<
                             width: width * .05,
                             child: HookBuilder(
                               builder: (context) {
-                                print(
-                                    "Rebuilding checkbox ${state.selectedRows.length}");
                                 return Checkbox(
                                   value: state.selectedRows.isEmpty
                                       ? false
@@ -118,10 +116,11 @@ class _PagedDataTableHeaderRow<
                       child = Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: SizedBox(
-                            width: column.sizeFactor == null
-                                ? state._nullSizeFactorColumnsWidth
-                                : width * column.sizeFactor!,
-                            child: child),
+                          width: column.sizeFactor == null
+                              ? state._nullSizeFactorColumnsWidth
+                              : width * column.sizeFactor!,
+                          child: child,
+                        ),
                       );
                       return child;
                     },
