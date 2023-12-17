@@ -101,9 +101,7 @@ class _PagedDataTableHeaderRow<
                                 child: column.title != null
                                     ? Text(
                                         column.title!,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelMedium,
+                                        style: theme.headerTextStyle,
                                         overflow: TextOverflow.ellipsis,
                                       )
                                     : column.titleBuilder!(context),
