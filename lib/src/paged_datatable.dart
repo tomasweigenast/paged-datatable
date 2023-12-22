@@ -140,38 +140,38 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
                 Divider(height: 0, color: localTheme.dividerColor),
 
                 /* ITEMS */
-                // Expanded(
-                //   child: _PagedDataTableRows<TKey, TResultId, TResult>(
-                //       rowsSelectable,
-                //       customRowBuilder ??
-                //           CustomRowBuilder<TResult>(
-                //               builder: (context, item) =>
-                //                   throw UnimplementedError("This does not build nothing"),
-                //               shouldUse: (context, item) => false),
-                //       noItemsFoundBuilder,
-                //       errorBuilder,
-                //       width),
-                // ),
                 Expanded(
-                  child: Scrollbar(
-                    thumbVisibility: true,
-                    controller: state.horizontalController,
-                    child: SingleChildScrollView(
-                      controller: state.horizontalController,
-                      scrollDirection: Axis.horizontal,
-                      child: _PagedDataTableScrollableRows<TKey, TResultId, TResult>(
-                          rowsSelectable,
-                          customRowBuilder ??
-                              CustomRowBuilder<TResult>(
-                                  builder: (context, item) =>
-                                      throw UnimplementedError("This does not build nothing"),
-                                  shouldUse: (context, item) => false),
-                          noItemsFoundBuilder,
-                          errorBuilder,
-                          width),
-                    ),
-                  ),
+                  child: _PagedDataTableRows<TKey, TResultId, TResult>(
+                      rowsSelectable,
+                      customRowBuilder ??
+                          CustomRowBuilder<TResult>(
+                              builder: (context, item) =>
+                                  throw UnimplementedError("This does not build nothing"),
+                              shouldUse: (context, item) => false),
+                      noItemsFoundBuilder,
+                      errorBuilder,
+                      width),
                 ),
+                // Expanded(
+                //   child: Scrollbar(
+                //     thumbVisibility: true,
+                //     controller: state.horizontalController,
+                //     child: SingleChildScrollView(
+                //       controller: state.horizontalController,
+                //       scrollDirection: Axis.horizontal,
+                //       child: _PagedDataTableScrollableRows<TKey, TResultId, TResult>(
+                //           rowsSelectable,
+                //           customRowBuilder ??
+                //               CustomRowBuilder<TResult>(
+                //                   builder: (context, item) =>
+                //                       throw UnimplementedError("This does not build nothing"),
+                //                   shouldUse: (context, item) => false),
+                //           noItemsFoundBuilder,
+                //           errorBuilder,
+                //           width),
+                //     ),
+                //   ),
+                // ),
 
                 /* FOOTER */
                 if (localTheme.configuration.footer.footerVisible) ...[

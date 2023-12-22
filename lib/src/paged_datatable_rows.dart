@@ -1,5 +1,8 @@
 part of 'paged_datatable.dart';
 
+/// maybe this is useful:
+/// https://stackoverflow.com/questions/56942322/how-to-create-a-horizontally-scrolling-table-with-fixed-column-in-flutter
+
 class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
     TResult extends Object> extends StatelessWidget {
   final WidgetBuilder? noItemsFoundBuilder;
