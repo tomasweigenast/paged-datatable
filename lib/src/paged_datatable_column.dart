@@ -7,15 +7,19 @@ abstract class BaseTableColumn<TType extends Object> {
   final bool sortable;
   final bool isNumeric;
   final double? sizeFactor;
+  final AlignmentGeometry? alignment;
+  final MainAxisAlignment? titleAlignment;
 
-  const BaseTableColumn(
-      {required this.id,
-      required this.title,
-      required this.titleBuilder,
-      required this.sortable,
-      required this.isNumeric,
-      required this.sizeFactor})
-      : assert(title != null || titleBuilder != null,
+  const BaseTableColumn({
+    required this.id,
+    required this.title,
+    required this.titleBuilder,
+    required this.sortable,
+    required this.isNumeric,
+    required this.sizeFactor,
+    this.alignment,
+    this.titleAlignment,
+  }) : assert(title != null || titleBuilder != null,
             "Either title or titleBuilder should be provided.");
 
   Widget buildCell(TType item, int rowIndex);
@@ -32,29 +36,32 @@ abstract class EditableTableColumn<TType extends Object, TValue extends Object>
   /// A function that returns the value that is going to be edited.
   final Getter<TType, TValue> getter;
 
-  const EditableTableColumn(
-      {required this.setter,
-      required this.getter,
-      required super.id,
-      required super.title,
-      required super.titleBuilder,
-      required super.sortable,
-      required super.isNumeric,
-      required super.sizeFactor});
+  const EditableTableColumn({
+    required this.setter,
+    required this.getter,
+    required super.id,
+    required super.title,
+    required super.titleBuilder,
+    required super.sortable,
+    required super.isNumeric,
+    required super.sizeFactor,
+  });
 }
 
 /// Defines a simple [BaseTableColumn] that renders a cell based on [cellBuilder]
 class TableColumn<TType extends Object> extends BaseTableColumn<TType> {
   final Widget Function(TType) cellBuilder;
 
-  const TableColumn(
-      {required super.title,
-      required this.cellBuilder,
-      super.sizeFactor = .1,
-      super.isNumeric = false,
-      super.sortable = false,
-      super.id})
-      : assert(!sortable || id != null, "sortable columns must define an id"),
+  const TableColumn({
+    required super.title,
+    required this.cellBuilder,
+    super.sizeFactor = .1,
+    super.isNumeric = false,
+    super.sortable = false,
+    super.alignment,
+    super.titleAlignment,
+    super.id,
+  })  : assert(!sortable || id != null, "sortable columns must define an id"),
         super(titleBuilder: null);
 
   @override
@@ -67,17 +74,17 @@ class DropdownTableColumn<TType extends Object, TValue extends Object>
   final List<DropdownMenuItem<TValue>> items;
   final InputDecoration? decoration;
 
-  const DropdownTableColumn(
-      {this.decoration,
-      required this.items,
-      required super.getter,
-      required super.setter,
-      required super.title,
-      super.id,
-      super.sortable = false,
-      super.isNumeric = false,
-      super.sizeFactor = .1})
-      : super(titleBuilder: null);
+  const DropdownTableColumn({
+    this.decoration,
+    required this.items,
+    required super.getter,
+    required super.setter,
+    required super.title,
+    super.id,
+    super.sortable = false,
+    super.isNumeric = false,
+    super.sizeFactor = .1,
+  }) : super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) {
@@ -97,17 +104,17 @@ class TextTableColumn<TType extends Object>
   final InputDecoration? decoration;
   final List<TextInputFormatter>? inputFormatters;
 
-  const TextTableColumn(
-      {this.decoration,
-      this.inputFormatters,
-      required super.getter,
-      required super.setter,
-      required super.title,
-      super.id,
-      super.sortable = false,
-      super.isNumeric = false,
-      super.sizeFactor = .1})
-      : super(titleBuilder: null);
+  const TextTableColumn({
+    this.decoration,
+    this.inputFormatters,
+    required super.getter,
+    required super.setter,
+    required super.title,
+    super.id,
+    super.sortable = false,
+    super.isNumeric = false,
+    super.sizeFactor = .1,
+  }) : super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) {
@@ -132,21 +139,21 @@ class LargeTextTableColumn<TType extends Object>
   final EdgeInsets? tooltipPadding, tooltipMargin;
   final List<TextInputFormatter>? inputFormatters;
 
-  const LargeTextTableColumn(
-      {this.decoration,
-      this.inputFormatters,
-      this.label,
-      this.tooltipText = false,
-      this.tooltipPadding,
-      this.tooltipMargin,
-      required super.getter,
-      required super.setter,
-      required super.title,
-      super.id,
-      super.sortable = false,
-      super.isNumeric = false,
-      super.sizeFactor = .1})
-      : super(titleBuilder: null);
+  const LargeTextTableColumn({
+    this.decoration,
+    this.inputFormatters,
+    this.label,
+    this.tooltipText = false,
+    this.tooltipPadding,
+    this.tooltipMargin,
+    required super.getter,
+    required super.setter,
+    required super.title,
+    super.id,
+    super.sortable = false,
+    super.isNumeric = false,
+    super.sizeFactor = .1,
+  }) : super(titleBuilder: null);
 
   @override
   Widget buildCell(TType item, int rowIndex) {

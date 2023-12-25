@@ -7,20 +7,21 @@ class _DateTimePicker extends HookWidget {
   final DateFormat? dateFormat;
   final void Function(DateTime? date) onSaved;
 
-  const _DateTimePicker(
-      {required this.decoration,
-      required this.initialDate,
-      required this.firstDate,
-      required this.lastDate,
-      required this.onSaved,
-      required this.dateFormat});
+  const _DateTimePicker({
+    required this.decoration,
+    required this.initialDate,
+    required this.firstDate,
+    required this.lastDate,
+    required this.onSaved,
+    required this.dateFormat,
+  });
 
   @override
   Widget build(BuildContext context) {
-    var textController = useTextEditingController();
-    var currentValueRef = useRef<DateTime?>(null);
-    var dateFormat = useMemoized(() {
-      var df = this.dateFormat ?? DateFormat.yMd();
+    final textController = useTextEditingController();
+    final currentValueRef = useRef<DateTime?>(null);
+    final dateFormat = useMemoized(() {
+      final df = this.dateFormat ?? DateFormat.yMd();
       if (initialDate != null) {
         currentValueRef.value = initialDate;
         textController.text = df.format(currentValueRef.value!);
@@ -76,10 +77,10 @@ class _DateTimeRangePicker extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var textController = useTextEditingController();
-    var currentValueRef = useRef<DateTimeRange?>(null);
-    var dateFormat = useMemoized(() {
-      var df = this.dateFormat ?? DateFormat.yMd();
+    final textController = useTextEditingController();
+    final currentValueRef = useRef<DateTimeRange?>(null);
+    final dateFormat = useMemoized(() {
+      final df = this.dateFormat ?? DateFormat.yMd();
       if (initialValue != null) {
         currentValueRef.value = initialValue;
         textController.text = _format(df, currentValueRef);
@@ -141,9 +142,9 @@ class _DropdownButtonCell<TType extends Object, T extends Object>
 
   @override
   Widget build(BuildContext context) {
-    var focusNode = useFocusNode();
-    var currentValueRef = useRef<T?>(initialValue);
-    var isLoadingN = useState<bool>(false);
+    final focusNode = useFocusNode();
+    final currentValueRef = useRef<T?>(initialValue);
+    final isLoadingN = useState<bool>(false);
     useEffect(() {
       currentValueRef.value = initialValue;
       return null;
@@ -196,10 +197,10 @@ class _TextFieldCell<TType extends Object> extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var focusNode = useFocusNode();
-    var currentValueRef = useRef<String?>(initialValue);
-    var isLoadingN = useState<bool>(false);
-    var isEnabledN = useState<bool>(false);
+    final focusNode = useFocusNode();
+    final currentValueRef = useRef<String?>(initialValue);
+    final isLoadingN = useState<bool>(false);
+    final isEnabledN = useState<bool>(false);
     useEffect(() {
       currentValueRef.value = initialValue;
       return null;
@@ -276,80 +277,87 @@ class _EditableTextField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var currentValueRef = useRef<String>(initialValue);
-    var isLoadingN = useState<bool>(false);
-    var isMounted = useIsMounted();
+    final currentValueRef = useRef<String>(initialValue);
+    final isLoadingN = useState<bool>(false);
+    final isMounted = useIsMounted();
     useEffect(() {
       currentValueRef.value = initialValue;
       return null;
     }, [initialValue]);
 
     return GestureDetector(
-        onDoubleTap: () async {
-          final RenderBox renderBox = context.findRenderObject() as RenderBox;
-          var offset = renderBox.localToGlobal(Offset.zero);
-          var availableSize = MediaQuery.of(context).size;
-          var drawWidth = availableSize.width / 3;
-          var drawHeight = availableSize.height / 3;
-          var size = renderBox.size;
+      onDoubleTap: () async {
+        final RenderBox renderBox = context.findRenderObject() as RenderBox;
+        final offset = renderBox.localToGlobal(Offset.zero);
+        final availableSize = MediaQuery.of(context).size;
+        final drawWidth = availableSize.width / 3;
+        final drawHeight = availableSize.height / 3;
+        final size = renderBox.size;
 
-          double x, y;
-          if (offset.dx + drawWidth > availableSize.width) {
-            x = offset.dx - drawWidth + size.width;
-          } else {
-            x = offset.dx;
+        double x, y;
+        if (offset.dx + drawWidth > availableSize.width) {
+          x = offset.dx - drawWidth + size.width;
+        } else {
+          x = offset.dx;
+        }
+
+        if (offset.dy + drawHeight > availableSize.height) {
+          y = offset.dy - drawHeight - size.height;
+        } else {
+          y = offset.dy + size.height;
+        }
+        RelativeRect rect = RelativeRect.fromLTRB(x, y, 0, 0);
+
+        String? newText = await showDialog(
+          context: context,
+          useSafeArea: true,
+          barrierColor: Colors.black.withOpacity(.3),
+          builder: (context) => _EditableTextFieldOverlay(
+            position: rect,
+            formatters: formatters,
+            value: currentValueRef.value,
+            width: drawWidth,
+            height: drawHeight,
+            validator: validator,
+            decoration: decoration,
+            label: label,
+          ),
+        );
+
+        if (newText != null && newText != currentValueRef.value) {
+          isLoadingN.value = true;
+
+          bool mustUpdate = await setter(newText);
+          if (mustUpdate) {
+            currentValueRef.value = newText;
           }
 
-          if (offset.dy + drawHeight > availableSize.height) {
-            y = offset.dy - drawHeight - size.height;
-          } else {
-            y = offset.dy + size.height;
+          if (isMounted()) {
+            isLoadingN.value = false;
           }
-          RelativeRect rect = RelativeRect.fromLTRB(x, y, 0, 0);
-
-          String? newText = await showDialog(
-              context: context,
-              useSafeArea: true,
-              barrierColor: Colors.black.withOpacity(.3),
-              builder: (context) => _EditableTextFieldOverlay(
-                    position: rect,
-                    formatters: formatters,
-                    value: currentValueRef.value,
-                    width: drawWidth,
-                    height: drawHeight,
-                    validator: validator,
-                    decoration: decoration,
-                    label: label,
-                  ));
-
-          if (newText != null && newText != currentValueRef.value) {
-            isLoadingN.value = true;
-
-            bool mustUpdate = await setter(newText);
-            if (mustUpdate) {
-              currentValueRef.value = newText;
-            }
-
-            if (isMounted()) {
-              isLoadingN.value = false;
-            }
-          }
-        },
-        child: isLoadingN.value
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(),
-              )
-            : (tooltipText
-                ? Tooltip(
-                    message: currentValueRef.value,
-                    margin: tooltipMargin,
-                    padding: tooltipPadding,
-                    child: Text(currentValueRef.value,
-                        overflow: TextOverflow.ellipsis))
-                : Text(currentValueRef.value,
-                    overflow: TextOverflow.ellipsis)));
+        }
+      },
+      child: isLoadingN.value
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(),
+            )
+          : (tooltipText
+              ? Tooltip(
+                  message: currentValueRef.value,
+                  margin: tooltipMargin,
+                  padding: tooltipPadding,
+                  child: Text(
+                    currentValueRef.value,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              : Text(
+                  currentValueRef.value,
+                  overflow: TextOverflow.ellipsis,
+                )),
+    );
   }
 }
 
@@ -362,20 +370,21 @@ class _EditableTextFieldOverlay extends HookWidget {
   final List<TextInputFormatter>? formatters;
   final double width, height;
 
-  const _EditableTextFieldOverlay(
-      {required this.position,
-      required this.value,
-      required this.validator,
-      required this.decoration,
-      required this.label,
-      required this.formatters,
-      required this.width,
-      required this.height});
+  const _EditableTextFieldOverlay({
+    required this.position,
+    required this.value,
+    required this.validator,
+    required this.decoration,
+    required this.label,
+    required this.formatters,
+    required this.width,
+    required this.height,
+  });
 
   @override
   Widget build(BuildContext context) {
-    var fieldController = useTextEditingController(text: value);
-    var formKey = useMemoized(() => GlobalKey<FormState>());
+    final fieldController = useTextEditingController(text: value);
+    final formKey = useMemoized(() => GlobalKey<FormState>());
 
     return SafeArea(
       child: Stack(
@@ -423,12 +432,13 @@ class _EditableTextFieldOverlay extends HookWidget {
                           ),
                           const SizedBox(width: 10),
                           ElevatedButton(
-                              onPressed: () {
-                                if (formKey.currentState!.validate()) {
-                                  Navigator.pop(context, fieldController.text);
-                                }
-                              },
-                              child: const Text("Save changes"))
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                Navigator.pop(context, fieldController.text);
+                              }
+                            },
+                            child: const Text("Save changes"),
+                          )
                         ],
                       )
                     ],
