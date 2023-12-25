@@ -6,8 +6,13 @@ class _PagedDataTableHeaderRow<
     TResult extends Object> extends StatelessWidget {
   final bool rowsSelectable;
   final double width;
+  final MainAxisAlignment mainAxisAlignment;
 
-  const _PagedDataTableHeaderRow(this.rowsSelectable, this.width);
+  const _PagedDataTableHeaderRow(
+    this.rowsSelectable,
+    this.width,
+    this.mainAxisAlignment,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +29,7 @@ class _PagedDataTableHeaderRow<
               final state = context
                   .read<_PagedDataTableState<TKey, TResultId, TResult>>();
               return Row(
+                mainAxisAlignment: mainAxisAlignment,
                 children: [
                   if (rowsSelectable)
                     Padding(
@@ -84,9 +90,10 @@ class _PagedDataTableHeaderRow<
                                 }
                               : null,
                           child: Row(
-                            mainAxisAlignment: column.isNumeric
-                                ? MainAxisAlignment.end
-                                : MainAxisAlignment.start,
+                            mainAxisAlignment: column.titleAlignment ??
+                                (column.isNumeric
+                                    ? MainAxisAlignment.end
+                                    : MainAxisAlignment.start),
                             children: [
                               if (state.hasSortModel &&
                                   state._sortModel!.columnId == column.id) ...[

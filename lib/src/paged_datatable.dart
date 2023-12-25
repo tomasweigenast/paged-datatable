@@ -81,6 +81,9 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
 
   /// A function that returns the id of an item.
   final ModelIdGetter<TResultId, TResult> idGetter;
+  final void Function(TResult t)? onRowTap;
+
+  final MainAxisAlignment? mainAxisAlignment;
 
   const PagedDataTable({
     required this.fetchPage,
@@ -98,6 +101,8 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
     this.rowsSelectable = false,
     this.customRowBuilder,
     this.refreshListener,
+    this.onRowTap,
+    this.mainAxisAlignment = MainAxisAlignment.start,
     super.key,
   });
 
@@ -146,7 +151,10 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
 
                 /* HEADER ROW */
                 _PagedDataTableHeaderRow<TKey, TResultId, TResult>(
-                    rowsSelectable, width),
+                  rowsSelectable,
+                  width,
+                  mainAxisAlignment!,
+                ),
                 Divider(height: 0, color: localTheme.dividerColor),
 
                 /* ITEMS */
@@ -162,6 +170,8 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
                     noItemsFoundBuilder,
                     errorBuilder,
                     width,
+                    onRowTap,
+                    mainAxisAlignment!,
                   ),
                 ),
 

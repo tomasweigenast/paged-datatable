@@ -7,6 +7,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
   final bool rowsSelectable;
   final double width;
   final CustomRowBuilder<TResult> customRowBuilder;
+  final void Function(TResult t)? onRowTap;
+  final MainAxisAlignment mainAxisAlignment;
 
   const _PagedDataTableRows(
     this.rowsSelectable,
@@ -14,6 +16,8 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
     this.noItemsFoundBuilder,
     this.errorBuilder,
     this.width,
+    this.onRowTap,
+    this.mainAxisAlignment,
   );
 
   @override
@@ -48,8 +52,9 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
         state.tableState == _TableState.displaying) {
       return noItemsFoundBuilder?.call(context) ??
           Center(
-            child:
-                Text(PagedDataTableLocalization.of(context).noItemsFoundText),
+            child: Text(
+              PagedDataTableLocalization.of(context).noItemsFoundText,
+            ),
           );
     }
 
@@ -90,8 +95,11 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                         Theme.of(context).primaryColorLight
                     : null,
                 child: InkWell(
+                  onTap: onRowTap == null
+                      ? null
+                      : () => onRowTap?.call(model.item),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: mainAxisAlignment,
                     children: [
                       if (rowsSelectable)
                         Padding(
@@ -120,9 +128,10 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                                 ? state._nullSizeFactorColumnsWidth
                                 : width * column.sizeFactor!,
                             child: Align(
-                              alignment: column.isNumeric
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
+                              alignment: column.alignment ??
+                                  (column.isNumeric
+                                      ? Alignment.centerRight
+                                      : Alignment.centerLeft),
                               heightFactor: null,
                               child: column.buildCell(model.item, model.index),
                             ),
@@ -138,9 +147,10 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
             if (theme.rowColors != null) {
               row = DecoratedBox(
                 decoration: BoxDecoration(
-                    color: index % 2 == 0
-                        ? theme.rowColors![0]
-                        : theme.rowColors![1]),
+                  color: index % 2 == 0
+                      ? theme.rowColors![0]
+                      : theme.rowColors![1],
+                ),
                 child: row,
               );
             }
