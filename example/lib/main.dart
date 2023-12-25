@@ -61,7 +61,6 @@ class _MainViewState extends State<MainView> {
       onRowTap: (post) {
         debugPrint("Tapped on row ${post.id}");
       },
-      mainAxisAlignment: MainAxisAlignment.start,
       rowsSelectable: true,
       theme: theme,
       idGetter: (post) => post.id,

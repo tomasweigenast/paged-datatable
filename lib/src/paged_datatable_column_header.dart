@@ -120,13 +120,16 @@ class _PagedDataTableHeaderRow<
                         child = Tooltip(message: column.title, child: child);
                       }
 
-                      child = Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: SizedBox(
-                          width: column.sizeFactor == null
-                              ? state._nullSizeFactorColumnsWidth
-                              : width * column.sizeFactor!,
-                          child: child,
+                      child = Expanded(
+                        flex: column.sizeFactor == null ? 1 : 0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: SizedBox(
+                            width: column.sizeFactor == null
+                                ? state._nullSizeFactorColumnsWidth
+                                : width * column.sizeFactor!,
+                            child: child,
+                          ),
                         ),
                       );
                       return child;

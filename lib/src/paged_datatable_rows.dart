@@ -121,19 +121,23 @@ class _PagedDataTableRows<TKey extends Comparable, TResultId extends Comparable,
                           ),
                         ),
                       ...state.columns.map(
-                        (column) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: SizedBox(
-                            width: column.sizeFactor == null
-                                ? state._nullSizeFactorColumnsWidth
-                                : width * column.sizeFactor!,
-                            child: Align(
-                              alignment: column.alignment ??
-                                  (column.isNumeric
-                                      ? Alignment.centerRight
-                                      : Alignment.centerLeft),
-                              heightFactor: null,
-                              child: column.buildCell(model.item, model.index),
+                        (column) => Expanded(
+                          flex: column.sizeFactor == null ? 1 : 0,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: SizedBox(
+                              width: column.sizeFactor == null
+                                  ? state._nullSizeFactorColumnsWidth
+                                  : width * column.sizeFactor!,
+                              child: Align(
+                                alignment: column.alignment ??
+                                    (column.isNumeric
+                                        ? Alignment.centerRight
+                                        : Alignment.centerLeft),
+                                heightFactor: null,
+                                child:
+                                    column.buildCell(model.item, model.index),
+                              ),
                             ),
                           ),
                         ),

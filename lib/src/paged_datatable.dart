@@ -133,56 +133,60 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
           elevation: 0,
           textStyle: localTheme.textStyle,
           shape: theme?.border,
-          child: LayoutBuilder(builder: (context, constraints) {
-            final width = constraints.maxWidth -
-                (columns.length * 32) -
-                (rowsSelectable ? 32 : 0);
-            state.availableWidth = width;
-            return Column(
-              children: [
-                /* FILTER TAB */
-                if (header != null ||
-                    menu != null ||
-                    state.filters.isNotEmpty) ...[
-                  _PagedDataTableFilterTab<TKey, TResultId, TResult>(
-                      menu, header),
-                  Divider(height: 0, color: localTheme.dividerColor),
-                ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth -
+                  (columns.length * 32) -
+                  (rowsSelectable ? 32 : 0);
+              state.availableWidth = width;
+              return Column(
+                children: [
+                  /* FILTER TAB */
+                  if (header != null ||
+                      menu != null ||
+                      state.filters.isNotEmpty) ...[
+                    _PagedDataTableFilterTab<TKey, TResultId, TResult>(
+                        menu, header),
+                    Divider(height: 0, color: localTheme.dividerColor),
+                  ],
 
-                /* HEADER ROW */
-                _PagedDataTableHeaderRow<TKey, TResultId, TResult>(
-                  rowsSelectable,
-                  width,
-                  mainAxisAlignment!,
-                ),
-                Divider(height: 0, color: localTheme.dividerColor),
-
-                /* ITEMS */
-                Expanded(
-                  child: _PagedDataTableRows<TKey, TResultId, TResult>(
+                  /* HEADER ROW */
+                  _PagedDataTableHeaderRow<TKey, TResultId, TResult>(
                     rowsSelectable,
-                    customRowBuilder ??
-                        CustomRowBuilder<TResult>(
-                            builder: (context, item) =>
-                                throw UnimplementedError(
-                                    "This does not build nothing"),
-                            shouldUse: (context, item) => false),
-                    noItemsFoundBuilder,
-                    errorBuilder,
                     width,
-                    onRowTap,
                     mainAxisAlignment!,
                   ),
-                ),
-
-                /* FOOTER */
-                if (localTheme.configuration.footer.footerVisible) ...[
                   Divider(height: 0, color: localTheme.dividerColor),
-                  _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
-                ]
-              ],
-            );
-          }),
+
+                  /* ITEMS */
+                  Expanded(
+                    child: _PagedDataTableRows<TKey, TResultId, TResult>(
+                      rowsSelectable,
+                      customRowBuilder ??
+                          CustomRowBuilder<TResult>(
+                            builder: (context, item) =>
+                                throw UnimplementedError(
+                              "This does not build nothing",
+                            ),
+                            shouldUse: (context, item) => false,
+                          ),
+                      noItemsFoundBuilder,
+                      errorBuilder,
+                      width,
+                      onRowTap,
+                      mainAxisAlignment!,
+                    ),
+                  ),
+
+                  /* FOOTER */
+                  if (localTheme.configuration.footer.footerVisible) ...[
+                    Divider(height: 0, color: localTheme.dividerColor),
+                    _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
+                  ]
+                ],
+              );
+            },
+          ),
         );
 
         // apply configuration to this widget only
