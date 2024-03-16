@@ -1,193 +1,151 @@
-import 'dart:async';
-
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:intl/intl.dart' hide TextDirection;
-import 'package:paged_datatable/l10n/generated/l10n.dart';
-import 'package:provider/provider.dart';
-import 'package:equatable/equatable.dart';
+import 'package:paged_datatable/src/linked_scroll_controller.dart';
+import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
-part 'controls.dart';
-part 'errors.dart';
-part 'paged_datatable_column.dart';
-part 'paged_datatable_column_header.dart';
-part 'paged_datatable_controller.dart';
-part 'paged_datatable_filter.dart';
-part 'paged_datatable_filter_bar.dart';
-part 'paged_datatable_filter_bar_menu.dart';
-part 'paged_datatable_footer.dart';
-part 'paged_datatable_menu.dart';
-part 'paged_datatable_row_state.dart';
-part 'paged_datatable_rows.dart';
-part 'paged_datatable_state.dart';
-part 'paged_datatable_theme.dart';
-part 'pagination_result.dart';
-part 'types.dart';
+final class PagedDataTable extends StatefulWidget {
+  const PagedDataTable({super.key});
 
-/// A paginated DataTable that allows page caching and filtering
-/// [TKey] is the type of the page token
-/// [TResult] is the type of data the data table will show.
-class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
-    TResult extends Object> extends StatelessWidget {
-  /// The callback that gets executed when a page is fetched.
-  final FetchCallback<TKey, TResult> fetchPage;
+  @override
+  State<StatefulWidget> createState() => _PagedDataTableState();
+}
 
-  /// The initial page to fetch.
-  final TKey initialPage;
-
-  /// The list of filters to show.
-  final List<TableFilter>? filters;
-
-  /// A custom controller used to programatically control the table.
-  final PagedDataTableController<TKey, TResultId, TResult>? controller;
-
-  /// The list of columns to display.
-  final List<BaseTableColumn<TResult>> columns;
-
-  /// A custom menu tooltip to show in the filter bar.
-  final PagedDataTableFilterBarMenu? menu;
-
-  /// A custom widget to build in the footer, aligned to the left.
-  ///
-  /// Navigation widgets remain untouched.
-  final Widget? footer;
-
-  /// A custom widget to build in the footer, aligned to the left.
-  ///
-  /// Filter widgets remain untouched.
-  final Widget? header;
-
-  /// A custom builder that display any error.
-  final ErrorBuilder? errorBuilder;
-
-  /// A custom builder that builds when no item is found.
-  final WidgetBuilder? noItemsFoundBuilder;
-
-  /// A custom theme to apply only to this DataTable instance.
-  final PagedDataTableThemeData? theme;
-
-  /// Indicates if the table allows the user to select rows.
-  final bool rowsSelectable;
-
-  /// A custom builder that builds a row.
-  final CustomRowBuilder<TResult>? customRowBuilder;
-
-  /// A stream to listen and refresh the table when any update is received.
-  final Stream? refreshListener;
-
-  /// A function that returns the id of an item.
-  final ModelIdGetter<TResultId, TResult> idGetter;
-
-  const PagedDataTable(
-      {required this.fetchPage,
-      required this.initialPage,
-      required this.columns,
-      required this.idGetter,
-      this.filters,
-      this.menu,
-      this.controller,
-      this.footer,
-      this.header,
-      this.theme,
-      this.errorBuilder,
-      this.noItemsFoundBuilder,
-      this.rowsSelectable = false,
-      this.customRowBuilder,
-      this.refreshListener,
-      super.key});
+final class _PagedDataTableState extends State<PagedDataTable> {
+  final _horizontalController = ScrollController();
+  final _linkedControllers = LinkedScrollControllerGroup();
+  late final _verticalTableViewController = _linkedControllers.addAndGet();
+  late final _verticalFixedColumsnController = _linkedControllers.addAndGet();
+  final _rowCount = 100;
 
   @override
   Widget build(BuildContext context) {
-    final localTheme = PagedDataTableTheme.maybeOf(context) ??
-        theme ??
-        _kDefaultPagedDataTableTheme;
-    return ChangeNotifierProvider<
-        _PagedDataTableState<TKey, TResultId, TResult>>(
-      create: (context) => _PagedDataTableState(
-          columns: columns,
-          rowsSelectable: rowsSelectable,
-          filters: filters,
-          idGetter: idGetter,
-          controller: controller,
-          fetchCallback: fetchPage,
-          initialPage: initialPage,
-          pageSize: localTheme.configuration.initialPageSize,
-          refreshListener: refreshListener),
-      builder: (context, widget) {
-        var state =
-            context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
-
-        Widget child = Material(
-          color: localTheme.backgroundColor,
-          elevation: 0,
-          textStyle: localTheme.textStyle,
-          shape: theme?.border,
-          child: LayoutBuilder(builder: (context, constraints) {
-            var width = constraints.maxWidth -
-                (columns.length * 32) -
-                (rowsSelectable ? 32 : 0);
-            state.availableWidth = width;
-            return Column(
-              children: [
-                /* FILTER TAB */
-                if (header != null ||
-                    menu != null ||
-                    state.filters.isNotEmpty) ...[
-                  _PagedDataTableFilterTab<TKey, TResultId, TResult>(
-                      menu, header),
-                  Divider(height: 0, color: localTheme.dividerColor),
-                ],
-
-                /* HEADER ROW */
-                _PagedDataTableHeaderRow<TKey, TResultId, TResult>(
-                    rowsSelectable, width),
-                Divider(height: 0, color: localTheme.dividerColor),
-
-                /* ITEMS */
-                Expanded(
-                  child: _PagedDataTableRows<TKey, TResultId, TResult>(
-                      rowsSelectable,
-                      customRowBuilder ??
-                          CustomRowBuilder<TResult>(
-                              builder: (context, item) =>
-                                  throw UnimplementedError(
-                                      "This does not build nothing"),
-                              shouldUse: (context, item) => false),
-                      noItemsFoundBuilder,
-                      errorBuilder,
-                      width),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Column(
+        children: [
+          Container(
+            height: 52,
+            color: Colors.blue,
+            child: const Center(child: Text("Header")),
+          ),
+          const Divider(height: 0),
+          Expanded(
+            child: Scrollbar(
+              controller: _verticalTableViewController,
+              child: Scrollbar(
+                controller: _horizontalController,
+                thumbVisibility: true,
+                child: Row(
+                  children: [
+                    Flexible(
+                      flex: 1,
+                      child: ListView.builder(
+                        controller: _verticalFixedColumsnController,
+                        itemCount: 100,
+                        itemBuilder: (context, index) => SizedBox(
+                          height: 62,
+                          child: Center(child: Text("Fixed $index")),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 9,
+                      child: TableView.builder(
+                        verticalDetails: ScrollableDetails.vertical(controller: _verticalTableViewController),
+                        horizontalDetails: ScrollableDetails.horizontal(controller: _horizontalController),
+                        columnCount: 20,
+                        rowCount: _rowCount,
+                        rowBuilder: _buildRowSpan,
+                        columnBuilder: _buildColumnSpan,
+                        cellBuilder: _buildCell,
+                      ),
+                    )
+                  ],
                 ),
+              ),
+            ),
+          ),
+          const Divider(height: 0),
+          Container(
+            height: 62,
+            color: Colors.red,
+            child: const Center(child: Text("Footer")),
+          )
+        ],
+      ),
+    );
+  }
 
-                /* FOOTER */
-                if (localTheme.configuration.footer.footerVisible) ...[
-                  Divider(height: 0, color: localTheme.dividerColor),
-                  _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
-                ]
-              ],
-            );
-          }),
+  TableViewCell _buildCell(BuildContext context, TableVicinity vicinity) {
+    return TableViewCell(
+      child: Center(
+        child: Text('Tile c: ${vicinity.column}, r: ${vicinity.row}'),
+      ),
+    );
+  }
+
+  TableSpan _buildColumnSpan(int index) {
+    const TableSpanDecoration decoration = TableSpanDecoration(
+      border: TableSpanBorder(
+        trailing: BorderSide(),
+      ),
+    );
+
+    switch (index % 5) {
+      case 0:
+        return TableSpan(
+          foregroundDecoration: decoration,
+          extent: const FixedTableSpanExtent(100),
+          recognizerFactories: <Type, GestureRecognizerFactory>{
+            TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+              () => TapGestureRecognizer(),
+              (TapGestureRecognizer t) => t.onTap = () => print('Tap column $index'),
+            ),
+          },
         );
+      case 1:
+        return TableSpan(
+          foregroundDecoration: decoration,
+          extent: const FractionalTableSpanExtent(0.5),
+          onEnter: (_) => print('Entered column $index'),
+          cursor: SystemMouseCursors.contextMenu,
+        );
+      case 2:
+        return TableSpan(
+          foregroundDecoration: decoration,
+          extent: const FixedTableSpanExtent(120),
+          onEnter: (_) => print('Entered column $index'),
+        );
+      case 3:
+        return TableSpan(
+          foregroundDecoration: decoration,
+          extent: const FixedTableSpanExtent(145),
+          onEnter: (_) => print('Entered column $index'),
+        );
+      case 4:
+        return TableSpan(
+          foregroundDecoration: decoration,
+          extent: const FixedTableSpanExtent(200),
+          onEnter: (_) => print('Entered column $index'),
+        );
+    }
+    throw AssertionError('This should be unreachable, as every index is accounted for in the switch clauses.');
+  }
 
-        // apply configuration to this widget only
-        if (theme != null) {
-          child = PagedDataTableTheme(data: theme!, child: child);
-          assert(
-              theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
-              "rowColors must contain exactly two colors");
-        } else {
-          assert(
-              localTheme.rowColors != null
-                  ? localTheme.rowColors!.length == 2
-                  : true,
-              "rowColors must contain exactly two colors");
-        }
+  TableSpan _buildRowSpan(int index) {
+    final TableSpanDecoration decoration = TableSpanDecoration(
+      color: index.isEven ? Colors.purple[100] : null,
+      border: const TableSpanBorder(
+        trailing: BorderSide(
+          width: 3,
+        ),
+      ),
+    );
 
-        return child;
-      },
+    return TableSpan(
+      backgroundDecoration: decoration,
+      extent: const FixedTableSpanExtent(62),
+      cursor: SystemMouseCursors.click,
     );
   }
 }
