@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
 
@@ -71,7 +70,7 @@ class MainView extends StatefulWidget {
 //         initialPageSize: 50));
 
 class _MainViewState extends State<MainView> {
-  // final tableController = PagedDataTableController<String, int, Post>();
+  final tableController = TableController<String, Post>();
   // PagedDataTableThemeData? theme;
 
   @override
@@ -80,7 +79,54 @@ class _MainViewState extends State<MainView> {
       body: Container(
         color: const Color.fromARGB(255, 208, 208, 208),
         padding: const EdgeInsets.all(20.0),
-        child: const PagedDataTable(),
+        child: Column(
+          children: [
+            TextButton(
+              child: const Text("Print debug"),
+              onPressed: () {
+                tableController.printDebugString();
+              },
+            ),
+            Expanded(
+              child: PagedDataTable<String, Post>(
+                controller: tableController,
+                initialPageSize: 20,
+                pageSizes: const [10, 20, 50, 100],
+                fetcher: (pageSize, pageToken) async {
+                  final data = await PostsRepository.getPosts(pageSize: pageSize, pageToken: pageToken);
+                  return (data.items, data.nextPageToken);
+                },
+                fixedColumnCount: 2,
+                columns: [
+                  TableColumn(
+                    title: const Text("Id"),
+                    cellBuilder: (context, item, index) => Text(item.id.toString()),
+                  ),
+                  TableColumn(
+                    title: const Text("Author"),
+                    cellBuilder: (context, item, index) => Text(item.author),
+                    size: const FractionalColumnSize(.15),
+                  ),
+                  TableColumn(
+                    title: const Text("Enabled"),
+                    cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
+                    size: const FixedColumnSize(100),
+                  ),
+                  TableColumn(
+                    title: const Text("Author Gender"),
+                    cellBuilder: (context, item, index) => Text(item.authorGender.name),
+                    size: const FractionalColumnSize(.2),
+                  ),
+                  TableColumn(
+                    title: const Text("Content"),
+                    cellBuilder: (context, item, index) => Text(item.content),
+                    size: const RemainingColumnSize(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         /*child: PagedDataTable<String, int, Post>(
           rowsSelectable: true,
           theme: theme,
