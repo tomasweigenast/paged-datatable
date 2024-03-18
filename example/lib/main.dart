@@ -101,6 +101,7 @@ class _MainViewState extends State<MainView> {
                   TableColumn(
                     title: const Text("Id"),
                     cellBuilder: (context, item, index) => Text(item.id.toString()),
+                    size: const FixedColumnSize(100),
                   ),
                   TableColumn(
                     title: const Text("Author"),
@@ -110,12 +111,12 @@ class _MainViewState extends State<MainView> {
                   TableColumn(
                     title: const Text("Enabled"),
                     cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
-                    size: const FixedColumnSize(100),
+                    // size: const FixedColumnSize(100),
                   ),
                   TableColumn(
                     title: const Text("Author Gender"),
                     cellBuilder: (context, item, index) => Text(item.authorGender.name),
-                    size: const FractionalColumnSize(.2),
+                    // size: const FractionalColumnSize(.2),
                   ),
                   TableColumn(
                     title: const Text("Content"),
