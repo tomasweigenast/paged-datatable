@@ -74,7 +74,7 @@ final class TableColumn<T> extends ReadOnlyTableColumn<T> {
     required super.title,
     super.id,
     super.size = const FractionalColumnSize(.1),
-    super.format = const AlignColumnFormat(alignment: Alignment.center),
+    super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
     super.tooltip,
   });
 

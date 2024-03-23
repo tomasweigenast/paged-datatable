@@ -5,8 +5,15 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
   final int fixedColumnCount;
   final List<ReadOnlyTableColumn> columns;
   final double width;
+  final ScrollController horizontalController;
 
-  const _Header({required this.width, required this.controller, required this.columns, required this.fixedColumnCount});
+  const _Header({
+    required this.width,
+    required this.controller,
+    required this.columns,
+    required this.fixedColumnCount,
+    required this.horizontalController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,17 +21,21 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
 
     return SizedBox(
       height: theme.headerHeight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (fixedColumnCount > 0) ..._buildFixedColumns(context, theme),
-          Expanded(
-            child: CustomScrollView(
-              scrollDirection: Axis.horizontal,
-              slivers: _buildColumns(context, theme).map((e) => SliverToBoxAdapter(child: e)).toList(growable: false),
+      child: DefaultTextStyle(
+        style: theme.headerTextStyle,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (fixedColumnCount > 0) ..._buildFixedColumns(context, theme),
+            Expanded(
+              child: CustomScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: horizontalController,
+                slivers: _buildColumns(context, theme).map((e) => SliverToBoxAdapter(child: e)).toList(growable: false),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -35,7 +46,7 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
 
     for (int i = 0; i < fixedColumnCount; i++) {
       final column = columns[i];
-      list.add(_buildColumn(column));
+      list.add(_buildColumn(theme, column));
     }
 
     return list;
@@ -45,18 +56,18 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
     final list = <Widget>[];
     for (int i = fixedColumnCount; i < columns.length; i++) {
       final column = columns[i];
-      list.add(_buildColumn(column));
+      list.add(_buildColumn(theme, column));
     }
 
     return list;
   }
 
-  Widget _buildColumn(ReadOnlyTableColumn column) {
+  Widget _buildColumn(PagedDataTableThemeData theme, ReadOnlyTableColumn column) {
     Widget child = Container(
-      decoration: BoxDecoration(
-        border: Border.all(),
-      ),
-      child: Center(
+      padding: theme.cellPadding,
+      margin: theme.padding,
+      child: Align(
+        alignment: Alignment.centerLeft,
         child: column.title,
       ),
     );

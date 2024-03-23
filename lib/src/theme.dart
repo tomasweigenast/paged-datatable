@@ -11,6 +11,7 @@ final class PagedDataTableThemeData {
   final BorderSide borderSide;
   final TextStyle cellTextStyle;
   final TextStyle headerTextStyle;
+  final Color? Function(int index)? cellColor;
 
   const PagedDataTableThemeData({
     this.cellPadding = const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
@@ -23,11 +24,12 @@ final class PagedDataTableThemeData {
     this.rowHeight = 52.0,
     this.cellTextStyle = const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),
     this.headerTextStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+    this.cellColor,
   });
 
   @override
   int get hashCode => Object.hash(cellPadding, padding, borderRadius, elevation, headerHeight, footerHeight, rowHeight,
-      borderSide, cellTextStyle, headerTextStyle);
+      borderSide, cellTextStyle, headerTextStyle, cellColor);
 
   @override
   bool operator ==(Object other) =>
@@ -42,7 +44,8 @@ final class PagedDataTableThemeData {
           other.rowHeight == rowHeight &&
           other.borderSide == borderSide &&
           other.cellTextStyle == cellTextStyle &&
-          other.headerTextStyle == headerTextStyle);
+          other.headerTextStyle == headerTextStyle &&
+          other.cellColor == cellColor);
 }
 
 final class PagedDataTableTheme extends InheritedWidget {

@@ -88,42 +88,47 @@ class _MainViewState extends State<MainView> {
               },
             ),
             Expanded(
-              child: PagedDataTable<String, Post>(
-                controller: tableController,
-                initialPageSize: 20,
-                pageSizes: const [10, 20, 50, 100],
-                fetcher: (pageSize, pageToken) async {
-                  final data = await PostsRepository.getPosts(pageSize: pageSize, pageToken: pageToken);
-                  return (data.items, data.nextPageToken);
-                },
-                fixedColumnCount: 2,
-                columns: [
-                  TableColumn(
-                    title: const Text("Id"),
-                    cellBuilder: (context, item, index) => Text(item.id.toString()),
-                    size: const FixedColumnSize(100),
-                  ),
-                  TableColumn(
-                    title: const Text("Author"),
-                    cellBuilder: (context, item, index) => Text(item.author),
-                    size: const FractionalColumnSize(.15),
-                  ),
-                  TableColumn(
-                    title: const Text("Enabled"),
-                    cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
-                    // size: const FixedColumnSize(100),
-                  ),
-                  TableColumn(
-                    title: const Text("Author Gender"),
-                    cellBuilder: (context, item, index) => Text(item.authorGender.name),
-                    // size: const FractionalColumnSize(.2),
-                  ),
-                  TableColumn(
-                    title: const Text("Content"),
-                    cellBuilder: (context, item, index) => Text(item.content),
-                    size: const RemainingColumnSize(),
-                  ),
-                ],
+              child: PagedDataTableTheme(
+                data: const PagedDataTableThemeData(
+                    // cellColor: (index) => index.isEven ? Colors.purple[100] : null,
+                    ),
+                child: PagedDataTable<String, Post>(
+                  controller: tableController,
+                  initialPageSize: 20,
+                  pageSizes: const [10, 20, 50, 100],
+                  fetcher: (pageSize, pageToken) async {
+                    final data = await PostsRepository.getPosts(pageSize: pageSize, pageToken: pageToken);
+                    return (data.items, data.nextPageToken);
+                  },
+                  fixedColumnCount: 2,
+                  columns: [
+                    TableColumn(
+                      title: const Text("Id"),
+                      cellBuilder: (context, item, index) => Text(item.id.toString()),
+                      size: const FixedColumnSize(100),
+                    ),
+                    TableColumn(
+                      title: const Text("Author"),
+                      cellBuilder: (context, item, index) => Text(item.author),
+                      size: const FractionalColumnSize(.15),
+                    ),
+                    TableColumn(
+                      title: const Text("Enabled"),
+                      cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
+                      // size: const FixedColumnSize(100),
+                    ),
+                    TableColumn(
+                      title: const Text("Author Gender"),
+                      cellBuilder: (context, item, index) => Text(item.authorGender.name),
+                      // size: const FractionalColumnSize(.2),
+                    ),
+                    TableColumn(
+                      title: const Text("Content"),
+                      cellBuilder: (context, item, index) => Text(item.content),
+                      size: const RemainingColumnSize(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
