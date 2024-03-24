@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/configuration.dart';
 import 'package:paged_datatable/src/linked_scroll_controller.dart';
@@ -122,7 +125,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
               ),
             ),
           ),
-          const Divider(height: 0),
+          const Divider(height: 0, color: Color(0xFFD6D6D6)),
           SizedBox(
             height: theme.footerHeight,
             child: const Center(child: Text("Footer")),
@@ -155,12 +158,13 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   TableSpan _buildColumnSpan(int index) {
     final column = widget.columns[index];
     return TableSpan(
-        extent: switch (column.size) {
-          RemainingColumnSize() => const RemainingTableSpanExtent(),
-          FixedColumnSize(:final size) => FixedTableSpanExtent(size),
-          FractionalColumnSize(:final fraction) => FractionalTableSpanExtent(fraction)
-        },
-        padding: const TableSpanPadding.all(0));
+      extent: switch (column.size) {
+        RemainingColumnSize() => const RemainingTableSpanExtent(),
+        FixedColumnSize(:final size) => FixedTableSpanExtent(size),
+        FractionalColumnSize(:final fraction) => FractionalTableSpanExtent(fraction)
+      },
+      padding: const TableSpanPadding.all(0),
+    );
   }
 
   TableSpan _buildRowSpan(int index) {
@@ -173,7 +177,14 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
 
     return TableSpan(
       backgroundDecoration: decoration,
+      cursor: SystemMouseCursors.click,
       extent: rowSpanExtent,
+      recognizerFactories: <Type, GestureRecognizerFactory>{
+        TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+          () => TapGestureRecognizer(),
+          (TapGestureRecognizer t) => t.onTap = () => debugPrint('Tap row $index'),
+        ),
+      },
     );
   }
 

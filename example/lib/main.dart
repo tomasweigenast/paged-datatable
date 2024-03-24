@@ -127,6 +127,12 @@ class _MainViewState extends State<MainView> {
                       cellBuilder: (context, item, index) => Text(item.content),
                       size: const RemainingColumnSize(),
                     ),
+                    TableColumn(
+                      title: const Text("Number"),
+                      format: const NumericColumnFormat(),
+                      cellBuilder: (context, item, index) => Text(item.number.toString()),
+                      size: const FractionalColumnSize(.1),
+                    ),
                   ],
                 ),
               ),
