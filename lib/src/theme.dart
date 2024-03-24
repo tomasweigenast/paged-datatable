@@ -12,6 +12,8 @@ final class PagedDataTableThemeData {
   final TextStyle cellTextStyle;
   final TextStyle headerTextStyle;
   final Color? Function(int index)? cellColor;
+  final bool verticalScrollbarVisibility;
+  final bool horizontalScrollbarVisibility;
 
   const PagedDataTableThemeData({
     this.cellPadding = const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
@@ -25,11 +27,13 @@ final class PagedDataTableThemeData {
     this.cellTextStyle = const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),
     this.headerTextStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
     this.cellColor,
+    this.verticalScrollbarVisibility = true,
+    this.horizontalScrollbarVisibility = true,
   });
 
   @override
   int get hashCode => Object.hash(cellPadding, padding, borderRadius, elevation, headerHeight, footerHeight, rowHeight,
-      borderSide, cellTextStyle, headerTextStyle, cellColor);
+      borderSide, cellTextStyle, headerTextStyle, cellColor, verticalScrollbarVisibility, horizontalScrollbarVisibility);
 
   @override
   bool operator ==(Object other) =>
@@ -45,7 +49,9 @@ final class PagedDataTableThemeData {
           other.borderSide == borderSide &&
           other.cellTextStyle == cellTextStyle &&
           other.headerTextStyle == headerTextStyle &&
-          other.cellColor == cellColor);
+          other.cellColor == cellColor &&
+          other.verticalScrollbarVisibility == verticalScrollbarVisibility &&
+          other.horizontalScrollbarVisibility == horizontalScrollbarVisibility);
 }
 
 final class PagedDataTableTheme extends InheritedWidget {

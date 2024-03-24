@@ -110,6 +110,8 @@ class _MainViewState extends State<MainView> {
                     TableColumn(
                       title: const Text("Author"),
                       cellBuilder: (context, item, index) => Text(item.author),
+                      sortable: true,
+                      id: "author",
                       size: const FractionalColumnSize(.15),
                     ),
                     TableColumn(

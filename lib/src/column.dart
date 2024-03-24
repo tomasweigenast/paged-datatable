@@ -26,13 +26,17 @@ sealed class ReadOnlyTableColumn<T> {
   /// The column's format
   final ColumnFormat format;
 
+  /// A flag that indicates if the column can be used as sort model. [id] must not be null.
+  final bool sortable;
+
   const ReadOnlyTableColumn({
     required this.id,
     required this.title,
     required this.size,
     required this.format,
     required this.tooltip,
-  });
+    required this.sortable,
+  }) : assert(sortable ? id != null : true, "When column is sortable, id must be set.");
 
   /// Builds the cell for [item] at [index].
   Widget build(BuildContext context, T item, int index);
@@ -60,6 +64,7 @@ sealed class EditableTableColumn<T, V> extends ReadOnlyTableColumn<T> {
     required super.size,
     required super.format,
     required super.tooltip,
+    required super.sortable,
     required this.setter,
     required this.getter,
   });
@@ -76,6 +81,7 @@ final class TableColumn<T> extends ReadOnlyTableColumn<T> {
     super.size = const FractionalColumnSize(.1),
     super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
     super.tooltip,
+    super.sortable = false,
   });
 
   @override

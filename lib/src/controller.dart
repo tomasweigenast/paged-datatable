@@ -36,6 +36,25 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Swipes the current sort model or sets it to [columnId].
+  ///
+  /// If the sort model was ascending, it gets changed to descending, and finally it gets changed to null.
+  void swipeSortModel([String? columnId]) {
+    if (columnId != null && _currentSortModel?.fieldName != columnId) {
+      sortModel = SortModel.ascending(fieldName: columnId);
+      return;
+    }
+
+    // Ignore if no sort model
+    if (_currentSortModel == null) return;
+
+    if (_currentSortModel!.descending) {
+      sortModel = null;
+    } else {
+      sortModel = SortModel(fieldName: _currentSortModel!.fieldName, descending: true);
+    }
+  }
+
   /// Advances to the next page
   Future<void> nextPage() => _fetch(_currentPageIndex + 1);
 

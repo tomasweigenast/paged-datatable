@@ -1,6 +1,6 @@
 part of 'paged_datatable.dart';
 
-final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
+final class _Header<K extends Comparable<K>, T> extends StatefulWidget {
   final TableController<K, T> controller;
   final int fixedColumnCount;
   final List<ReadOnlyTableColumn> columns;
@@ -16,66 +16,123 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
   });
 
   @override
+  State<StatefulWidget> createState() => _HeaderState<K, T>();
+}
+
+final class _HeaderState<K extends Comparable<K>, T> extends State<_Header<K, T>> {
+  late _TableState tableState;
+  SortModel? sortModel;
+
+  @override
+  void initState() {
+    super.initState();
+
+    sortModel = widget.controller.sortModel;
+    tableState = widget.controller._state;
+    widget.controller.addListener(_onControllerChanged);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = PagedDataTableTheme.of(context);
-    final (fixedColumns, _) = _buildFixedColumns(context, width, theme);
-    final (columns, _) = _buildColumns(context, width, theme);
+    final fixedColumns = _buildFixedColumns(context, widget.width, theme);
+    final columns = _buildColumns(context, widget.width, theme);
 
     return SizedBox(
       height: theme.headerHeight,
       child: DefaultTextStyle(
         style: theme.headerTextStyle,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            if (fixedColumnCount > 0) ...fixedColumns,
-            Expanded(
-              child: _ScrollableColumns(
-                  controller: horizontalController,
-                  children: columns.map((e) => SliverToBoxAdapter(child: e)).toList(growable: false)),
+            Row(
+              children: [
+                if (widget.fixedColumnCount > 0) ...fixedColumns,
+                Expanded(
+                  child: _ScrollableColumns(
+                      controller: widget.horizontalController,
+                      children: columns.map((e) => SliverToBoxAdapter(child: e)).toList(growable: false)),
+                ),
+              ],
             ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: tableState == _TableState.fetching ? const LinearProgressIndicator() : const SizedBox.shrink(),
+            )
           ],
         ),
       ),
     );
   }
 
-  (List<Widget>, double) _buildFixedColumns(BuildContext context, double totalWidth, PagedDataTableThemeData theme) {
+  List<Widget> _buildFixedColumns(BuildContext context, double totalWidth, PagedDataTableThemeData theme) {
     final list = <Widget>[];
 
     double remainingWidth = totalWidth;
-    for (int i = 0; i < fixedColumnCount; i++) {
-      final column = columns[i];
-      final (widget, width) = _buildColumn(theme, remainingWidth, column);
-      list.add(widget);
+    for (int i = 0; i < widget.fixedColumnCount; i++) {
+      final column = widget.columns[i];
+      final (build, width) = _buildColumn(context, theme, remainingWidth, column);
+      list.add(build);
       remainingWidth = width;
     }
 
-    return (list, remainingWidth);
+    return list;
   }
 
-  (List<Widget>, double) _buildColumns(BuildContext context, double totalWidth, PagedDataTableThemeData theme) {
+  List<Widget> _buildColumns(BuildContext context, double totalWidth, PagedDataTableThemeData theme) {
     final list = <Widget>[];
     double remainingWidth = totalWidth;
-    for (int i = fixedColumnCount; i < columns.length; i++) {
-      final column = columns[i];
-      final (widget, width) = _buildColumn(theme, remainingWidth, column);
-      list.add(widget);
+    for (int i = widget.fixedColumnCount; i < widget.columns.length; i++) {
+      final column = widget.columns[i];
+      final (built, width) = _buildColumn(context, theme, remainingWidth, column);
+      list.add(built);
       remainingWidth = width;
     }
 
-    return (list, remainingWidth);
+    return list;
   }
 
-  (Widget, double) _buildColumn(PagedDataTableThemeData theme, double availableWidth, ReadOnlyTableColumn column) {
+  (Widget, double) _buildColumn(
+      BuildContext context, PagedDataTableThemeData theme, double availableWidth, ReadOnlyTableColumn column) {
     Widget child = Container(
       padding: theme.cellPadding,
       margin: theme.padding,
-      child: column.format.transform(column.title),
+      child: column.format.transform(
+        Tooltip(
+            textAlign: TextAlign.left,
+            message: column.title is Text
+                ? (column.title as Text).data!
+                : column.title is RichText
+                    ? (column.title as RichText).text.toPlainText()
+                    : "",
+            child: column.title),
+      ),
     );
 
-    if (column.size is FractionalColumnSize) {
-      debugPrint("Column ${column.title} width will be: ${width * (column.size as FractionalColumnSize).fraction}");
+    if (column.sortable) {
+      child = MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () {
+            widget.controller.swipeSortModel(column.id);
+          },
+          child: child,
+        ),
+      );
+
+      if (sortModel?.fieldName == column.id) {
+        child = Row(
+          children: [
+            Flexible(child: child),
+            IconButton(
+              icon: sortModel!.descending ? const Icon(Icons.arrow_downward) : const Icon(Icons.arrow_upward),
+              onPressed: () {
+                widget.controller.swipeSortModel(column.id);
+              },
+            )
+          ],
+        );
+      }
     }
 
     switch (column.size) {
@@ -84,7 +141,7 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
         availableWidth -= size;
         break;
       case FractionalColumnSize(:final fraction):
-        final size = width * fraction;
+        final size = widget.width * fraction;
         child = SizedBox(width: size, child: child);
         availableWidth -= size;
         break;
@@ -95,6 +152,21 @@ final class _Header<K extends Comparable<K>, T> extends StatelessWidget {
     }
 
     return (child, availableWidth);
+  }
+
+  void _onControllerChanged() {
+    if (widget.controller.sortModel != sortModel || widget.controller._state != tableState) {
+      setState(() {
+        sortModel = widget.controller.sortModel;
+        tableState = widget.controller._state;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.controller.removeListener(_onControllerChanged);
   }
 }
 
