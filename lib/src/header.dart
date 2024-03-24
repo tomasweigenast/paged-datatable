@@ -6,6 +6,7 @@ final class _Header<K extends Comparable<K>, T> extends StatefulWidget {
   final List<ReadOnlyTableColumn> columns;
   final double width;
   final ScrollController horizontalController;
+  final PagedDataTableConfiguration configuration;
 
   const _Header({
     required this.width,
@@ -13,6 +14,7 @@ final class _Header<K extends Comparable<K>, T> extends StatefulWidget {
     required this.columns,
     required this.fixedColumnCount,
     required this.horizontalController,
+    required this.configuration,
   });
 
   @override

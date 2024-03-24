@@ -102,6 +102,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
               builder: (context, constraints) => _Header(
                   width: constraints.maxWidth,
                   controller: tableController,
+                  configuration: widget.configuration,
                   columns: widget.columns,
                   fixedColumnCount: widget.fixedColumnCount,
                   horizontalController: headerHorizontalController)),
@@ -112,6 +113,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
               columns: widget.columns,
               horizontalController: horizontalController,
               controller: tableController,
+              configuration: widget.configuration,
             ),
           ),
           // Expanded(

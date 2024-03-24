@@ -6,9 +6,15 @@ class _DoubleListRows<K extends Comparable<K>, T> extends StatefulWidget {
   final ScrollController horizontalController;
   final int fixedColumnCount;
   final TableController<K, T> controller;
+  final PagedDataTableConfiguration configuration;
 
-  const _DoubleListRows(
-      {required this.columns, required this.fixedColumnCount, required this.horizontalController, required this.controller});
+  const _DoubleListRows({
+    required this.columns,
+    required this.fixedColumnCount,
+    required this.horizontalController,
+    required this.controller,
+    required this.configuration,
+  });
 
   @override
   State<StatefulWidget> createState() => _DoubleListRowsState<K, T>();

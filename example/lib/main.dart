@@ -95,6 +95,7 @@ class _MainViewState extends State<MainView> {
                 child: PagedDataTable<String, Post>(
                   controller: tableController,
                   initialPageSize: 20,
+                  configuration: const PagedDataTableConfiguration(),
                   pageSizes: const [10, 20, 50, 100],
                   fetcher: (pageSize, sortModel, pageToken) async {
                     final data = await PostsRepository.getPosts(
