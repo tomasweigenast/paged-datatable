@@ -19,7 +19,7 @@ part 'table_view_rows.dart';
 part 'double_list_rows.dart';
 
 typedef Fetcher<K extends Comparable<K>, T> = FutureOr<(List<T> resultset, K? nextPageToken)> Function(
-    int pageSize, K? pageToken);
+    int pageSize, SortModel? sortModel, K? pageToken);
 
 final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   final TableController<K, T>? controller;

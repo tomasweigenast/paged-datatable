@@ -13,14 +13,15 @@ class Post {
   int number;
   Gender authorGender;
 
-  Post(
-      {required this.id,
-      required this.author,
-      required this.content,
-      required this.createdAt,
-      required this.isEnabled,
-      required this.number,
-      required this.authorGender});
+  Post({
+    required this.id,
+    required this.author,
+    required this.content,
+    required this.createdAt,
+    required this.isEnabled,
+    required this.number,
+    required this.authorGender,
+  });
 
   static final Faker _faker = Faker();
   factory Post.random({required int id}) {
@@ -81,16 +82,28 @@ class PostsRepository {
     if (sortBy == null) {
       query = query.orderBy((element) => element.id);
     } else {
-      if (sortBy == "createdAt") {
-        query = sortDescending
-            ? query.orderByDescending(
-                (element) => element.createdAt.millisecondsSinceEpoch)
-            : query
-                .orderBy((element) => element.createdAt.millisecondsSinceEpoch);
-      } else if (sortBy == "number") {
-        query = sortDescending
-            ? query.orderByDescending((element) => element.number)
-            : query.orderBy((element) => element.number);
+      switch (sortBy) {
+        case "createdAt":
+          query = sortDescending
+              ? query.orderByDescending((element) => element.createdAt.millisecondsSinceEpoch)
+              : query.orderBy((element) => element.createdAt.millisecondsSinceEpoch);
+          break;
+
+        case "number":
+          query =
+              sortDescending ? query.orderByDescending((element) => element.number) : query.orderBy((element) => element.number);
+          break;
+
+        case "author":
+          query =
+              sortDescending ? query.orderByDescending((element) => element.author) : query.orderBy((element) => element.author);
+          break;
+
+        case "authorGender":
+          query = sortDescending
+              ? query.orderByDescending((element) => element.authorGender.name)
+              : query.orderBy((element) => element.authorGender.name);
+          break;
       }
     }
 
@@ -104,21 +117,17 @@ class PostsRepository {
     }
 
     if (between != null) {
-      query = query.where((element) =>
-          between.start.isBefore(element.createdAt) &&
-          between.end.isAfter(element.createdAt));
+      query = query.where((element) => between.start.isBefore(element.createdAt) && between.end.isAfter(element.createdAt));
     }
 
     if (authorName != null) {
-      query = query.where((element) =>
-          element.author.toLowerCase().contains(authorName.toLowerCase()));
+      query = query.where((element) => element.author.toLowerCase().contains(authorName.toLowerCase()));
     }
 
     if (searchQuery != null) {
       searchQuery = searchQuery.toLowerCase();
       query = query.where((element) =>
-          element.author.toLowerCase().startsWith(searchQuery!) ||
-          element.content.toLowerCase().contains(searchQuery));
+          element.author.toLowerCase().startsWith(searchQuery!) || element.content.toLowerCase().contains(searchQuery));
     }
 
     var resultSet = query.take(pageSize + 1).toList();

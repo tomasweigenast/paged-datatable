@@ -96,8 +96,13 @@ class _MainViewState extends State<MainView> {
                   controller: tableController,
                   initialPageSize: 20,
                   pageSizes: const [10, 20, 50, 100],
-                  fetcher: (pageSize, pageToken) async {
-                    final data = await PostsRepository.getPosts(pageSize: pageSize, pageToken: pageToken);
+                  fetcher: (pageSize, sortModel, pageToken) async {
+                    final data = await PostsRepository.getPosts(
+                      pageSize: pageSize,
+                      pageToken: pageToken,
+                      sortBy: sortModel?.fieldName,
+                      sortDescending: sortModel?.descending ?? false,
+                    );
                     return (data.items, data.nextPageToken);
                   },
                   fixedColumnCount: 2,
@@ -122,6 +127,8 @@ class _MainViewState extends State<MainView> {
                     TableColumn(
                       title: const Text("Author Gender"),
                       cellBuilder: (context, item, index) => Text(item.authorGender.name),
+                      sortable: true,
+                      id: "authorGender",
                       // size: const FractionalColumnSize(.2),
                     ),
                     TableColumn(

@@ -164,7 +164,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
     try {
       final pageToken = _paginationKeys[page];
-      var (items, nextPageToken) = await _fetcher(_currentPageSize, pageToken);
+      var (items, nextPageToken) = await _fetcher(_currentPageSize, sortModel, pageToken);
       _hasNextPage = nextPageToken != null;
       _currentPageIndex = page;
       if (nextPageToken != null) {
