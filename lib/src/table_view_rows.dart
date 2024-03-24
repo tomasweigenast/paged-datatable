@@ -1,7 +1,7 @@
 part of 'paged_datatable.dart';
 
 /// A row renderer that uses TableView
-class _TableViewRows<T> extends StatefulWidget {
+class _TableViewRows<K extends Comparable<K>, T> extends StatefulWidget {
   final TableController controller;
   final ScrollController horizontalController, verticalController;
   final int fixedColumnCount;
@@ -15,10 +15,10 @@ class _TableViewRows<T> extends StatefulWidget {
       required this.fixedColumnCount});
 
   @override
-  State<_TableViewRows<T>> createState() => _TableViewRowsState<T>();
+  State<_TableViewRows<K, T>> createState() => _TableViewRowsState<K, T>();
 }
 
-class _TableViewRowsState<T> extends State<_TableViewRows<T>> {
+class _TableViewRowsState<K extends Comparable<K>, T> extends State<_TableViewRows<K, T>> {
   late PagedDataTableThemeData theme;
   late FixedTableSpanExtent rowSpanExtent;
 
@@ -70,7 +70,7 @@ class _TableViewRowsState<T> extends State<_TableViewRows<T>> {
 
     return TableViewCell(
       child: switch (column) {
-        TableColumn<T>(:final cellBuilder) => Padding(
+        TableColumn<K, T>(:final cellBuilder) => Padding(
             padding: theme.padding,
             child: column.format.transform(
               Padding(

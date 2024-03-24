@@ -6,6 +6,7 @@ part of 'paged_datatable.dart';
 final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   final List<T> _currentDataset = []; // the current dataset that is being displayed
   final Map<int, K> _paginationKeys = {}; // it's a map because on not found map will return null, list will throw
+  final Set<int> _selectedRows = {}; // The list of selected row indexes
   PagedDataTableConfiguration? _configuration;
   late final Fetcher<K, T> _fetcher; // The function used to fetch items
 
@@ -129,6 +130,28 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     }
 
     _currentDataset[index] = value;
+    notifyListeners();
+  }
+
+  /// Marks a row as selected
+  void selectRow(int index) {
+    _selectedRows.add(index);
+    notifyListeners();
+  }
+
+  /// Unselects a row if was selected before
+  void unselectRow(int index) {
+    _selectedRows.remove(index);
+    notifyListeners();
+  }
+
+  /// Selects or unselects a row
+  void toggleRow(int index) {
+    if (_selectedRows.contains(index)) {
+      _selectedRows.remove(index);
+    } else {
+      _selectedRows.add(index);
+    }
     notifyListeners();
   }
 

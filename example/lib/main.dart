@@ -108,6 +108,7 @@ class _MainViewState extends State<MainView> {
                   },
                   fixedColumnCount: 2,
                   columns: [
+                    RowSelectorColumn(),
                     TableColumn(
                       title: const Text("Id"),
                       cellBuilder: (context, item, index) => Text(item.id.toString()),

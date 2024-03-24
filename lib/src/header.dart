@@ -106,7 +106,7 @@ final class _HeaderState<K extends Comparable<K>, T> extends State<_Header<K, T>
                 ? (column.title as Text).data!
                 : column.title is RichText
                     ? (column.title as RichText).text.toPlainText()
-                    : "",
+                    : column.tooltip ?? "",
             child: column.title),
       ),
     );
