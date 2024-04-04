@@ -1,24 +1,19 @@
 part of 'paged_datatable.dart';
 
-class _FixedPartRow<K extends Comparable<K>, T> extends StatefulWidget {
+abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
   final int index;
-  final double maxWidth;
-  final int fixedColumnCount;
-  final List<ReadOnlyTableColumn> columns;
+  final double totalWidth;
 
-  const _FixedPartRow({
-    required this.index,
-    required this.maxWidth,
-    required this.fixedColumnCount,
-    required this.columns,
-    super.key,
-  });
+  const _RowBuilder({required this.index, required this.totalWidth, super.key});
 
   @override
-  State<_FixedPartRow<K, T>> createState() => _FixedPartRowState<K, T>();
+  State<StatefulWidget> createState() => _RowBuilderState<K, T>();
+
+  List<Widget> buildColumns(
+      BuildContext context, int index, double totalWidth, TableController<K, T> controller, PagedDataTableThemeData theme);
 }
 
-class _FixedPartRowState<K extends Comparable<K>, T> extends State<_FixedPartRow<K, T>> {
+class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, T>> {
   late final controller = TableControllerProvider.of<K, T>(context);
   late final theme = PagedDataTableTheme.of(context);
   bool selected = false;
@@ -35,9 +30,7 @@ class _FixedPartRowState<K extends Comparable<K>, T> extends State<_FixedPartRow
 
   @override
   Widget build(BuildContext context) {
-    final columns = _buildColumns(context, controller, widget.index, widget.maxWidth, theme);
-
-    Widget child = Row(children: columns);
+    Widget child = Row(children: widget.buildColumns(context, widget.index, widget.totalWidth, controller, theme));
     var color = theme.cellColor?.call(widget.index);
     if (selected && theme.selectedCellColor != null) {
       color = theme.selectedCellColor;
@@ -60,14 +53,35 @@ class _FixedPartRowState<K extends Comparable<K>, T> extends State<_FixedPartRow
     }
   }
 
-  List<Widget> _buildColumns(
-      BuildContext context, TableController<K, T> controller, int index, double totalWidth, PagedDataTableThemeData theme) {
+  @override
+  void dispose() {
+    super.dispose();
+
+    controller.removeRowChangeListener(widget.index, _onRowChanged);
+  }
+}
+
+class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
+  final int fixedColumnCount;
+  final List<ReadOnlyTableColumn> columns;
+
+  const _FixedPartRow({
+    required super.index,
+    required super.totalWidth,
+    required this.fixedColumnCount,
+    required this.columns,
+    super.key,
+  });
+
+  @override
+  List<Widget> buildColumns(
+      BuildContext context, int index, double totalWidth, TableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
     double remainingWidth = totalWidth;
-    for (int i = 0; i < widget.fixedColumnCount; i++) {
-      final column = widget.columns[i];
+    for (int i = 0; i < fixedColumnCount; i++) {
+      final column = columns[i];
       final (build, width) = _buildCell(context, index, item, theme, totalWidth, remainingWidth, column);
       list.add(build);
       remainingWidth = width;
@@ -75,94 +89,35 @@ class _FixedPartRowState<K extends Comparable<K>, T> extends State<_FixedPartRow
 
     return list;
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    controller.removeRowChangeListener(widget.index, _onRowChanged);
-  }
 }
 
-class _VariablePartRow<K extends Comparable<K>, T> extends StatefulWidget {
-  final int index;
-  final double maxWidth;
+class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   final List<ReadOnlyTableColumn> columns;
   final int fixedColumnCount;
 
   const _VariablePartRow({
-    required this.index,
-    required this.maxWidth,
+    required super.index,
+    required super.totalWidth,
     required this.fixedColumnCount,
     required this.columns,
     super.key,
   });
 
   @override
-  State<_VariablePartRow<K, T>> createState() => _VariablePartRowState<K, T>();
-}
-
-class _VariablePartRowState<K extends Comparable<K>, T> extends State<_VariablePartRow<K, T>> {
-  late final controller = TableControllerProvider.of<K, T>(context);
-  late final theme = PagedDataTableTheme.of(context);
-  bool selected = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    controller.addRowChangeListener(widget.index, _onRowChanged);
-    setState(() {
-      selected = controller._selectedRows.contains(widget.index);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget child = Row(children: _buildColumns(context, widget.index, widget.maxWidth, theme));
-
-    var color = theme.cellColor?.call(widget.index);
-    if (selected && theme.selectedCellColor != null) {
-      color = theme.selectedCellColor;
-    }
-    if (color != null) {
-      child = DecoratedBox(
-        decoration: BoxDecoration(color: color),
-        child: child,
-      );
-    }
-
-    return SizedBox(height: theme.rowHeight, child: child);
-  }
-
-  List<Widget> _buildColumns(BuildContext context, int index, double totalWidth, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(
+      BuildContext context, int index, double totalWidth, TableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
     double remainingWidth = totalWidth;
 
-    for (int i = widget.fixedColumnCount; i < widget.columns.length; i++) {
-      final column = widget.columns[i];
+    for (int i = fixedColumnCount; i < columns.length; i++) {
+      final column = columns[i];
       final (built, width) = _buildCell(context, index, item, theme, totalWidth, remainingWidth, column);
       list.add(built);
       remainingWidth = width;
     }
 
     return list;
-  }
-
-  void _onRowChanged(int index, T value) {
-    if (mounted) {
-      setState(() {
-        selected = controller._selectedRows.contains(index);
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    controller.removeRowChangeListener(widget.index, _onRowChanged);
   }
 }
 

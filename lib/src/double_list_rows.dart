@@ -82,7 +82,7 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
                         separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
                         itemBuilder: (context, index) => _FixedPartRow<K, T>(
                             index: index,
-                            maxWidth: constraints.maxWidth,
+                            totalWidth: constraints.maxWidth,
                             fixedColumnCount: widget.fixedColumnCount,
                             columns: widget.columns),
                       ),
@@ -103,7 +103,7 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
                                 separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
                                 itemBuilder: (context, index) => _VariablePartRow<K, T>(
                                   index: index,
-                                  maxWidth: constraints.maxWidth,
+                                  totalWidth: constraints.maxWidth,
                                   fixedColumnCount: widget.fixedColumnCount,
                                   columns: widget.columns,
                                 ),
