@@ -1,3 +1,15 @@
+## 2.0.0-dev.1
+
+First prerelease of PagedDataTable v2!
+
+- Adds Horizontal scrolling.
+- Fixes row selection.
+- Adds a better `TableController`.
+- Better column sorting.
+
+> Keep in mind this is an uncomplete release. Filters, intl and cell edition features are disabled. I will continue working on this package
+> actively.
+
 ## 1.4.4
 
 - Add support for 'de' locale
