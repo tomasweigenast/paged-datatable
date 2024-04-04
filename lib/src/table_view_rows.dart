@@ -1,7 +1,7 @@
 part of 'paged_datatable.dart';
 
 /// A row renderer that uses TableView
-class _TableViewRows<K extends Comparable<K>, T> extends StatefulWidget {
+/*class _TableViewRows<K extends Comparable<K>, T> extends StatefulWidget {
   final TableController controller;
   final ScrollController horizontalController, verticalController;
   final int fixedColumnCount;
@@ -131,3 +131,4 @@ class _TableViewRowsState<K extends Comparable<K>, T> extends State<_TableViewRo
     widget.controller.removeListener(_onControllerChanged);
   }
 }
+*/

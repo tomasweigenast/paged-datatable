@@ -1,6 +1,6 @@
 ## 2.0.0-dev.1
 
-First prerelease of PagedDataTable v2!
+**First prerelease of PagedDataTable v2!**
 
 - Adds Horizontal scrolling.
 - Fixes row selection.

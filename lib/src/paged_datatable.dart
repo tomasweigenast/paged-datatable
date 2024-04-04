@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/footer.dart';
@@ -9,17 +8,17 @@ import 'package:paged_datatable/src/linked_scroll_controller.dart';
 import 'package:paged_datatable/src/sort.dart';
 import 'package:paged_datatable/src/table_controller_notifier.dart';
 
-import 'table_view/table.dart';
-import 'table_view/table_cell.dart';
-import 'table_view/table_span.dart';
+part 'column_widgets.dart';
+// import 'table_view/table.dart';
+// import 'table_view/table_cell.dart';
+// import 'table_view/table_span.dart';
 
 part 'controller.dart';
 part 'double_list_rows.dart';
-part 'header.dart';
 part 'footer_widgets.dart';
-part 'table_view_rows.dart';
-part 'column_widgets.dart';
+part 'header.dart';
 part 'row.dart';
+part 'table_view_rows.dart';
 
 typedef Fetcher<K extends Comparable<K>, T> = FutureOr<(List<T> resultset, K? nextPageToken)> Function(
     int pageSize, SortModel? sortModel, K? pageToken);
@@ -58,7 +57,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   late final headerHorizontalController = linkedControllers.addAndGet();
   late final horizontalController = linkedControllers.addAndGet();
   late final TableController<K, T> tableController;
-  late FixedTableSpanExtent rowSpanExtent, headerRowSpanExtent;
+  // late FixedTableSpanExtent rowSpanExtent, headerRowSpanExtent;
   late PagedDataTableThemeData theme;
   bool selfConstructedController = false;
 
