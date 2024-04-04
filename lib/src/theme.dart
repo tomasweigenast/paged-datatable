@@ -12,6 +12,7 @@ final class PagedDataTableThemeData {
   final TextStyle cellTextStyle;
   final TextStyle headerTextStyle;
   final Color? Function(int index)? cellColor;
+  final Color? selectedCellColor;
   final bool verticalScrollbarVisibility;
   final bool horizontalScrollbarVisibility;
 
@@ -24,6 +25,7 @@ final class PagedDataTableThemeData {
     this.headerHeight = 56.0,
     this.footerHeight = 56.0,
     this.rowHeight = 52.0,
+    this.selectedCellColor,
     this.cellTextStyle = const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),
     this.headerTextStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
     this.cellColor,
@@ -50,6 +52,7 @@ final class PagedDataTableThemeData {
           other.cellTextStyle == cellTextStyle &&
           other.headerTextStyle == headerTextStyle &&
           other.cellColor == cellColor &&
+          other.selectedCellColor == selectedCellColor &&
           other.verticalScrollbarVisibility == verticalScrollbarVisibility &&
           other.horizontalScrollbarVisibility == horizontalScrollbarVisibility);
 }

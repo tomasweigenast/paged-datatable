@@ -15,9 +15,9 @@ import 'table_view/table_span.dart';
 part 'controller.dart';
 part 'double_list_rows.dart';
 part 'header.dart';
-part 'row_state.dart';
 part 'table_view_rows.dart';
 part 'column_widgets.dart';
+part 'row.dart';
 
 typedef Fetcher<K extends Comparable<K>, T> = FutureOr<(List<T> resultset, K? nextPageToken)> Function(
     int pageSize, SortModel? sortModel, K? pageToken);

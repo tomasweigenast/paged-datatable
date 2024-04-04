@@ -1,5 +1,7 @@
 part of 'paged_datatable.dart';
 
+typedef RowChangeListener<K extends Comparable<K>, T> = void Function(int index, T item);
+
 /// [TableController] represents the state of a [PagedDataTable] of type [T], using pagination keys of type [K].
 ///
 /// Is recommended that [T] specifies a custom hashCode and equals method for comparison reasons.
@@ -7,6 +9,12 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   final List<T> _currentDataset = []; // the current dataset that is being displayed
   final Map<int, K> _paginationKeys = {}; // it's a map because on not found map will return null, list will throw
   final Set<int> _selectedRows = {}; // The list of selected row indexes
+
+  // The list of special listeners which all are functions
+  final Map<_ListenerType, dynamic> _listeners = {
+    // callbacks for row change. The key of the map is the row index, the value the list of listeners for the row
+    _ListenerType.rowChange: <int, List<RowChangeListener<K, T>>>{},
+  };
   PagedDataTableConfiguration? _configuration;
   late final Fetcher<K, T> _fetcher; // The function used to fetch items
 
@@ -29,6 +37,9 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
   /// The current sort model of the table
   SortModel? get sortModel => _currentSortModel;
+
+  /// The list of selected row indexes
+  List<int> get selectedRows => _selectedRows.toList(growable: false);
 
   /// Updates the sort model and refreshes the dataset
   set sortModel(SortModel? sortModel) {
@@ -96,7 +107,11 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   ///
   /// This will use item to lookup based on its hashcode, so if you don't implement a custom
   /// one, this may not remove anything.
-  void removeRow(T item) => removeRowAt(_currentDataset.indexOf(item));
+  void removeRow(T item) {
+    final index = _currentDataset.indexOf(item);
+    removeRowAt(index);
+    _notifyOnRowChanged(index);
+  }
 
   /// Removes a row at the specified [index].
   void removeRowAt(int index) {
@@ -110,18 +125,21 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
     _currentDataset.removeAt(index);
     _totalItems--;
-    notifyListeners();
+    _notifyOnRowChanged(index);
   }
 
   /// Inserts [value] in the current dataset at the specified [index]
   void insertAt(int index, T value) {
     _currentDataset.insert(index, value);
     _totalItems++;
-    notifyListeners();
+    _notifyOnRowChanged(index);
   }
 
   /// Inserts [value] at the bottom of the current dataset
-  void insert(T value) => insertAt(_totalItems, value);
+  void insert(T value) {
+    insertAt(_totalItems, value);
+    _notifyOnRowChanged(_totalItems);
+  }
 
   /// Replaces the element at [index] with [value]
   void replace(int index, T value) {
@@ -130,19 +148,33 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     }
 
     _currentDataset[index] = value;
-    notifyListeners();
+    _notifyOnRowChanged(index);
   }
 
   /// Marks a row as selected
   void selectRow(int index) {
     _selectedRows.add(index);
-    notifyListeners();
+    _notifyOnRowChanged(index);
+  }
+
+  /// Marks every row in the current resultset as selected
+  void selectAllRows() {
+    final iterable = Iterable<int>.generate(_totalItems);
+    _selectedRows.addAll(iterable);
+    _notifyRowChangedMany(iterable);
+  }
+
+  /// Unselects every row
+  void unselectEveryRow() {
+    final selectedRows = _selectedRows.toList(growable: false);
+    _selectedRows.clear();
+    _notifyRowChangedMany(selectedRows);
   }
 
   /// Unselects a row if was selected before
   void unselectRow(int index) {
     _selectedRows.remove(index);
-    notifyListeners();
+    _notifyOnRowChanged(index);
   }
 
   /// Selects or unselects a row
@@ -151,6 +183,58 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
       _selectedRows.remove(index);
     } else {
       _selectedRows.add(index);
+    }
+    _notifyOnRowChanged(index);
+  }
+
+  /// Registers a callback that gets called when the row at [index] is updated.
+  void addRowChangeListener(int index, RowChangeListener<K, T> onRowChange) {
+    final listeners = _listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>;
+    final listenersForIndex = listeners[index] ?? [];
+    listenersForIndex.add(onRowChange);
+    listeners[index] = listenersForIndex;
+  }
+
+  /// Unregisters a row change callback.
+  void removeRowChangeListener(int index, RowChangeListener<K, T> rowChangeListener) {
+    final listeners = _listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>;
+    final listenersForIndex = listeners[index];
+    if (listenersForIndex == null) return;
+
+    int? toRemove;
+    for (int i = 0; i < listenersForIndex.length; i++) {
+      if (listenersForIndex[i] == rowChangeListener) {
+        toRemove = i;
+        break;
+      }
+    }
+
+    if (toRemove != null) listenersForIndex.removeAt(toRemove);
+  }
+
+  /// This method automatically calls notifyListeners too.
+  void _notifyOnRowChanged(int rowIndex) {
+    final listeners = (_listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>)[rowIndex];
+    if (listeners != null) {
+      final item = _currentDataset[rowIndex]!;
+      for (final listener in listeners) {
+        listener(rowIndex, item);
+      }
+    }
+    notifyListeners();
+  }
+
+  /// This method automatically calls notifyListeners too.
+  void _notifyRowChangedMany(Iterable<int> indexes) {
+    final listeners = (_listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>);
+    for (final index in indexes) {
+      final listenerGroup = listeners[index];
+      if (listenerGroup != null) {
+        final value = _currentDataset[index]!;
+        for (final listener in listenerGroup) {
+          listener(index, value);
+        }
+      }
     }
     notifyListeners();
   }
@@ -228,4 +312,8 @@ enum _TableState {
   idle,
   fetching,
   error,
+}
+
+enum _ListenerType {
+  rowChange,
 }

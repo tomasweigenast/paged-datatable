@@ -7,7 +7,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await initializeDateFormatting("en");
 
-  PostsRepository.generate(200);
+  PostsRepository.generate(500);
 
   runApp(const MyApp());
 }
@@ -89,12 +89,13 @@ class _MainViewState extends State<MainView> {
             ),
             Expanded(
               child: PagedDataTableTheme(
-                data: const PagedDataTableThemeData(
-                    // cellColor: (index) => index.isEven ? Colors.purple[100] : null,
-                    ),
+                data: PagedDataTableThemeData(
+                  selectedCellColor: const Color(0xFFCE93D8),
+                  cellColor: (index) => index.isEven ? Colors.purple[50] : null,
+                ),
                 child: PagedDataTable<String, Post>(
                   controller: tableController,
-                  initialPageSize: 20,
+                  initialPageSize: 100,
                   configuration: const PagedDataTableConfiguration(),
                   pageSizes: const [10, 20, 50, 100],
                   fetcher: (pageSize, sortModel, pageToken) async {

@@ -112,7 +112,7 @@ final class RowSelectorColumn<K extends Comparable<K>, T> extends ReadOnlyTableC
           size: const FixedColumnSize(80),
           sortable: false,
           tooltip: "Select rows", // TODO: add intl
-          title: Checkbox(value: false, onChanged: (newValue) {}),
+          title: SelectAllRowsCheckbox<K, T>(),
         );
 
   @override
