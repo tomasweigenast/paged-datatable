@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+          useMaterial3: true,
           colorScheme: const ColorScheme.light(primary: Colors.deepPurple, secondary: Colors.teal),
           // textTheme: GoogleFonts.robotoTextTheme(),
           cardTheme: CardTheme(

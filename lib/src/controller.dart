@@ -9,6 +9,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   final List<T> _currentDataset = []; // the current dataset that is being displayed
   final Map<int, K> _paginationKeys = {}; // it's a map because on not found map will return null, list will throw
   final Set<int> _selectedRows = {}; // The list of selected row indexes
+  late final List<int>? _pageSizes;
 
   // The list of special listeners which all are functions
   final Map<_ListenerType, dynamic> _listeners = {
@@ -30,10 +31,20 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   bool get hasNextPage => _hasNextPage;
 
   /// A flag that indicates if the dataset has a previous page
-  bool get hasPreviousPage => _currentPageIndex != -1;
+  bool get hasPreviousPage => _currentPageIndex != 0;
 
   /// The current amount of items that are being displayed on the current page
   int get totalItems => _totalItems;
+
+  /// The current page size
+  int get pageSize => _currentPageSize;
+
+  /// Sets the new page size for the table
+  set pageSize(int pageSize) {
+    _currentPageSize = pageSize;
+    refresh(fromStart: true);
+    notifyListeners();
+  }
 
   /// The current sort model of the table
   SortModel? get sortModel => _currentSortModel;
@@ -80,6 +91,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   void refresh({bool fromStart = false}) {
     if (fromStart) {
       _paginationKeys.clear();
+      _totalItems = 0;
       _fetch();
     } else {
       _fetch(_currentPageIndex);
@@ -242,6 +254,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   /// Initializes the controller filling up properties
   void _init({
     required List<ReadOnlyTableColumn> columns,
+    required List<int>? pageSizes,
     required int initialPageSize,
     required Fetcher<K, T> fetcher,
     required PagedDataTableConfiguration config,
@@ -251,6 +264,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     assert(columns.isNotEmpty, "columns cannot be empty.");
 
     _currentPageSize = initialPageSize;
+    _pageSizes = pageSizes;
     _configuration = config;
     _fetcher = fetcher;
 

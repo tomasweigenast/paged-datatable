@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
+import 'package:paged_datatable/src/footer.dart';
 import 'package:paged_datatable/src/linked_scroll_controller.dart';
 import 'package:paged_datatable/src/sort.dart';
 import 'package:paged_datatable/src/table_controller_notifier.dart';
@@ -15,6 +16,7 @@ import 'table_view/table_span.dart';
 part 'controller.dart';
 part 'double_list_rows.dart';
 part 'header.dart';
+part 'footer_widgets.dart';
 part 'table_view_rows.dart';
 part 'column_widgets.dart';
 part 'row.dart';
@@ -31,6 +33,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   final Fetcher<K, T> fetcher;
   final int fixedColumnCount;
   final PagedDataTableConfiguration configuration;
+  final Widget? footer;
 
   const PagedDataTable({
     required this.columns,
@@ -41,6 +44,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.controller,
     this.fixedColumnCount = 0,
     this.configuration = const PagedDataTableConfiguration(),
+    this.footer,
     super.key,
   });
 
@@ -72,6 +76,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
     }
     tableController._init(
       columns: widget.columns,
+      pageSizes: widget.pageSizes,
       initialPageSize: widget.initialPageSize,
       fetcher: widget.fetcher,
       config: widget.configuration,
@@ -131,8 +136,8 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
             const Divider(height: 0, color: Color(0xFFD6D6D6)),
             SizedBox(
               height: theme.footerHeight,
-              child: const Center(child: Text("Footer")),
-            )
+              child: widget.footer ?? DefaultFooter<K, T>(),
+            ),
           ],
         ),
       ),
