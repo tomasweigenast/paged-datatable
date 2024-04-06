@@ -123,7 +123,7 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
 
   Future<void> _showFilterOverlay(TapDownDetails details, BuildContext context) {
     final mediaWidth = MediaQuery.of(context).size.width;
-    final bool isBottomSheet = mediaWidth < 1000; // TODO: add configurable breakpoint
+    final bool isBottomSheet = mediaWidth < theme.filterDialogBreakpoint;
 
     if (isBottomSheet) {
       return showModalBottomSheet(

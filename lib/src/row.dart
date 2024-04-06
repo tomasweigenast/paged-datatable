@@ -29,9 +29,9 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
   @override
   Widget build(BuildContext context) {
     Widget child = Row(children: widget.buildColumns(context, widget.index, controller, theme));
-    var color = theme.cellColor?.call(widget.index);
-    if (selected && theme.selectedCellColor != null) {
-      color = theme.selectedCellColor;
+    var color = theme.rowColor?.call(widget.index);
+    if (selected && theme.selectedRow != null) {
+      color = theme.selectedRow;
     }
     if (color != null) {
       child = DecoratedBox(
@@ -120,6 +120,7 @@ Widget _buildCell<T>(
   Widget child = Container(
     padding: theme.cellPadding,
     margin: theme.padding,
+    decoration: BoxDecoration(border: theme.cellBorderSide),
     child: column.format.transform(column.build(context, value, index)),
   );
 

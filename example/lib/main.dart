@@ -90,8 +90,8 @@ class _MainViewState extends State<MainView> {
             Expanded(
               child: PagedDataTableTheme(
                 data: PagedDataTableThemeData(
-                  selectedCellColor: const Color(0xFFCE93D8),
-                  cellColor: (index) => index.isEven ? Colors.purple[50] : null,
+                  selectedRow: const Color(0xFFCE93D8),
+                  rowColor: (index) => index.isEven ? Colors.purple[50] : null,
                 ),
                 child: PagedDataTable<String, Post>(
                   controller: tableController,
@@ -122,6 +122,28 @@ class _MainViewState extends State<MainView> {
                       name: "Author's Gender",
                     ),
                   ],
+                  filterBarChild: PopupMenuButton(
+                    icon: const Icon(Icons.more_vert_outlined),
+                    itemBuilder: (context) => <PopupMenuEntry>[
+                      PopupMenuItem(
+                        child: const Text("Print selected rows"),
+                        onTap: () {},
+                      ),
+                      PopupMenuItem(
+                        child: const Text("Select row"),
+                        onTap: () {},
+                      ),
+                      PopupMenuItem(
+                        child: const Text("Select all rows"),
+                        onTap: () {},
+                      ),
+                      PopupMenuItem(
+                        child: const Text("Unselect all rows"),
+                        onTap: () {},
+                      ),
+                      const PopupMenuDivider(),
+                    ],
+                  ),
                   fixedColumnCount: 2,
                   columns: [
                     RowSelectorColumn(),
