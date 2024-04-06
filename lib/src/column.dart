@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-
-import '../paged_datatable.dart';
+part of 'paged_datatable.dart';
 
 typedef Setter<T, V> = FutureOr<bool> Function(T item, V value, int rowIndex);
 typedef Getter<T, V> = V? Function(T item, int rowIndex);
@@ -105,6 +101,7 @@ final class TableColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<
 
 /// A special [ReadOnlyTableColumn] that renders a checkbox used to select rows.
 final class RowSelectorColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<K, T> {
+  /// Creates a new [RowSelectorColumn].
   RowSelectorColumn()
       : super(
           format: const AlignColumnFormat(alignment: Alignment.center),
@@ -112,11 +109,11 @@ final class RowSelectorColumn<K extends Comparable<K>, T> extends ReadOnlyTableC
           size: const FixedColumnSize(80),
           sortable: false,
           tooltip: "Select rows",
-          title: SelectAllRowsCheckbox<K, T>(),
+          title: _SelectAllRowsCheckbox<K, T>(),
         );
 
   @override
   Widget build(BuildContext context, T item, int index) {
-    return SelectRowCheckbox<K, T>(index: index);
+    return _SelectRowCheckbox<K, T>(index: index);
   }
 }

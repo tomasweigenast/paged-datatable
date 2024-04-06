@@ -13,6 +13,9 @@ final class PagedDataTableThemeData {
   /// The elevation of the table.
   final double elevation;
 
+  /// The table's background color.
+  final Color backgroundColor;
+
   /// The header bar's height
   final double headerHeight;
 
@@ -52,6 +55,9 @@ final class PagedDataTableThemeData {
   /// The width breakpoint that [PagedDataTable] uses to decide if will render a popup or a bottom sheet when the filter dialog is requested.
   final double filterDialogBreakpoint;
 
+  /// The [ChipThemeData] to apply to filter chips.
+  final ChipThemeData? chipTheme;
+
   const PagedDataTableThemeData({
     this.cellPadding = const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
     this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
@@ -70,11 +76,27 @@ final class PagedDataTableThemeData {
     this.verticalScrollbarVisibility = true,
     this.horizontalScrollbarVisibility = true,
     this.filterDialogBreakpoint = 1000.0,
+    this.chipTheme,
+    this.backgroundColor = Colors.white,
   });
 
   @override
-  int get hashCode => Object.hash(cellPadding, padding, borderRadius, elevation, headerHeight, footerHeight, rowHeight,
-      cellBorderSide, cellTextStyle, headerTextStyle, rowColor, verticalScrollbarVisibility, horizontalScrollbarVisibility);
+  int get hashCode => Object.hash(
+      cellPadding,
+      padding,
+      borderRadius,
+      elevation,
+      headerHeight,
+      footerHeight,
+      rowHeight,
+      cellBorderSide,
+      cellTextStyle,
+      headerTextStyle,
+      rowColor,
+      verticalScrollbarVisibility,
+      horizontalScrollbarVisibility,
+      chipTheme,
+      backgroundColor);
 
   @override
   bool operator ==(Object other) =>
@@ -93,7 +115,9 @@ final class PagedDataTableThemeData {
           other.cellBorderSide == cellBorderSide &&
           other.selectedRow == selectedRow &&
           other.verticalScrollbarVisibility == verticalScrollbarVisibility &&
-          other.horizontalScrollbarVisibility == horizontalScrollbarVisibility);
+          other.horizontalScrollbarVisibility == horizontalScrollbarVisibility &&
+          other.chipTheme == chipTheme &&
+          other.backgroundColor == backgroundColor);
 }
 
 final class PagedDataTableTheme extends InheritedWidget {

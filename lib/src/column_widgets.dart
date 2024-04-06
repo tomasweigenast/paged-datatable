@@ -1,9 +1,9 @@
 part of 'paged_datatable.dart';
 
-final class SelectRowCheckbox<K extends Comparable<K>, T> extends StatelessWidget {
+final class _SelectRowCheckbox<K extends Comparable<K>, T> extends StatelessWidget {
   final int index;
 
-  const SelectRowCheckbox({required this.index, super.key});
+  const _SelectRowCheckbox({required this.index, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +17,14 @@ final class SelectRowCheckbox<K extends Comparable<K>, T> extends StatelessWidge
   }
 }
 
-final class SelectAllRowsCheckbox<K extends Comparable<K>, T> extends StatefulWidget {
-  const SelectAllRowsCheckbox({super.key});
+final class _SelectAllRowsCheckbox<K extends Comparable<K>, T> extends StatefulWidget {
+  const _SelectAllRowsCheckbox({super.key});
 
   @override
   State<StatefulWidget> createState() => _SelectAllRowsCheckboxState<K, T>();
 }
 
-final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T> extends State<SelectAllRowsCheckbox<K, T>> {
+final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T> extends State<_SelectAllRowsCheckbox<K, T>> {
   late final tableController = TableControllerProvider.of<K, T>(context);
   bool? state;
 

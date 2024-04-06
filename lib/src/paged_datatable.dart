@@ -21,6 +21,7 @@ part 'sort_model.dart';
 part 'filter_state.dart';
 part 'filter_bar.dart';
 part 'filter.dart';
+part 'column.dart';
 
 /// [PagedDataTable] renders a table of items that is paginable.
 ///
@@ -130,6 +131,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
     theme = PagedDataTableTheme.of(context);
 
     return Card(
+      color: theme.backgroundColor,
       elevation: theme.elevation,
       shape: RoundedRectangleBorder(borderRadius: theme.borderRadius),
       margin: EdgeInsets.zero,

@@ -107,16 +107,12 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
     //   );
     // }
 
-    // if (theme.chipTheme != null) {
-    //   child = ChipTheme(
-    //     data: theme.chipTheme!,
-    //     child: child,
-    //   );
-    // }
-
-    // if (theme.filtersHeaderTextStyle != null) {
-    //   child = DefaultTextStyle(style: theme.filtersHeaderTextStyle!, child: child);
-    // }
+    if (theme.chipTheme != null) {
+      child = ChipTheme(
+        data: theme.chipTheme!,
+        child: child,
+      );
+    }
 
     return child;
   }
