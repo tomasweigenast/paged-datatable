@@ -137,21 +137,25 @@ final class _HeaderState<K extends Comparable<K>, T> extends State<_Header<K, T>
       }
     }
 
-    switch (column.size) {
-      case FixedColumnSize(:final size):
-        child = SizedBox(width: size, child: child);
-        availableWidth -= size;
-        break;
-      case FractionalColumnSize(:final fraction):
-        final size = widget.width * fraction;
-        child = SizedBox(width: size, child: child);
-        availableWidth -= size;
-        break;
-      case RemainingColumnSize():
-        child = SizedBox(width: availableWidth, child: child);
-        availableWidth = 0;
-        break;
-    }
+    final size = column.size.calculateConstraints(availableWidth);
+    availableWidth -= size;
+    child = SizedBox(width: size, child: child);
+
+    // switch (column.size) {
+    //   case FixedColumnSize(:final size):
+    //     child = SizedBox(width: size, child: child);
+    //     availableWidth -= size;
+    //     break;
+    //   case FractionalColumnSize(:final fraction):
+    //     final size = widget.width * fraction;
+    //     child = SizedBox(width: size, child: child);
+    //     availableWidth -= size;
+    //     break;
+    //   case RemainingColumnSize():
+    //     child = SizedBox(width: availableWidth, child: child);
+    //     availableWidth = 0;
+    //     break;
+    // }
 
     return (child, availableWidth);
   }

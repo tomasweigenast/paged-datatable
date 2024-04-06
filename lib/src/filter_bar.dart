@@ -2,7 +2,9 @@ part of 'paged_datatable.dart';
 
 /// The filter bar is displayed before the table header
 class _FilterBar<K extends Comparable<K>, T> extends StatefulWidget {
-  const _FilterBar();
+  final Widget? child;
+
+  const _FilterBar({required this.child});
 
   @override
   State<StatefulWidget> createState() => _FilterBarState<K, T>();
@@ -93,25 +95,7 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
               ],
             ),
           ),
-          const Flexible(
-            child: Row(
-              children: [
-                // if (header != null) ...[const Spacer(), Flexible(child: header!)] else const Spacer(),
-
-                // /* MENU */
-                // if (menu != null)
-                //   IconButton(
-                //     splashRadius: 20,
-                //     padding: const EdgeInsets.symmetric(horizontal: 16),
-                //     tooltip: menu!.tooltip,
-                //     icon: Icon(Icons.more_vert, color: theme.buttonsColor),
-                //     onPressed: () {
-                //       _showMenu(context: context, items: menu!.items);
-                //     },
-                //   )
-              ],
-            ),
-          )
+          if (widget.child != null) widget.child!,
         ],
       ),
     );
@@ -137,19 +121,33 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
     return child;
   }
 
-  Future<void> _showFilterOverlay(TapDownDetails details, BuildContext context) async {
+  Future<void> _showFilterOverlay(TapDownDetails details, BuildContext context) {
+    final mediaWidth = MediaQuery.of(context).size.width;
+    final bool isBottomSheet = mediaWidth < 1000; // TODO: add configurable breakpoint
+
+    if (isBottomSheet) {
+      return showModalBottomSheet(
+        barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        context: context,
+        builder: (context) => _FiltersDialog<K, T>(
+          availableWidth: mediaWidth,
+          rect: null,
+          tableController: controller,
+        ),
+      );
+    }
+
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    var offset = renderBox.localToGlobal(Offset.zero);
-    var size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final rect = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + renderBox.size.height - 10, 0, 0);
 
-    var rect = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + size.height - 10, 0, 0);
-
-    await showDialog(
+    return showDialog(
       context: context,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierDismissible: true,
       barrierColor: Colors.transparent,
       builder: (context) => _FiltersDialog<K, T>(
+        availableWidth: mediaWidth,
         rect: rect,
         tableController: controller,
       ),
@@ -169,17 +167,15 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
 }
 
 class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
-  final RelativeRect rect;
+  final RelativeRect? rect;
   final TableController<K, T> tableController;
+  final double availableWidth;
 
-  const _FiltersDialog({required this.rect, required this.tableController});
+  const _FiltersDialog({required this.rect, required this.availableWidth, required this.tableController});
 
   @override
   Widget build(BuildContext context) {
-    final mediaWidth = MediaQuery.of(context).size.width;
-    final bool isBottomSheet = mediaWidth < 1000; // TODO: add configurable breakpoint
-
-    final filtersList = Padding(
+    Widget filtersList = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
       child: Form(
         key: tableController._filtersFormKey,
@@ -222,8 +218,8 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
             child: const Text("Cancel"),
           ),
           const SizedBox(width: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
+          FilledButton(
+            style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
             onPressed: () {
               // to ensure onSaved is called on filters
               tableController._filtersFormKey.currentState!.save();
@@ -236,34 +232,44 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
       ),
     );
 
-    return Stack(
-      fit: StackFit.loose,
-      children: [
-        Positioned(
-          top: rect.top,
-          left: rect.left,
-          child: Container(
-            width: mediaWidth / 3,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              boxShadow: [BoxShadow(blurRadius: 3, color: Colors.black54)],
-              borderRadius: BorderRadius.all(Radius.circular(28)),
-            ),
-            child: Material(
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(28))),
-              elevation: 0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  filtersList,
-                  const Divider(height: 0, color: Color(0xFFD6D6D6)),
-                  buttons,
-                ],
+    if (rect == null) {
+      filtersList = Expanded(child: filtersList);
+    }
+
+    Widget child = Material(
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(28))),
+      elevation: 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          filtersList,
+          const Divider(height: 0, color: Color(0xFFD6D6D6)),
+          buttons,
+        ],
+      ),
+    );
+
+    if (rect != null) {
+      return Stack(
+        fit: StackFit.loose,
+        children: [
+          Positioned(
+            top: rect!.top,
+            left: rect!.left,
+            child: Container(
+              width: availableWidth / 3,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [BoxShadow(blurRadius: 3, color: Colors.black54)],
+                borderRadius: BorderRadius.all(Radius.circular(28)),
               ),
+              child: child,
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
+
+    return child;
   }
 }

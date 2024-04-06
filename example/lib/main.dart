@@ -140,14 +140,14 @@ class _MainViewState extends State<MainView> {
                     TableColumn(
                       title: const Text("Enabled"),
                       cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
-                      // size: const FixedColumnSize(100),
+                      size: const FixedColumnSize(100),
                     ),
                     TableColumn(
                       title: const Text("Author Gender"),
                       cellBuilder: (context, item, index) => Text(item.authorGender.name),
                       sortable: true,
                       id: "authorGender",
-                      // size: const FractionalColumnSize(.2),
+                      size: const MaxColumnSize(FractionalColumnSize(.2), FixedColumnSize(100)),
                     ),
                     TableColumn(
                       title: const Text("Content"),
@@ -158,7 +158,7 @@ class _MainViewState extends State<MainView> {
                       title: const Text("Number"),
                       format: const NumericColumnFormat(),
                       cellBuilder: (context, item, index) => Text(item.number.toString()),
-                      size: const FractionalColumnSize(.1),
+                      size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
                     ),
                   ],
                 ),

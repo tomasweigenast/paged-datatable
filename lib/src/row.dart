@@ -30,6 +30,7 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
 
   @override
   Widget build(BuildContext context) {
+    print("Total width: ${widget.totalWidth}");
     Widget child = Row(children: widget.buildColumns(context, widget.index, widget.totalWidth, controller, theme));
     var color = theme.cellColor?.call(widget.index);
     if (selected && theme.selectedCellColor != null) {
@@ -126,24 +127,28 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   Widget child = Container(
     padding: theme.cellPadding,
     margin: theme.padding,
+    color: Colors.blue,
     child: column.format.transform(column.build(context, value, index)),
   );
 
-  switch (column.size) {
-    case FixedColumnSize(:final size):
-      child = SizedBox(width: size, child: child);
-      availableWidth -= size;
-      break;
-    case FractionalColumnSize(:final fraction):
-      final size = totalWidth * fraction;
-      child = SizedBox(width: size, child: child);
-      availableWidth -= size;
-      break;
-    case RemainingColumnSize():
-      child = SizedBox(width: availableWidth, child: child);
-      availableWidth = 0;
-      break;
-  }
+  final size = column.size.calculateConstraints(availableWidth);
+  availableWidth -= size;
+  child = SizedBox(width: size, child: child);
+  // switch (column.size) {
+  //   case FixedColumnSize(:final size):
+  //     child = SizedBox(width: size, child: child);
+  //     availableWidth -= size;
+  //     break;
+  //   case FractionalColumnSize(:final fraction):
+  //     final size = totalWidth * fraction;
+  //     child = SizedBox(width: size, child: child);
+  //     availableWidth -= size;
+  //     break;
+  //   case RemainingColumnSize():
+  //     child = SizedBox(width: availableWidth, child: child);
+  //     availableWidth = 0;
+  //     break;
+  // }
 
   return (child, availableWidth);
 }

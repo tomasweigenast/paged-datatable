@@ -15,16 +15,16 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   final Set<int> _selectedRows = {}; // The list of selected row indexes
   final GlobalKey<FormState> _filtersFormKey = GlobalKey();
   late final List<int>? _pageSizes;
-
-  // The list of special listeners which all are functions
+  late final Fetcher<K, T> _fetcher; // The function used to fetch items
   final Map<_ListenerType, dynamic> _listeners = {
-    // callbacks for row change. The key of the map is the row index, the value the list of listeners for the row
+    // The list of special listeners which all are functions
+
+    // Callbacks for row change. The key of the map is the row index, the value the list of listeners for the row
     _ListenerType.rowChange: <int, List<RowChangeListener<K, T>>>{},
   };
   PagedDataTableConfiguration? _configuration;
-  late final Fetcher<K, T> _fetcher; // The function used to fetch items
 
-  Object? _currentError; // If something went wrong when fetching items, the error
+  Object? _currentError; // If something went wrong when fetching items, this is the latest error
   int _totalItems = 0; // the total items in the current dataset
   int _currentPageSize = 0;
   int _currentPageIndex = 0; // The current index of the page, used to lookup token inside _paginationKeys
@@ -352,7 +352,9 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
       // if now less than items than before, replace and remove
       else {
         _currentDataset.replaceRange(0, items.length - 1, items);
-        _currentDataset.removeRange(items.length, _totalItems - 1);
+        if (items.length < _totalItems) {
+          _currentDataset.removeRange(items.length, _totalItems - 1);
+        }
       }
 
       _totalItems = items.length;

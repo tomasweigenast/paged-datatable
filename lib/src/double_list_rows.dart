@@ -51,16 +51,21 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
             builder: (context, constraints) {
               // compute available widths
               var availableViewport = constraints.maxWidth;
+              print("initial available width: $availableViewport");
               var totalWidth = 0.0;
               var fixedWidth = 0.0;
               for (int i = 0; i < widget.columns.length; i++) {
                 final col = widget.columns[i];
-                final thisWidth = switch (col.size) {
-                  FixedColumnSize(:final size) => size,
-                  RemainingColumnSize() => availableViewport,
-                  FractionalColumnSize(:final fraction) => constraints.maxWidth * fraction
-                };
+                // final thisWidth = switch (col.size) {
+                //   FixedColumnSize(:final size) => size,
+                //   RemainingColumnSize() => availableViewport,
+                //   FractionalColumnSize(:final fraction) => constraints.maxWidth * fraction
+                // };
+                final thisWidth = col.size.calculateConstraints(availableViewport);
+                print("Width of column $i: $thisWidth");
+                // child = SizedBox(width: size, child: child);
                 availableViewport -= thisWidth;
+                print("Available width: $availableViewport");
                 totalWidth += thisWidth;
 
                 if (i < widget.fixedColumnCount) {

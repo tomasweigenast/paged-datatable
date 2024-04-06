@@ -9,9 +9,6 @@ import 'package:paged_datatable/src/linked_scroll_controller.dart';
 import 'package:paged_datatable/src/table_controller_notifier.dart';
 
 part 'column_widgets.dart';
-// import 'table_view/table.dart';
-// import 'table_view/table_cell.dart';
-// import 'table_view/table_span.dart';
 
 part 'controller.dart';
 part 'double_list_rows.dart';
@@ -25,16 +22,46 @@ part 'filter_state.dart';
 part 'filter_bar.dart';
 part 'filter.dart';
 
+/// [PagedDataTable] renders a table of items that is paginable.
+///
+/// The type of element to be displayed in the table is [T] and [K] is the type of key
+/// used to paginate the table.
 final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
+  /// An specific [TableController] to be use in this [PagedDataTable].
   final TableController<K, T>? controller;
+
+  /// The list of columns to draw in the table.
   final List<ReadOnlyTableColumn<K, T>> columns;
+
+  /// The initial page size of the table.
+  ///
+  /// If [pageSizes] is not null, this value must match any of the its values.
   final int initialPageSize;
+
+  /// The initial page query.
   final K? initialPage;
+
+  /// The list of page sizes availables to be selected in the footer.
   final List<int>? pageSizes;
+
+  /// The callback used to fetch new items.
   final Fetcher<K, T> fetcher;
+
+  /// The amount of columns to fix, starting from the left.
   final int fixedColumnCount;
+
+  /// The configuration of this [PagedDataTable].
   final PagedDataTableConfiguration configuration;
+
+  /// The widget to display at the footer of the table.
+  ///
+  /// If null, the default footer will be displayed.
   final Widget? footer;
+
+  /// Additional widget to add at the right of the filter bar.
+  final Widget? filterBarChild;
+
+  /// The list of filters to use.
   final List<TableFilter> filters;
 
   const PagedDataTable({
@@ -47,6 +74,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.fixedColumnCount = 0,
     this.configuration = const PagedDataTableConfiguration(),
     this.footer,
+    this.filterBarChild,
     this.filters = const <TableFilter>[],
     super.key,
   });
@@ -109,7 +137,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
         controller: tableController,
         child: Column(
           children: [
-            _FilterBar<K, T>(),
+            _FilterBar<K, T>(child: widget.filterBarChild),
 
             // This LayoutBuilder is to get the same width as the TableView
             LayoutBuilder(
