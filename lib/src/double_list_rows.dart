@@ -7,6 +7,7 @@ class _DoubleListRows<K extends Comparable<K>, T> extends StatefulWidget {
   final int fixedColumnCount;
   final TableController<K, T> controller;
   final PagedDataTableConfiguration configuration;
+  final List<double> sizes;
 
   const _DoubleListRows({
     required this.columns,
@@ -14,6 +15,7 @@ class _DoubleListRows<K extends Comparable<K>, T> extends StatefulWidget {
     required this.horizontalController,
     required this.controller,
     required this.configuration,
+    required this.sizes,
   });
 
   @override
@@ -47,81 +49,55 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
         child: Opacity(
           opacity: widget.controller._state == _TableState.idle ? 1 : 0.5,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // compute available widths
-              var availableViewport = constraints.maxWidth;
-              print("initial available width: $availableViewport");
-              var totalWidth = 0.0;
-              var fixedWidth = 0.0;
-              for (int i = 0; i < widget.columns.length; i++) {
-                final col = widget.columns[i];
-                // final thisWidth = switch (col.size) {
-                //   FixedColumnSize(:final size) => size,
-                //   RemainingColumnSize() => availableViewport,
-                //   FractionalColumnSize(:final fraction) => constraints.maxWidth * fraction
-                // };
-                final thisWidth = col.size.calculateConstraints(availableViewport);
-                print("Width of column $i: $thisWidth");
-                // child = SizedBox(width: size, child: child);
-                availableViewport -= thisWidth;
-                print("Available width: $availableViewport");
-                totalWidth += thisWidth;
-
-                if (i < widget.fixedColumnCount) {
-                  fixedWidth += thisWidth;
-                }
-              }
-
-              return Scrollbar(
-                thumbVisibility: theme.verticalScrollbarVisibility,
-                controller: normalController,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: fixedWidth,
-                      child: ListView.separated(
-                        primary: false,
-                        controller: fixedController,
-                        itemCount: widget.controller._totalItems,
-                        separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
-                        itemBuilder: (context, index) => _FixedPartRow<K, T>(
-                            index: index,
-                            totalWidth: constraints.maxWidth,
-                            fixedColumnCount: widget.fixedColumnCount,
-                            columns: widget.columns),
-                      ),
+          child: Scrollbar(
+            thumbVisibility: theme.verticalScrollbarVisibility,
+            controller: normalController,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: widget.sizes.take(widget.fixedColumnCount).fold(0.0, (a, b) => a! + b),
+                  child: ListView.separated(
+                    primary: false,
+                    controller: fixedController,
+                    itemCount: widget.controller._totalItems,
+                    separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
+                    itemBuilder: (context, index) => _FixedPartRow<K, T>(
+                      index: index,
+                      fixedColumnCount: widget.fixedColumnCount,
+                      sizes: widget.sizes,
+                      columns: widget.columns,
                     ),
-                    Expanded(
-                      child: Scrollbar(
-                        thumbVisibility: theme.horizontalScrollbarVisibility,
-                        controller: widget.horizontalController,
-                        child: ListView(
-                          controller: widget.horizontalController,
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: totalWidth, maxHeight: constraints.maxHeight),
-                              child: ListView.separated(
-                                controller: normalController,
-                                itemCount: widget.controller._totalItems,
-                                separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
-                                itemBuilder: (context, index) => _VariablePartRow<K, T>(
-                                  index: index,
-                                  totalWidth: constraints.maxWidth,
-                                  fixedColumnCount: widget.fixedColumnCount,
-                                  columns: widget.columns,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
+                Expanded(
+                  child: Scrollbar(
+                    thumbVisibility: theme.horizontalScrollbarVisibility,
+                    controller: widget.horizontalController,
+                    child: ListView(
+                      controller: widget.horizontalController,
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        ConstrainedBox(
+                          constraints:
+                              BoxConstraints(maxWidth: widget.sizes.skip(widget.fixedColumnCount).fold(0.0, (a, b) => a + b)),
+                          child: ListView.separated(
+                            controller: normalController,
+                            itemCount: widget.controller._totalItems,
+                            separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
+                            itemBuilder: (context, index) => _VariablePartRow<K, T>(
+                              sizes: widget.sizes,
+                              index: index,
+                              fixedColumnCount: widget.fixedColumnCount,
+                              columns: widget.columns,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

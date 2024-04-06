@@ -4,12 +4,12 @@ final class _Header<K extends Comparable<K>, T> extends StatefulWidget {
   final TableController<K, T> controller;
   final int fixedColumnCount;
   final List<ReadOnlyTableColumn> columns;
-  final double width;
   final ScrollController horizontalController;
   final PagedDataTableConfiguration configuration;
+  final List<double> sizes;
 
   const _Header({
-    required this.width,
+    required this.sizes,
     required this.controller,
     required this.columns,
     required this.fixedColumnCount,
@@ -37,8 +37,8 @@ final class _HeaderState<K extends Comparable<K>, T> extends State<_Header<K, T>
   @override
   Widget build(BuildContext context) {
     final theme = PagedDataTableTheme.of(context);
-    final fixedColumns = _buildFixedColumns(context, widget.width, theme);
-    final columns = _buildColumns(context, widget.width, theme);
+    final fixedColumns = _buildFixedColumns(context, theme);
+    final columns = _buildColumns(context, theme);
 
     return SizedBox(
       height: theme.headerHeight,
@@ -67,35 +67,28 @@ final class _HeaderState<K extends Comparable<K>, T> extends State<_Header<K, T>
     );
   }
 
-  List<Widget> _buildFixedColumns(BuildContext context, double totalWidth, PagedDataTableThemeData theme) {
+  List<Widget> _buildFixedColumns(BuildContext context, PagedDataTableThemeData theme) {
     final list = <Widget>[];
 
-    double remainingWidth = totalWidth;
     for (int i = 0; i < widget.fixedColumnCount; i++) {
       final column = widget.columns[i];
-      final (build, width) = _buildColumn(context, theme, remainingWidth, column);
-      list.add(build);
-      remainingWidth = width;
+      list.add(_buildColumn(context, theme, widget.sizes[i], column));
     }
 
     return list;
   }
 
-  List<Widget> _buildColumns(BuildContext context, double totalWidth, PagedDataTableThemeData theme) {
+  List<Widget> _buildColumns(BuildContext context, PagedDataTableThemeData theme) {
     final list = <Widget>[];
-    double remainingWidth = totalWidth;
     for (int i = widget.fixedColumnCount; i < widget.columns.length; i++) {
       final column = widget.columns[i];
-      final (built, width) = _buildColumn(context, theme, remainingWidth, column);
-      list.add(built);
-      remainingWidth = width;
+      list.add(_buildColumn(context, theme, widget.sizes[i], column));
     }
 
     return list;
   }
 
-  (Widget, double) _buildColumn(
-      BuildContext context, PagedDataTableThemeData theme, double availableWidth, ReadOnlyTableColumn column) {
+  Widget _buildColumn(BuildContext context, PagedDataTableThemeData theme, double width, ReadOnlyTableColumn column) {
     Widget child = Container(
       padding: theme.cellPadding,
       margin: theme.padding,
@@ -137,27 +130,9 @@ final class _HeaderState<K extends Comparable<K>, T> extends State<_Header<K, T>
       }
     }
 
-    final size = column.size.calculateConstraints(availableWidth);
-    availableWidth -= size;
-    child = SizedBox(width: size, child: child);
+    child = SizedBox(width: width, child: child);
 
-    // switch (column.size) {
-    //   case FixedColumnSize(:final size):
-    //     child = SizedBox(width: size, child: child);
-    //     availableWidth -= size;
-    //     break;
-    //   case FractionalColumnSize(:final fraction):
-    //     final size = widget.width * fraction;
-    //     child = SizedBox(width: size, child: child);
-    //     availableWidth -= size;
-    //     break;
-    //   case RemainingColumnSize():
-    //     child = SizedBox(width: availableWidth, child: child);
-    //     availableWidth = 0;
-    //     break;
-    // }
-
-    return (child, availableWidth);
+    return child;
   }
 
   void _onControllerChanged() {

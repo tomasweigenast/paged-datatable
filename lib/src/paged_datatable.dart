@@ -135,44 +135,52 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
       margin: EdgeInsets.zero,
       child: TableControllerProvider(
         controller: tableController,
-        child: Column(
-          children: [
-            _FilterBar<K, T>(child: widget.filterBarChild),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final sizes = _calculateColumnWidth(constraints.maxWidth);
 
-            // This LayoutBuilder is to get the same width as the TableView
-            LayoutBuilder(
-                builder: (context, constraints) => _Header(
-                    width: constraints.maxWidth,
+            return Column(
+              children: [
+                _FilterBar<K, T>(child: widget.filterBarChild),
+
+                _Header(
+                  controller: tableController,
+                  configuration: widget.configuration,
+                  columns: widget.columns,
+                  sizes: sizes,
+                  fixedColumnCount: widget.fixedColumnCount,
+                  horizontalController: headerHorizontalController,
+                ),
+                const Divider(height: 0, color: Color(0xFFD6D6D6)),
+
+                Expanded(
+                  child: _DoubleListRows(
+                    fixedColumnCount: widget.fixedColumnCount,
+                    columns: widget.columns,
+                    horizontalController: horizontalController,
                     controller: tableController,
                     configuration: widget.configuration,
-                    columns: widget.columns,
-                    fixedColumnCount: widget.fixedColumnCount,
-                    horizontalController: headerHorizontalController)),
-            const Divider(height: 0, color: Color(0xFFD6D6D6)),
-            Expanded(
-              child: _DoubleListRows(
-                fixedColumnCount: widget.fixedColumnCount,
-                columns: widget.columns,
-                horizontalController: horizontalController,
-                controller: tableController,
-                configuration: widget.configuration,
-              ),
-            ),
-            // Expanded(
-            //   child: _TableViewRows<T>(
-            //     columns: widget.columns,
-            //     controller: tableController,
-            //     fixedColumnCount: widget.fixedColumnCount,
-            //     horizontalController: horizontalController,
-            //     verticalController: verticalController,
-            //   ),
-            // ),
-            const Divider(height: 0, color: Color(0xFFD6D6D6)),
-            SizedBox(
-              height: theme.footerHeight,
-              child: widget.footer ?? DefaultFooter<K, T>(),
-            ),
-          ],
+                    sizes: sizes,
+                  ),
+                ),
+
+                // Expanded(
+                //   child: _TableViewRows<T>(
+                //     columns: widget.columns,
+                //     controller: tableController,
+                //     fixedColumnCount: widget.fixedColumnCount,
+                //     horizontalController: horizontalController,
+                //     verticalController: verticalController,
+                //   ),
+                // ),
+                const Divider(height: 0, color: Color(0xFFD6D6D6)),
+                SizedBox(
+                  height: theme.footerHeight,
+                  child: widget.footer ?? DefaultFooter<K, T>(),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -188,5 +196,18 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
     if (selfConstructedController) {
       tableController.dispose();
     }
+  }
+
+  List<double> _calculateColumnWidth(double maxWidth) {
+    final sizes = List.generate(widget.columns.length, (index) => 0.0, growable: false);
+    double availableWidth = maxWidth;
+    for (int i = 0; i < widget.columns.length; i++) {
+      final column = widget.columns[i];
+      final columnSize = column.size.calculateConstraints(availableWidth);
+      availableWidth -= columnSize;
+      sizes[i] = columnSize;
+    }
+
+    return sizes;
   }
 }

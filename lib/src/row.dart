@@ -2,15 +2,13 @@ part of 'paged_datatable.dart';
 
 abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
   final int index;
-  final double totalWidth;
 
-  const _RowBuilder({required this.index, required this.totalWidth, super.key});
+  const _RowBuilder({required this.index, super.key});
 
   @override
   State<StatefulWidget> createState() => _RowBuilderState<K, T>();
 
-  List<Widget> buildColumns(
-      BuildContext context, int index, double totalWidth, TableController<K, T> controller, PagedDataTableThemeData theme);
+  List<Widget> buildColumns(BuildContext context, int index, TableController<K, T> controller, PagedDataTableThemeData theme);
 }
 
 class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, T>> {
@@ -30,8 +28,7 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
 
   @override
   Widget build(BuildContext context) {
-    print("Total width: ${widget.totalWidth}");
-    Widget child = Row(children: widget.buildColumns(context, widget.index, widget.totalWidth, controller, theme));
+    Widget child = Row(children: widget.buildColumns(context, widget.index, controller, theme));
     var color = theme.cellColor?.call(widget.index);
     if (selected && theme.selectedCellColor != null) {
       color = theme.selectedCellColor;
@@ -65,27 +62,25 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
 class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   final int fixedColumnCount;
   final List<ReadOnlyTableColumn> columns;
+  final List<double> sizes;
 
   const _FixedPartRow({
     required super.index,
-    required super.totalWidth,
     required this.fixedColumnCount,
     required this.columns,
+    required this.sizes,
     super.key,
   });
 
   @override
-  List<Widget> buildColumns(
-      BuildContext context, int index, double totalWidth, TableController<K, T> controller, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(BuildContext context, int index, TableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
-    double remainingWidth = totalWidth;
     for (int i = 0; i < fixedColumnCount; i++) {
       final column = columns[i];
-      final (build, width) = _buildCell(context, index, item, theme, totalWidth, remainingWidth, column);
-      list.add(build);
-      remainingWidth = width;
+      final widget = _buildCell(context, index, item, sizes[i], theme, column);
+      list.add(widget);
     }
 
     return list;
@@ -95,35 +90,33 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
 class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   final List<ReadOnlyTableColumn> columns;
   final int fixedColumnCount;
+  final List<double> sizes;
 
   const _VariablePartRow({
     required super.index,
-    required super.totalWidth,
     required this.fixedColumnCount,
     required this.columns,
+    required this.sizes,
     super.key,
   });
 
   @override
-  List<Widget> buildColumns(
-      BuildContext context, int index, double totalWidth, TableController<K, T> controller, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(BuildContext context, int index, TableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
-    double remainingWidth = totalWidth;
 
     for (int i = fixedColumnCount; i < columns.length; i++) {
       final column = columns[i];
-      final (built, width) = _buildCell(context, index, item, theme, totalWidth, remainingWidth, column);
-      list.add(built);
-      remainingWidth = width;
+      final widget = _buildCell(context, index, item, sizes[i], theme, column);
+      list.add(widget);
     }
 
     return list;
   }
 }
 
-(Widget widget, double remainingWidth) _buildCell<T>(BuildContext context, int index, T value, PagedDataTableThemeData theme,
-    double totalWidth, double availableWidth, ReadOnlyTableColumn column) {
+Widget _buildCell<T>(
+    BuildContext context, int index, T value, double width, PagedDataTableThemeData theme, ReadOnlyTableColumn column) {
   Widget child = Container(
     padding: theme.cellPadding,
     margin: theme.padding,
@@ -131,9 +124,7 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
     child: column.format.transform(column.build(context, value, index)),
   );
 
-  final size = column.size.calculateConstraints(availableWidth);
-  availableWidth -= size;
-  child = SizedBox(width: size, child: child);
+  child = SizedBox(width: width, child: child);
   // switch (column.size) {
   //   case FixedColumnSize(:final size):
   //     child = SizedBox(width: size, child: child);
@@ -150,5 +141,5 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   //     break;
   // }
 
-  return (child, availableWidth);
+  return child;
 }
