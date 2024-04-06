@@ -8,6 +8,7 @@ final class PagedDataTableThemeData {
   final double headerHeight;
   final double footerHeight;
   final double rowHeight;
+  final double filterBarHeight;
   final BorderSide borderSide;
   final TextStyle cellTextStyle;
   final TextStyle headerTextStyle;
@@ -25,6 +26,7 @@ final class PagedDataTableThemeData {
     this.borderSide = const BorderSide(color: Color(0xFFD6D6D6), width: 1),
     this.headerHeight = 56.0,
     this.footerHeight = 56.0,
+    this.filterBarHeight = 50.0,
     this.rowHeight = 52.0,
     this.selectedCellColor,
     this.cellTextStyle = const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),

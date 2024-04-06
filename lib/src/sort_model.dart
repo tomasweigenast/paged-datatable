@@ -1,10 +1,11 @@
+part of 'paged_datatable.dart';
+
+/// SortModel indicates the current field the table is using to sort values.
 final class SortModel {
   final String fieldName;
   final bool descending;
 
-  const SortModel({required this.fieldName, required this.descending});
-  const SortModel.descending({required this.fieldName}) : descending = true;
-  const SortModel.ascending({required this.fieldName}) : descending = false;
+  const SortModel._({required this.fieldName, required this.descending});
 
   @override
   int get hashCode => Object.hash(fieldName, descending);

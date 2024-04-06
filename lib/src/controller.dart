@@ -1,5 +1,8 @@
 part of 'paged_datatable.dart';
 
+typedef Fetcher<K extends Comparable<K>, T> = FutureOr<(List<T> resultset, K? nextPageToken)> Function(
+    int pageSize, SortModel? sortModel, FilterModel filterModel, K? pageToken);
+
 typedef RowChangeListener<K extends Comparable<K>, T> = void Function(int index, T item);
 
 /// [TableController] represents the state of a [PagedDataTable] of type [T], using pagination keys of type [K].
@@ -7,8 +10,10 @@ typedef RowChangeListener<K extends Comparable<K>, T> = void Function(int index,
 /// Is recommended that [T] specifies a custom hashCode and equals method for comparison reasons.
 final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   final List<T> _currentDataset = []; // the current dataset that is being displayed
+  final Map<String, FilterState> _filtersState = {}; // The list of filters' states
   final Map<int, K> _paginationKeys = {}; // it's a map because on not found map will return null, list will throw
   final Set<int> _selectedRows = {}; // The list of selected row indexes
+  final GlobalKey<FormState> _filtersFormKey = GlobalKey();
   late final List<int>? _pageSizes;
 
   // The list of special listeners which all are functions
@@ -64,7 +69,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   /// If the sort model was ascending, it gets changed to descending, and finally it gets changed to null.
   void swipeSortModel([String? columnId]) {
     if (columnId != null && _currentSortModel?.fieldName != columnId) {
-      sortModel = SortModel.ascending(fieldName: columnId);
+      sortModel = SortModel._(fieldName: columnId, descending: false);
       return;
     }
 
@@ -74,7 +79,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     if (_currentSortModel!.descending) {
       sortModel = null;
     } else {
-      sortModel = SortModel(fieldName: _currentSortModel!.fieldName, descending: true);
+      sortModel = SortModel._(fieldName: _currentSortModel!.fieldName, descending: true);
     }
   }
 
@@ -224,6 +229,33 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     if (toRemove != null) listenersForIndex.removeAt(toRemove);
   }
 
+  /// Removes a filter, changing its value to null.
+  void removeFilter(String filterId) {
+    final filter = _filtersState[filterId];
+    if (filter == null) throw ArgumentError("Filter with id $filterId not found.");
+
+    filter.value = null;
+    notifyListeners();
+    _fetch();
+  }
+
+  /// Removes all the set filters, changing their values to null.
+  void removeFilters() {
+    _filtersState.forEach((key, value) {
+      value.value = null;
+    });
+    notifyListeners();
+    _fetch();
+  }
+
+  /// Applies the current set filters
+  void applyFilters() {
+    if (_filtersState.values.any((element) => element.value != null)) {
+      notifyListeners();
+      _fetch();
+    }
+  }
+
   /// This method automatically calls notifyListeners too.
   void _notifyOnRowChanged(int rowIndex) {
     final listeners = (_listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>)[rowIndex];
@@ -257,6 +289,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     required List<int>? pageSizes,
     required int initialPageSize,
     required Fetcher<K, T> fetcher,
+    required List<TableFilter> filters,
     required PagedDataTableConfiguration config,
   }) {
     if (_configuration != null) return;
@@ -267,6 +300,7 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     _pageSizes = pageSizes;
     _configuration = config;
     _fetcher = fetcher;
+    _filtersState.addEntries(filters.map((filter) => MapEntry(filter.id, filter.createState())));
 
     // Schedule a fetch
     Future.microtask(_fetch);
@@ -285,7 +319,9 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
     try {
       final pageToken = _paginationKeys[page];
-      var (items, nextPageToken) = await _fetcher(_currentPageSize, sortModel, pageToken);
+      final filterModel = FilterModel._(_filtersState.map((key, value) => MapEntry(key, value.value)));
+
+      var (items, nextPageToken) = await _fetcher(_currentPageSize, sortModel, filterModel, pageToken);
       _hasNextPage = nextPageToken != null;
       _currentPageIndex = page;
       if (nextPageToken != null) {
@@ -296,14 +332,27 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
         items = items.toList();
       }
 
-      if (_totalItems == 0) {
-        _currentDataset.addAll(items);
-      } else {
-        _currentDataset.replaceRange(0, items.length - 1, items);
+      /* the following may be more efficient than clearing the list and adding items again */
 
-        if (items.length < _totalItems) {
-          _currentDataset.removeRange(items.length, _totalItems - 1);
-        }
+      // if no items, clear dataset
+      if (items.isEmpty) {
+        _currentDataset.clear();
+      }
+
+      // if no items before, just add all
+      else if (_totalItems == 0) {
+        _currentDataset.addAll(items);
+      }
+
+      // if now more items than before, replace then add
+      else if (items.length > _totalItems) {
+        _currentDataset.replaceRange(0, _totalItems - 1, items);
+      }
+
+      // if now less than items than before, replace and remove
+      else {
+        _currentDataset.replaceRange(0, items.length - 1, items);
+        _currentDataset.removeRange(items.length, _totalItems - 1);
       }
 
       _totalItems = items.length;

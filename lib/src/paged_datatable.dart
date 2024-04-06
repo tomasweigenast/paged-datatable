@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/footer.dart';
 import 'package:paged_datatable/src/linked_scroll_controller.dart';
-import 'package:paged_datatable/src/sort.dart';
 import 'package:paged_datatable/src/table_controller_notifier.dart';
 
 part 'column_widgets.dart';
@@ -19,9 +19,11 @@ part 'footer_widgets.dart';
 part 'header.dart';
 part 'row.dart';
 part 'table_view_rows.dart';
-
-typedef Fetcher<K extends Comparable<K>, T> = FutureOr<(List<T> resultset, K? nextPageToken)> Function(
-    int pageSize, SortModel? sortModel, K? pageToken);
+part 'filter_model.dart';
+part 'sort_model.dart';
+part 'filter_state.dart';
+part 'filter_bar.dart';
+part 'filter.dart';
 
 final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   final TableController<K, T>? controller;
@@ -33,6 +35,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   final int fixedColumnCount;
   final PagedDataTableConfiguration configuration;
   final Widget? footer;
+  final List<TableFilter> filters;
 
   const PagedDataTable({
     required this.columns,
@@ -44,6 +47,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.fixedColumnCount = 0,
     this.configuration = const PagedDataTableConfiguration(),
     this.footer,
+    this.filters = const <TableFilter>[],
     super.key,
   });
 
@@ -79,6 +83,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
       initialPageSize: widget.initialPageSize,
       fetcher: widget.fetcher,
       config: widget.configuration,
+      filters: widget.filters,
     );
   }
 
@@ -104,6 +109,8 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
         controller: tableController,
         child: Column(
           children: [
+            _FilterBar<K, T>(),
+
             // This LayoutBuilder is to get the same width as the TableView
             LayoutBuilder(
                 builder: (context, constraints) => _Header(

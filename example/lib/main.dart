@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,13 +31,10 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: const ColorScheme.light(primary: Colors.deepPurple, secondary: Colors.teal),
-          // textTheme: GoogleFonts.robotoTextTheme(),
-          cardTheme: CardTheme(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          ),
-          popupMenuTheme: PopupMenuThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        textTheme: kIsWeb ? GoogleFonts.robotoTextTheme() : null,
+      ),
       home: const MainView(),
     );
   }
@@ -99,15 +98,30 @@ class _MainViewState extends State<MainView> {
                   initialPageSize: 100,
                   configuration: const PagedDataTableConfiguration(),
                   pageSizes: const [10, 20, 50, 100],
-                  fetcher: (pageSize, sortModel, pageToken) async {
+                  fetcher: (pageSize, sortModel, filterModel, pageToken) async {
                     final data = await PostsRepository.getPosts(
                       pageSize: pageSize,
                       pageToken: pageToken,
                       sortBy: sortModel?.fieldName,
                       sortDescending: sortModel?.descending ?? false,
+                      gender: filterModel["authorGender"],
+                      searchQuery: filterModel["content"],
                     );
                     return (data.items, data.nextPageToken);
                   },
+                  filters: [
+                    TextTableFilter(
+                      id: "content",
+                      chipFormatter: (value) => 'Content has "$value"',
+                      name: "Content",
+                    ),
+                    DropdownTableFilter<Gender>(
+                      items: Gender.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(growable: false),
+                      chipFormatter: (value) => 'Author is ${value.name.toLowerCase()}',
+                      id: "authorGender",
+                      name: "Author's Gender",
+                    ),
+                  ],
                   fixedColumnCount: 2,
                   columns: [
                     RowSelectorColumn(),
