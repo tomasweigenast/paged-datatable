@@ -1,3 +1,12 @@
+## 2.0.0-dev.2
+
+- Add filter bar and filters.
+- Add controller methods to manage filters.
+- Removed PagedDataTableMenu. Now to display a menu, use the `filterBarChild` and a `PopupMenuButton`.
+- Improved the calculation of column widths.
+
+> Keep in mind this is an uncomplete release. I will continue working on this package actively.
+
 ## 2.0.0-dev.1
 
 **First prerelease of PagedDataTable v2!**
