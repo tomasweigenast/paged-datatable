@@ -120,7 +120,6 @@ Widget _buildCell<T>(
   Widget child = Container(
     padding: theme.cellPadding,
     margin: theme.padding,
-    color: Colors.blue,
     child: column.format.transform(column.build(context, value, index)),
   );
 
