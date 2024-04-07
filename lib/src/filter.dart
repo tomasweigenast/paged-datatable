@@ -16,6 +16,9 @@ abstract class TableFilter<T extends Object> {
   /// A flag that indicates if the filter is enabled or not
   final bool enabled;
 
+  /// A flag that indicates if the filter is visible or not
+  final bool visible;
+
   /// The initial value for the filter
   final T? initialValue;
 
@@ -25,6 +28,7 @@ abstract class TableFilter<T extends Object> {
     required this.chipFormatter,
     required this.enabled,
     required this.initialValue,
+    this.visible = true,
   });
 
   /// Renders the picker for the filter.
@@ -47,7 +51,7 @@ abstract class TableFilter<T extends Object> {
 }
 
 /// A [TableFilter] that renders a [TextFormField].
-class TextTableFilter extends TableFilter<String> {
+final class TextTableFilter extends TableFilter<String> {
   final InputDecoration? decoration;
 
   const TextTableFilter({
@@ -73,8 +77,21 @@ class TextTableFilter extends TableFilter<String> {
   }
 }
 
+/// A [TableFilter] that is not visible in the filter selection but can be set using the controller.
+final class ProgrammingTextFilter<T extends Object> extends TableFilter<T> {
+  ProgrammingTextFilter({
+    required super.id,
+    required super.chipFormatter,
+    required super.initialValue,
+  }) : super(enabled: true, visible: false, name: "");
+
+  @override
+  Widget buildPicker(BuildContext context, FilterState<T> state) =>
+      const SizedBox.shrink();
+}
+
 /// A [TableFilter] that renders a [DropdownButtonFormField].
-class DropdownTableFilter<T extends Object> extends TableFilter<T> {
+final class DropdownTableFilter<T extends Object> extends TableFilter<T> {
   final InputDecoration? decoration;
   final List<DropdownMenuItem<T>> items;
 
@@ -100,4 +117,85 @@ class DropdownTableFilter<T extends Object> extends TableFilter<T> {
       decoration: decoration ?? InputDecoration(labelText: name),
     );
   }
+}
+
+/// A [TableFilter] that renders a [TextField] that, when selected, opens a [DateTime] picker.
+final class DateTimePickerTableFilter extends TableFilter<DateTime> {
+  final DateTime firstDate;
+  final DateTime lastDate;
+  final DateTime? initialDate;
+  final DatePickerMode initialDatePickerMode;
+  final DatePickerEntryMode initialEntryMode;
+  final bool Function(DateTime)? selectableDayPredicate;
+  final DateFormat dateFormat;
+
+  DateTimePickerTableFilter({
+    required super.id,
+    required super.name,
+    required super.chipFormatter,
+    required super.enabled,
+    required super.initialValue,
+    required this.firstDate,
+    required this.lastDate,
+    required this.dateFormat,
+    this.initialDate,
+    this.initialDatePickerMode = DatePickerMode.day,
+    this.initialEntryMode = DatePickerEntryMode.calendar,
+    this.selectableDayPredicate,
+  });
+
+  @override
+  Widget buildPicker(BuildContext context, FilterState<DateTime> state) =>
+      _DateTimePicker(
+        firstDate: firstDate,
+        initialDate: initialDate,
+        initialDatePickerMode: initialDatePickerMode,
+        initialEntryMode: initialEntryMode,
+        lastDate: lastDate,
+        selectableDayPredicate: selectableDayPredicate,
+        dateFormat: dateFormat,
+        value: state.value,
+        onChanged: (newValue) {
+          state.value = newValue;
+        },
+      );
+}
+
+/// A [TableFilter] that renders a [TextField] that, when selected, opens a [DateTimeRange] picker.
+final class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
+  final DateTime firstDate;
+  final DateTime lastDate;
+  final DateTimeRange? initialDateRange;
+  final DatePickerMode initialDatePickerMode;
+  final DatePickerEntryMode initialEntryMode;
+  final String Function(DateTimeRange) formatter;
+
+  DateRangePickerTableFilter({
+    required super.id,
+    required super.name,
+    required super.chipFormatter,
+    required super.enabled,
+    required super.initialValue,
+    required this.firstDate,
+    required this.lastDate,
+    required this.formatter,
+    this.initialDateRange,
+    this.initialDatePickerMode = DatePickerMode.day,
+    this.initialEntryMode = DatePickerEntryMode.calendar,
+  });
+
+  @override
+  Widget buildPicker(BuildContext context, FilterState<DateTimeRange> state) =>
+      _DateRangePicker(
+        firstDate: firstDate,
+        formatter: formatter,
+        initialDateRange: initialDateRange,
+        initialDatePickerMode: initialDatePickerMode,
+        initialEntryMode: initialEntryMode,
+        lastDate: lastDate,
+        value: state.value,
+        onChanged: (newValue) {
+          state.value = newValue;
+        },
+      );
 }

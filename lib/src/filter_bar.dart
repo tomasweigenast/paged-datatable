@@ -26,7 +26,7 @@ class _FilterBarState<K extends Comparable<K>, T>
 
   @override
   Widget build(BuildContext context) {
-    // var localizations = PagedDataTableLocalization.of(context);
+    var localizations = PagedDataTableLocalization.of(context);
 
     Widget child = SizedBox(
       height: theme.filterBarHeight,
@@ -45,7 +45,7 @@ class _FilterBarState<K extends Comparable<K>, T>
                       child: InkWell(
                         radius: 20,
                         child: Tooltip(
-                          message: "Filter values",
+                          message: localizations.showFilterMenuTooltip,
                           child: MouseRegion(
                             cursor: controller._state == _TableState.fetching
                                 ? SystemMouseCursors.basic
@@ -189,12 +189,15 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
             Text(localizations.filterByTitle,
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            ...tableController._filtersState.entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: entry.value._filter.buildPicker(context, entry.value),
-              ),
-            )
+            ...tableController._filtersState.entries
+                .where((element) => element.value._filter.visible)
+                .map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child:
+                        entry.value._filter.buildPicker(context, entry.value),
+                  ),
+                )
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/footer.dart';
 import 'package:paged_datatable/src/linked_scroll_controller.dart';
@@ -22,6 +23,7 @@ part 'sort_model.dart';
 part 'filter_state.dart';
 part 'filter_bar.dart';
 part 'filter.dart';
+part 'filter_widgets.dart';
 part 'column.dart';
 
 /// [PagedDataTable] renders a table of items that is paginable.

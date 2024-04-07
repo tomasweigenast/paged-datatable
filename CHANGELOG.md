@@ -2,6 +2,8 @@
 
 - Add localizations again.
 - Add TextField-like editable columns.
+- Add `ProgrammaticTableFilter`.
+- Add `DateTimePickerTableFilter` and `DateRangePickerTableFilter`.
 
 > Keep in mind this is an uncomplete release. Probably the next version will be a complete release.
 

@@ -378,9 +378,6 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
                         child: Text(textController.text,
                             style: widget.tooltipStyle),
                       )),
-                  // message: textController.text,
-                  // padding: widget.tooltipPadding,
-                  // margin: widget.tooltipMargin,
                   child: Text(
                     textController.text,
                     overflow: TextOverflow.ellipsis,
