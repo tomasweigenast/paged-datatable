@@ -100,13 +100,6 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
       ),
     );
 
-    // if (theme.headerBackgroundColor != null) {
-    //   child = DecoratedBox(
-    //     decoration: BoxDecoration(color: theme.headerBackgroundColor),
-    //     child: child,
-    //   );
-    // }
-
     if (theme.chipTheme != null) {
       child = ChipTheme(
         data: theme.chipTheme!,
