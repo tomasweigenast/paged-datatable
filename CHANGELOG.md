@@ -1,3 +1,12 @@
+## 2.0.0-dev.4
+
+- Update documentation
+- Add more controller examples
+- Fix several issues
+
+> The next version will be a complete release. This version can be used in production. I'm waiting for feedback to publish
+> a release.
+
 ## 2.0.0-dev.3
 
 - Add localizations again.

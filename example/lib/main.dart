@@ -96,8 +96,12 @@ class _MainViewState extends State<MainView> {
                       name: "Content",
                     ),
                     DropdownTableFilter<Gender>(
-                      items: Gender.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(growable: false),
-                      chipFormatter: (value) => 'Author is ${value.name.toLowerCase()}',
+                      items: Gender.values
+                          .map((e) =>
+                              DropdownMenuItem(value: e, child: Text(e.name)))
+                          .toList(growable: false),
+                      chipFormatter: (value) =>
+                          'Author is ${value.name.toLowerCase()}',
                       id: "authorGender",
                       name: "Author's Gender",
                     ),
@@ -115,7 +119,8 @@ class _MainViewState extends State<MainView> {
                       PopupMenuItem(
                         child: const Text("Select random row"),
                         onTap: () {
-                          final index = Random().nextInt(tableController.totalItems);
+                          final index =
+                              Random().nextInt(tableController.totalItems);
                           tableController.selectRow(index);
                         },
                       ),
@@ -141,13 +146,15 @@ class _MainViewState extends State<MainView> {
                       PopupMenuItem(
                         child: const Text("Remove last row"),
                         onTap: () {
-                          tableController.removeRowAt(tableController.totalItems - 1);
+                          tableController
+                              .removeRowAt(tableController.totalItems - 1);
                         },
                       ),
                       PopupMenuItem(
                         child: const Text("Remove random row"),
                         onTap: () {
-                          final index = Random().nextInt(tableController.totalItems);
+                          final index =
+                              Random().nextInt(tableController.totalItems);
                           tableController.removeRowAt(index);
                         },
                       ),
@@ -205,7 +212,8 @@ class _MainViewState extends State<MainView> {
                       PopupMenuItem(
                         child: const Text("Set filter"),
                         onTap: () {
-                          tableController.setFilter("authorGender", Gender.male);
+                          tableController.setFilter(
+                              "authorGender", Gender.male);
                         },
                       ),
                       PopupMenuItem(
@@ -227,7 +235,8 @@ class _MainViewState extends State<MainView> {
                     RowSelectorColumn(),
                     TableColumn(
                       title: const Text("Id"),
-                      cellBuilder: (context, item, index) => Text(item.id.toString()),
+                      cellBuilder: (context, item, index) =>
+                          Text(item.id.toString()),
                       size: const FixedColumnSize(100),
                     ),
                     TableColumn(
@@ -254,10 +263,12 @@ class _MainViewState extends State<MainView> {
                     ),
                     TableColumn(
                       title: const Text("Author Gender"),
-                      cellBuilder: (context, item, index) => Text(item.authorGender.name),
+                      cellBuilder: (context, item, index) =>
+                          Text(item.authorGender.name),
                       sortable: true,
                       id: "authorGender",
-                      size: const MaxColumnSize(FractionalColumnSize(.2), FixedColumnSize(100)),
+                      size: const MaxColumnSize(
+                          FractionalColumnSize(.2), FixedColumnSize(100)),
                     ),
                     LargeTextTableColumn(
                       title: const Text("Content"),
@@ -274,7 +285,8 @@ class _MainViewState extends State<MainView> {
                       title: const Text("Number"),
                       format: const NumericColumnFormat(),
                       // cellBuilder: (context, item, index) => Text(item.number.toString()),
-                      size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
+                      size: const MaxColumnSize(
+                          FixedColumnSize(100), FractionalColumnSize(.1)),
                       getter: (item, index) => item.number.toString(),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       setter: (item, newValue, index) async {
