@@ -99,6 +99,69 @@ final class TableColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<
       other.format == format;
 }
 
+/// [DropdownTableColumn] renders a compact [DropdownButton] that allows to modify the cell's value in place.
+///
+/// The [DropdownButton]'s type is [V].
+final class DropdownTableColumn<K extends Comparable<K>, T, V> extends EditableTableColumn<K, T, V> {
+  final InputDecoration inputDecoration;
+  final List<DropdownMenuItem<V>> items;
+
+  const DropdownTableColumn({
+    required super.title,
+    super.id,
+    super.size = const FractionalColumnSize(.1),
+    super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
+    super.tooltip,
+    super.sortable = false,
+    required super.setter,
+    required super.getter,
+    required this.items,
+    this.inputDecoration = const InputDecoration(isDense: true),
+  });
+
+  @override
+  Widget build(BuildContext context, T item, int index) => _DropdownCell<T, V>(
+        getter: getter,
+        setter: setter,
+        index: index,
+        item: item,
+        items: items,
+        inputDecoration: inputDecoration,
+        key: ValueKey(item),
+      );
+}
+
+/// [TextTableColumn] renders a compact [TextField] that allows to modify the cell's value in place when double-clicked.
+final class TextTableColumn<K extends Comparable<K>, T> extends EditableTableColumn<K, T, String> {
+  final InputDecoration inputDecoration;
+  final List<TextInputFormatter>? inputFormatters;
+
+  const TextTableColumn({
+    required super.title,
+    super.id,
+    super.size = const FractionalColumnSize(.1),
+    super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
+    super.tooltip,
+    super.sortable = false,
+    required super.setter,
+    required super.getter,
+    this.inputDecoration = const InputDecoration(isDense: true),
+    this.inputFormatters,
+  });
+
+  @override
+  Widget build(BuildContext context, T item, int index) => _TextFieldCell<T>(
+        getter: getter,
+        setter: setter,
+        index: index,
+        item: item,
+        key: ValueKey(item),
+        isDialog: false,
+        inputDecoration: inputDecoration,
+        inputFormatters: inputFormatters,
+      );
+}
+
 /// A special [ReadOnlyTableColumn] that renders a checkbox used to select rows.
 final class RowSelectorColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<K, T> {
   /// Creates a new [RowSelectorColumn].

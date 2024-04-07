@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
@@ -159,10 +160,21 @@ class _MainViewState extends State<MainView> {
                       id: "author",
                       size: const FractionalColumnSize(.15),
                     ),
-                    TableColumn(
+                    DropdownTableColumn(
                       title: const Text("Enabled"),
-                      cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
+                      // cellBuilder: (context, item, index) => Text(item.isEnabled ? "Yes" : "No"),
+                      items: const <DropdownMenuItem<bool>>[
+                        DropdownMenuItem(value: true, child: Text("Yes")),
+                        DropdownMenuItem(value: false, child: Text("No")),
+                      ],
                       size: const FixedColumnSize(100),
+                      getter: (item, index) => item.isEnabled,
+                      setter: (item, newValue, index) async {
+                        // simulate network trip
+                        await Future.delayed(const Duration(seconds: 2));
+                        item.isEnabled = newValue;
+                        return true;
+                      },
                     ),
                     TableColumn(
                       title: const Text("Author Gender"),
@@ -176,11 +188,19 @@ class _MainViewState extends State<MainView> {
                       cellBuilder: (context, item, index) => Text(item.content),
                       size: const RemainingColumnSize(),
                     ),
-                    TableColumn(
+                    TextTableColumn(
                       title: const Text("Number"),
                       format: const NumericColumnFormat(),
-                      cellBuilder: (context, item, index) => Text(item.number.toString()),
+                      // cellBuilder: (context, item, index) => Text(item.number.toString()),
                       size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
+                      getter: (item, index) => item.number.toString(),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      setter: (item, newValue, index) async {
+                        // simulate network trip
+                        await Future.delayed(const Duration(seconds: 2));
+                        item.number = int.parse(newValue);
+                        return true;
+                      },
                     ),
                   ],
                 ),
