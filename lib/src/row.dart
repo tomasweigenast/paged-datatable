@@ -8,10 +8,12 @@ abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _RowBuilderState<K, T>();
 
-  List<Widget> buildColumns(BuildContext context, int index, TableController<K, T> controller, PagedDataTableThemeData theme);
+  List<Widget> buildColumns(BuildContext context, int index,
+      TableController<K, T> controller, PagedDataTableThemeData theme);
 }
 
-class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, T>> {
+class _RowBuilderState<K extends Comparable<K>, T>
+    extends State<_RowBuilder<K, T>> {
   late final controller = TableControllerProvider.of<K, T>(context);
   late final theme = PagedDataTableTheme.of(context);
   bool selected = false;
@@ -28,7 +30,9 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
 
   @override
   Widget build(BuildContext context) {
-    Widget child = Row(children: widget.buildColumns(context, widget.index, controller, theme));
+    Widget child = Row(
+        children:
+            widget.buildColumns(context, widget.index, controller, theme));
     var color = theme.rowColor?.call(widget.index);
     if (selected && theme.selectedRow != null) {
       color = theme.selectedRow;
@@ -73,7 +77,8 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   });
 
   @override
-  List<Widget> buildColumns(BuildContext context, int index, TableController<K, T> controller, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(BuildContext context, int index,
+      TableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
@@ -101,7 +106,8 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   });
 
   @override
-  List<Widget> buildColumns(BuildContext context, int index, TableController<K, T> controller, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(BuildContext context, int index,
+      TableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
@@ -115,8 +121,8 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   }
 }
 
-Widget _buildCell<T>(
-    BuildContext context, int index, T value, double width, PagedDataTableThemeData theme, ReadOnlyTableColumn column) {
+Widget _buildCell<T>(BuildContext context, int index, T value, double width,
+    PagedDataTableThemeData theme, ReadOnlyTableColumn column) {
   Widget child = Container(
     padding: theme.cellPadding,
     margin: theme.padding,

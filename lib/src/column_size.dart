@@ -18,7 +18,8 @@ final class FixedColumnSize extends ColumnSize {
   int get hashCode => size.hashCode;
 
   @override
-  bool operator ==(Object other) => other is FixedColumnSize && other.size == size;
+  bool operator ==(Object other) =>
+      other is FixedColumnSize && other.size == size;
 
   @override
   double calculateConstraints(double availableWidth) => size;
@@ -28,16 +29,19 @@ final class FixedColumnSize extends ColumnSize {
 final class FractionalColumnSize extends ColumnSize {
   final double fraction;
 
-  const FractionalColumnSize(this.fraction) : assert(fraction > 0, "Fraction cannot be less than or equal to zero.");
+  const FractionalColumnSize(this.fraction)
+      : assert(fraction > 0, "Fraction cannot be less than or equal to zero.");
 
   @override
   int get hashCode => fraction.hashCode;
 
   @override
-  bool operator ==(Object other) => other is FractionalColumnSize && other.fraction == fraction;
+  bool operator ==(Object other) =>
+      other is FractionalColumnSize && other.fraction == fraction;
 
   @override
-  double calculateConstraints(double availableWidth) => availableWidth * fraction;
+  double calculateConstraints(double availableWidth) =>
+      availableWidth * fraction;
 }
 
 /// Indicates that a column will take the remaining space in the viewport.
@@ -45,7 +49,8 @@ final class RemainingColumnSize extends ColumnSize {
   const RemainingColumnSize();
 
   @override
-  double calculateConstraints(double availableWidth) => math.max(0.0, availableWidth);
+  double calculateConstraints(double availableWidth) =>
+      math.max(0.0, availableWidth);
 }
 
 /// A column size that uses the maximum value of two provided constraints.
@@ -55,6 +60,7 @@ final class MaxColumnSize extends ColumnSize {
   const MaxColumnSize(this.a, this.b);
 
   @override
-  double calculateConstraints(double availableWidth) =>
-      math.max(a.calculateConstraints(availableWidth), b.calculateConstraints(availableWidth));
+  double calculateConstraints(double availableWidth) => math.max(
+      a.calculateConstraints(availableWidth),
+      b.calculateConstraints(availableWidth));
 }

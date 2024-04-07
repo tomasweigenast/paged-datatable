@@ -2,7 +2,8 @@ part of 'paged_datatable.dart';
 
 typedef Setter<T, V> = FutureOr<bool> Function(T item, V value, int rowIndex);
 typedef Getter<T, V> = V? Function(T item, int rowIndex);
-typedef CellBuilder<T> = Widget Function(BuildContext context, T item, int rowIndex);
+typedef CellBuilder<T> = Widget Function(
+    BuildContext context, T item, int rowIndex);
 
 /// [ReadOnlyTableColumn] represents a basic table column for [T] that displays read-only content.
 sealed class ReadOnlyTableColumn<K extends Comparable<K>, T> {
@@ -31,7 +32,8 @@ sealed class ReadOnlyTableColumn<K extends Comparable<K>, T> {
     required this.format,
     required this.tooltip,
     required this.sortable,
-  }) : assert(sortable ? id != null : true, "When column is sortable, id must be set.");
+  }) : assert(sortable ? id != null : true,
+            "When column is sortable, id must be set.");
 
   /// Builds the cell for [item] at [index].
   Widget build(BuildContext context, T item, int index);
@@ -49,7 +51,8 @@ sealed class ReadOnlyTableColumn<K extends Comparable<K>, T> {
 }
 
 /// [EditableTableColumn] represents a basic table column for [T] that display editable content of type [V].
-sealed class EditableTableColumn<K extends Comparable<K>, T, V> extends ReadOnlyTableColumn<K, T> {
+sealed class EditableTableColumn<K extends Comparable<K>, T, V>
+    extends ReadOnlyTableColumn<K, T> {
   /// The function that is going to be called when the field is saved. It must return a boolean indicating
   /// if the update operation succeeded or not, being [true] for a successful operation or false otherwise.
   final Setter<T, V> setter;
@@ -70,7 +73,8 @@ sealed class EditableTableColumn<K extends Comparable<K>, T, V> extends ReadOnly
 }
 
 /// [TableColumn] is a implementation of [ReadOnlyTableColumn] that renders a cell based on [cellBuilder].
-final class TableColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<K, T> {
+final class TableColumn<K extends Comparable<K>, T>
+    extends ReadOnlyTableColumn<K, T> {
   final CellBuilder<T> cellBuilder;
 
   const TableColumn({
@@ -84,7 +88,8 @@ final class TableColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<
   });
 
   @override
-  Widget build(BuildContext context, T item, int index) => cellBuilder(context, item, index);
+  Widget build(BuildContext context, T item, int index) =>
+      cellBuilder(context, item, index);
 
   @override
   int get hashCode => Object.hash(id, size, title, cellBuilder, format);
@@ -92,7 +97,8 @@ final class TableColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<
   @override
   bool operator ==(Object other) =>
       other is TableColumn<K, T> &&
-      other.cellBuilder == cellBuilder && // todo: this will always return false, fix a better way to compare those
+      other.cellBuilder ==
+          cellBuilder && // todo: this will always return false, fix a better way to compare those
       other.title == title &&
       other.id == id &&
       other.size == size &&
@@ -102,7 +108,8 @@ final class TableColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<
 /// [DropdownTableColumn] renders a compact [DropdownButton] that allows to modify the cell's value in place.
 ///
 /// The [DropdownButton]'s type is [V].
-final class DropdownTableColumn<K extends Comparable<K>, T, V> extends EditableTableColumn<K, T, V> {
+final class DropdownTableColumn<K extends Comparable<K>, T, V>
+    extends EditableTableColumn<K, T, V> {
   final InputDecoration inputDecoration;
   final List<DropdownMenuItem<V>> items;
 
@@ -132,7 +139,8 @@ final class DropdownTableColumn<K extends Comparable<K>, T, V> extends EditableT
 }
 
 /// [TextTableColumn] renders a compact [TextField] that allows to modify the cell's value in place when double-clicked.
-final class TextTableColumn<K extends Comparable<K>, T> extends EditableTableColumn<K, T, String> {
+final class TextTableColumn<K extends Comparable<K>, T>
+    extends EditableTableColumn<K, T, String> {
   final InputDecoration inputDecoration;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -165,7 +173,8 @@ final class TextTableColumn<K extends Comparable<K>, T> extends EditableTableCol
 /// [LargeTextTableColumn] renders an overlay dialog with a [TextField] that allows to modify the cell's value when double-clicked.
 ///
 /// This works better for cells with large content.
-final class LargeTextTableColumn<K extends Comparable<K>, T> extends EditableTableColumn<K, T, String> {
+final class LargeTextTableColumn<K extends Comparable<K>, T>
+    extends EditableTableColumn<K, T, String> {
   final InputDecoration inputDecoration;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -197,7 +206,8 @@ final class LargeTextTableColumn<K extends Comparable<K>, T> extends EditableTab
     required super.setter,
     required super.getter,
     required this.fieldLabel,
-    this.inputDecoration = const InputDecoration(isDense: true, border: OutlineInputBorder()),
+    this.inputDecoration =
+        const InputDecoration(isDense: true, border: OutlineInputBorder()),
     this.inputFormatters,
     this.validator,
     this.showTooltip = true,
@@ -207,7 +217,8 @@ final class LargeTextTableColumn<K extends Comparable<K>, T> extends EditableTab
   });
 
   @override
-  Widget build(BuildContext context, T item, int index) => _LargeTextFieldCell<T>(
+  Widget build(BuildContext context, T item, int index) =>
+      _LargeTextFieldCell<T>(
         getter: getter,
         setter: setter,
         index: index,
@@ -226,7 +237,8 @@ final class LargeTextTableColumn<K extends Comparable<K>, T> extends EditableTab
 }
 
 /// A special [ReadOnlyTableColumn] that renders a checkbox used to select rows.
-final class RowSelectorColumn<K extends Comparable<K>, T> extends ReadOnlyTableColumn<K, T> {
+final class RowSelectorColumn<K extends Comparable<K>, T>
+    extends ReadOnlyTableColumn<K, T> {
   /// Creates a new [RowSelectorColumn].
   RowSelectorColumn()
       : super(

@@ -8,7 +8,8 @@ class RefreshTable<K extends Comparable<K>, T> extends StatefulWidget {
   State<RefreshTable> createState() => _RefreshTableState<K, T>();
 }
 
-class _RefreshTableState<K extends Comparable<K>, T> extends State<RefreshTable<K, T>> {
+class _RefreshTableState<K extends Comparable<K>, T>
+    extends State<RefreshTable<K, T>> {
   late final theme = PagedDataTableTheme.of(context);
   late final controller = TableControllerProvider.of<K, T>(context);
 
@@ -57,7 +58,8 @@ class PageSizeSelector<K extends Comparable<K>, T> extends StatefulWidget {
   State<PageSizeSelector> createState() => _PageSizeSelectorState<K, T>();
 }
 
-class _PageSizeSelectorState<K extends Comparable<K>, T> extends State<PageSizeSelector<K, T>> {
+class _PageSizeSelectorState<K extends Comparable<K>, T>
+    extends State<PageSizeSelector<K, T>> {
   late final theme = PagedDataTableTheme.of(context);
   late final controller = TableControllerProvider.of<K, T>(context);
 
@@ -71,7 +73,8 @@ class _PageSizeSelectorState<K extends Comparable<K>, T> extends State<PageSizeS
   @override
   Widget build(BuildContext context) {
     final localizations = PagedDataTableLocalization.of(context);
-    assert(controller._pageSizes != null, "PageSizeSelector widget can be used only if the pageSizes property is set.");
+    assert(controller._pageSizes != null,
+        "PageSizeSelector widget can be used only if the pageSizes property is set.");
 
     return Row(
       children: [
@@ -83,7 +86,8 @@ class _PageSizeSelectorState<K extends Comparable<K>, T> extends State<PageSizeS
           child: DropdownButtonFormField<int>(
             value: controller.pageSize,
             items: controller._pageSizes!
-                .map((pageSize) => DropdownMenuItem(value: pageSize, child: Text(pageSize.toString())))
+                .map((pageSize) => DropdownMenuItem(
+                    value: pageSize, child: Text(pageSize.toString())))
                 .toList(growable: false),
             onChanged: controller._state == _TableState.fetching
                 ? null
@@ -94,7 +98,8 @@ class _PageSizeSelectorState<K extends Comparable<K>, T> extends State<PageSizeS
                   },
             style: theme.footerTextStyle.copyWith(fontSize: 14),
             decoration: const InputDecoration(
-              border: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFD6D6D6))),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFD6D6D6))),
               isCollapsed: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             ),
@@ -126,7 +131,8 @@ class TotalItems<K extends Comparable<K>, T> extends StatefulWidget {
   State<TotalItems> createState() => _TotalItemsState<K, T>();
 }
 
-class _TotalItemsState<K extends Comparable<K>, T> extends State<TotalItems<K, T>> {
+class _TotalItemsState<K extends Comparable<K>, T>
+    extends State<TotalItems<K, T>> {
   late final theme = PagedDataTableTheme.of(context);
   late final controller = TableControllerProvider.of<K, T>(context);
 
@@ -171,7 +177,8 @@ class CurrentPage<K extends Comparable<K>, T> extends StatefulWidget {
   State<CurrentPage> createState() => _CurrentPageState<K, T>();
 }
 
-class _CurrentPageState<K extends Comparable<K>, T> extends State<CurrentPage<K, T>> {
+class _CurrentPageState<K extends Comparable<K>, T>
+    extends State<CurrentPage<K, T>> {
   late final theme = PagedDataTableTheme.of(context);
   late final controller = TableControllerProvider.of<K, T>(context);
 
@@ -215,7 +222,8 @@ class NavigationButtons<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _NavigationButtonsState<K, T>();
 }
 
-class _NavigationButtonsState<K extends Comparable<K>, T> extends State<NavigationButtons<K, T>> {
+class _NavigationButtonsState<K extends Comparable<K>, T>
+    extends State<NavigationButtons<K, T>> {
   late final theme = PagedDataTableTheme.of(context);
   late final controller = TableControllerProvider.of<K, T>(context);
 
@@ -236,14 +244,20 @@ class _NavigationButtonsState<K extends Comparable<K>, T> extends State<Navigati
           tooltip: localizations.previousPageButtonText,
           splashRadius: 20,
           icon: const Icon(Icons.keyboard_arrow_left_rounded),
-          onPressed: (controller.hasPreviousPage && controller._state != _TableState.fetching) ? controller.previousPage : null,
+          onPressed: (controller.hasPreviousPage &&
+                  controller._state != _TableState.fetching)
+              ? controller.previousPage
+              : null,
         ),
         const SizedBox(width: 12),
         IconButton(
           tooltip: localizations.nextPageButtonText,
           splashRadius: 20,
           icon: const Icon(Icons.keyboard_arrow_right_rounded),
-          onPressed: (controller.hasNextPage && controller._state != _TableState.fetching) ? controller.nextPage : null,
+          onPressed: (controller.hasNextPage &&
+                  controller._state != _TableState.fetching)
+              ? controller.nextPage
+              : null,
         ),
         const SizedBox(width: 10),
       ],

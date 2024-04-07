@@ -85,7 +85,8 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _PagedDataTableState<K, T>();
 }
 
-final class _PagedDataTableState<K extends Comparable<K>, T> extends State<PagedDataTable<K, T>> {
+final class _PagedDataTableState<K extends Comparable<K>, T>
+    extends State<PagedDataTable<K, T>> {
   final verticalController = ScrollController();
   final linkedControllers = LinkedScrollControllerGroup();
   late final headerHorizontalController = linkedControllers.addAndGet();
@@ -98,7 +99,10 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   @override
   void initState() {
     super.initState();
-    assert(widget.pageSizes != null ? widget.pageSizes!.contains(widget.initialPageSize) : true,
+    assert(
+        widget.pageSizes != null
+            ? widget.pageSizes!.contains(widget.initialPageSize)
+            : true,
         "initialPageSize must be inside pageSizes. To disable this restriction, set pageSizes to null.");
 
     if (widget.controller == null) {
@@ -121,7 +125,9 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   void didUpdateWidget(covariant PagedDataTable<K, T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.columns.length != widget.columns.length /*!listEquals(oldWidget.columns, widget.columns)*/) {
+    if (oldWidget.columns.length !=
+        widget.columns
+            .length /*!listEquals(oldWidget.columns, widget.columns)*/) {
       tableController._reset(columns: widget.columns);
       debugPrint("PagedDataTable<$T> changed and rebuilt.");
     }
@@ -202,7 +208,8 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   }
 
   List<double> _calculateColumnWidth(double maxWidth) {
-    final sizes = List.generate(widget.columns.length, (index) => 0.0, growable: false);
+    final sizes =
+        List.generate(widget.columns.length, (index) => 0.0, growable: false);
     double availableWidth = maxWidth;
     for (int i = 0; i < widget.columns.length; i++) {
       final column = widget.columns[i];

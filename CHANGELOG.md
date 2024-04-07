@@ -1,3 +1,10 @@
+## 2.0.0-dev.3
+
+- Add localizations again.
+- Add TextField-like editable columns.
+
+> Keep in mind this is an uncomplete release. Probably the next version will be a complete release.
+
 ## 2.0.0-dev.2
 
 - Add filter bar and filters.

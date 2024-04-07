@@ -59,7 +59,8 @@ final class PagedDataTableThemeData {
   final ChipThemeData? chipTheme;
 
   const PagedDataTableThemeData({
-    this.cellPadding = const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+    this.cellPadding =
+        const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
     this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
     this.borderRadius = const BorderRadius.all(Radius.circular(4.0)),
     this.elevation = 0.0,
@@ -69,8 +70,12 @@ final class PagedDataTableThemeData {
     this.filterBarHeight = 50.0,
     this.rowHeight = 52.0,
     this.selectedRow,
-    this.cellTextStyle = const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),
-    this.headerTextStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+    this.cellTextStyle =
+        const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),
+    this.headerTextStyle = const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        overflow: TextOverflow.ellipsis),
     this.footerTextStyle = const TextStyle(fontSize: 14, color: Colors.black),
     this.rowColor,
     this.verticalScrollbarVisibility = true,
@@ -115,7 +120,8 @@ final class PagedDataTableThemeData {
           other.cellBorderSide == cellBorderSide &&
           other.selectedRow == selectedRow &&
           other.verticalScrollbarVisibility == verticalScrollbarVisibility &&
-          other.horizontalScrollbarVisibility == horizontalScrollbarVisibility &&
+          other.horizontalScrollbarVisibility ==
+              horizontalScrollbarVisibility &&
           other.chipTheme == chipTheme &&
           other.backgroundColor == backgroundColor);
 }
@@ -123,15 +129,18 @@ final class PagedDataTableThemeData {
 final class PagedDataTableTheme extends InheritedWidget {
   final PagedDataTableThemeData data;
 
-  const PagedDataTableTheme({required this.data, required super.child, super.key});
+  const PagedDataTableTheme(
+      {required this.data, required super.child, super.key});
 
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) => data != (oldWidget as PagedDataTableTheme).data;
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
+      data != (oldWidget as PagedDataTableTheme).data;
 
   /// Lookups for a [PagedDataTableTheme] widget in the widget tree, if not found, returns null.
   static PagedDataTableThemeData? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<PagedDataTableTheme>()?.data;
 
   /// Lookups for a [PagedDataTableTheme] widget in the widget tree, if not found, then default [PagedDataTableThemeData] is returned.
-  static PagedDataTableThemeData of(BuildContext context) => maybeOf(context) ?? const PagedDataTableThemeData();
+  static PagedDataTableThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const PagedDataTableThemeData();
 }

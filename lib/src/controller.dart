@@ -1,17 +1,22 @@
 part of 'paged_datatable.dart';
 
-typedef Fetcher<K extends Comparable<K>, T> = FutureOr<(List<T> resultset, K? nextPageToken)> Function(
-    int pageSize, SortModel? sortModel, FilterModel filterModel, K? pageToken);
+typedef Fetcher<K extends Comparable<K>, T>
+    = FutureOr<(List<T> resultset, K? nextPageToken)> Function(int pageSize,
+        SortModel? sortModel, FilterModel filterModel, K? pageToken);
 
-typedef RowChangeListener<K extends Comparable<K>, T> = void Function(int index, T item);
+typedef RowChangeListener<K extends Comparable<K>, T> = void Function(
+    int index, T item);
 
 /// [TableController] represents the state of a [PagedDataTable] of type [T], using pagination keys of type [K].
 ///
 /// Is recommended that [T] specifies a custom hashCode and equals method for comparison reasons.
 final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
-  final List<T> _currentDataset = []; // the current dataset that is being displayed
-  final Map<String, FilterState> _filtersState = {}; // The list of filters' states
-  final Map<int, K> _paginationKeys = {}; // it's a map because on not found map will return null, list will throw
+  final List<T> _currentDataset =
+      []; // the current dataset that is being displayed
+  final Map<String, FilterState> _filtersState =
+      {}; // The list of filters' states
+  final Map<int, K> _paginationKeys =
+      {}; // it's a map because on not found map will return null, list will throw
   final Set<int> _selectedRows = {}; // The list of selected row indexes
   final GlobalKey<FormState> _filtersFormKey = GlobalKey();
   late final List<int>? _pageSizes;
@@ -24,11 +29,14 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   };
   PagedDataTableConfiguration? _configuration;
 
-  Object? _currentError; // If something went wrong when fetching items, this is the latest error
+  Object?
+      _currentError; // If something went wrong when fetching items, this is the latest error
   int _totalItems = 0; // the total items in the current dataset
   int _currentPageSize = 0;
-  int _currentPageIndex = 0; // The current index of the page, used to lookup token inside _paginationKeys
-  bool _hasNextPage = false; // a flag that indicates if there are more pages after the current one
+  int _currentPageIndex =
+      0; // The current index of the page, used to lookup token inside _paginationKeys
+  bool _hasNextPage =
+      false; // a flag that indicates if there are more pages after the current one
   SortModel? _currentSortModel; // The current sort model of the table
   _TableState _state = _TableState.idle;
 
@@ -79,7 +87,8 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     if (_currentSortModel!.descending) {
       sortModel = null;
     } else {
-      sortModel = SortModel._(fieldName: _currentSortModel!.fieldName, descending: true);
+      sortModel = SortModel._(
+          fieldName: _currentSortModel!.fieldName, descending: true);
     }
   }
 
@@ -133,7 +142,9 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   /// Removes a row at the specified [index].
   void removeRowAt(int index) {
     if (index >= _totalItems) {
-      throw ArgumentError("index cannot be greater than or equals to the total list of items.", "index");
+      throw ArgumentError(
+          "index cannot be greater than or equals to the total list of items.",
+          "index");
     }
 
     if (index < 0) {
@@ -161,7 +172,9 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   /// Replaces the element at [index] with [value]
   void replace(int index, T value) {
     if (index >= _totalItems) {
-      throw ArgumentError("Index cannot be greater than or equals to the total size of the current dataset.", "index");
+      throw ArgumentError(
+          "Index cannot be greater than or equals to the total size of the current dataset.",
+          "index");
     }
 
     _currentDataset[index] = value;
@@ -206,15 +219,18 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
   /// Registers a callback that gets called when the row at [index] is updated.
   void addRowChangeListener(int index, RowChangeListener<K, T> onRowChange) {
-    final listeners = _listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>;
+    final listeners = _listeners[_ListenerType.rowChange]
+        as Map<int, List<RowChangeListener<K, T>>>;
     final listenersForIndex = listeners[index] ?? [];
     listenersForIndex.add(onRowChange);
     listeners[index] = listenersForIndex;
   }
 
   /// Unregisters a row change callback.
-  void removeRowChangeListener(int index, RowChangeListener<K, T> rowChangeListener) {
-    final listeners = _listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>;
+  void removeRowChangeListener(
+      int index, RowChangeListener<K, T> rowChangeListener) {
+    final listeners = _listeners[_ListenerType.rowChange]
+        as Map<int, List<RowChangeListener<K, T>>>;
     final listenersForIndex = listeners[index];
     if (listenersForIndex == null) return;
 
@@ -232,7 +248,9 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
   /// Removes a filter, changing its value to null.
   void removeFilter(String filterId) {
     final filter = _filtersState[filterId];
-    if (filter == null) throw ArgumentError("Filter with id $filterId not found.");
+    if (filter == null) {
+      throw ArgumentError("Filter with id $filterId not found.");
+    }
 
     filter.value = null;
     notifyListeners();
@@ -258,7 +276,8 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
   /// This method automatically calls notifyListeners too.
   void _notifyOnRowChanged(int rowIndex) {
-    final listeners = (_listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>)[rowIndex];
+    final listeners = (_listeners[_ListenerType.rowChange]
+        as Map<int, List<RowChangeListener<K, T>>>)[rowIndex];
     if (listeners != null) {
       final item = _currentDataset[rowIndex]!;
       for (final listener in listeners) {
@@ -270,7 +289,8 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
   /// This method automatically calls notifyListeners too.
   void _notifyRowChangedMany(Iterable<int> indexes) {
-    final listeners = (_listeners[_ListenerType.rowChange] as Map<int, List<RowChangeListener<K, T>>>);
+    final listeners = (_listeners[_ListenerType.rowChange]
+        as Map<int, List<RowChangeListener<K, T>>>);
     for (final index in indexes) {
       final listenerGroup = listeners[index];
       if (listenerGroup != null) {
@@ -300,7 +320,8 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
     _pageSizes = pageSizes;
     _configuration = config;
     _fetcher = fetcher;
-    _filtersState.addEntries(filters.map((filter) => MapEntry(filter.id, filter.createState())));
+    _filtersState.addEntries(
+        filters.map((filter) => MapEntry(filter.id, filter.createState())));
 
     // Schedule a fetch
     Future.microtask(_fetch);
@@ -319,9 +340,11 @@ final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
 
     try {
       final pageToken = _paginationKeys[page];
-      final filterModel = FilterModel._(_filtersState.map((key, value) => MapEntry(key, value.value)));
+      final filterModel = FilterModel._(
+          _filtersState.map((key, value) => MapEntry(key, value.value)));
 
-      var (items, nextPageToken) = await _fetcher(_currentPageSize, sortModel, filterModel, pageToken);
+      var (items, nextPageToken) =
+          await _fetcher(_currentPageSize, sortModel, filterModel, pageToken);
       _hasNextPage = nextPageToken != null;
       _currentPageIndex = page;
       if (nextPageToken != null) {

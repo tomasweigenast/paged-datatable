@@ -22,7 +22,8 @@ class _DoubleListRows<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _DoubleListRowsState<K, T>();
 }
 
-class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleListRows<K, T>> {
+class _DoubleListRowsState<K extends Comparable<K>, T>
+    extends State<_DoubleListRows<K, T>> {
   final scrollControllerGroup = LinkedScrollControllerGroup();
   late final fixedController = scrollControllerGroup.addAndGet();
   late final normalController = scrollControllerGroup.addAndGet();
@@ -55,12 +56,15 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
             child: Row(
               children: [
                 SizedBox(
-                  width: widget.sizes.take(widget.fixedColumnCount).fold(0.0, (a, b) => a! + b),
+                  width: widget.sizes
+                      .take(widget.fixedColumnCount)
+                      .fold(0.0, (a, b) => a! + b),
                   child: ListView.separated(
                     primary: false,
                     controller: fixedController,
                     itemCount: widget.controller._totalItems,
-                    separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
+                    separatorBuilder: (_, __) =>
+                        const Divider(height: 0, color: Color(0xFFD6D6D6)),
                     itemBuilder: (context, index) => _FixedPartRow<K, T>(
                       index: index,
                       fixedColumnCount: widget.fixedColumnCount,
@@ -78,13 +82,17 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
                       scrollDirection: Axis.horizontal,
                       children: [
                         ConstrainedBox(
-                          constraints:
-                              BoxConstraints(maxWidth: widget.sizes.skip(widget.fixedColumnCount).fold(0.0, (a, b) => a + b)),
+                          constraints: BoxConstraints(
+                              maxWidth: widget.sizes
+                                  .skip(widget.fixedColumnCount)
+                                  .fold(0.0, (a, b) => a + b)),
                           child: ListView.separated(
                             controller: normalController,
                             itemCount: widget.controller._totalItems,
-                            separatorBuilder: (_, __) => const Divider(height: 0, color: Color(0xFFD6D6D6)),
-                            itemBuilder: (context, index) => _VariablePartRow<K, T>(
+                            separatorBuilder: (_, __) => const Divider(
+                                height: 0, color: Color(0xFFD6D6D6)),
+                            itemBuilder: (context, index) =>
+                                _VariablePartRow<K, T>(
                               sizes: widget.sizes,
                               index: index,
                               fixedColumnCount: widget.fixedColumnCount,
