@@ -1,2 +1,2 @@
 #!/bin/bash
-fvm flutter pub run intl_utils:generate
+dart run intl_utils:generate

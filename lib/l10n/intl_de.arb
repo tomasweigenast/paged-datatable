@@ -6,13 +6,15 @@
     "removeAllFiltersButtonText": "Entfernen",
     "removeFilterButtonText": "Diesen Filter entfernen",
     "refreshText": "Aktualisieren",
+    "editableColumnSaveChangesButtonText": "Änderungen speichern",
+    "editableColumnCancelButtonText": "Abbrechen",
     "refreshedAtText": "Zuletzt aktualisiert um {time}",
     "@refreshedAtText": {
         "placeholders": {
             "time": {}
         }
     },
-    "rowsPagePageText": "Zeilen pro Seite",
+    "rowsPerPageText": "Zeilen pro Seite",
     "pageIndicatorText": "Seite {currentPage}",
     "@pageIndicatorText": {
         "placeholders": {

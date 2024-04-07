@@ -31,6 +31,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "applyFilterButtonText": MessageLookupByLibrary.simpleMessage("Apply"),
         "cancelFilteringButtonText":
             MessageLookupByLibrary.simpleMessage("Cancel"),
+        "editableColumnCancelButtonText":
+            MessageLookupByLibrary.simpleMessage("Cancel"),
+        "editableColumnSaveChangesButtonText":
+            MessageLookupByLibrary.simpleMessage("Save changes"),
         "filterByTitle": MessageLookupByLibrary.simpleMessage("Filter by"),
         "nextPageButtonText": MessageLookupByLibrary.simpleMessage("Next page"),
         "noItemsFoundText":
@@ -44,7 +48,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Remove"),
         "removeFilterButtonText":
             MessageLookupByLibrary.simpleMessage("Remove this filter"),
-        "rowsPagePageText":
+        "rowsPerPageText":
             MessageLookupByLibrary.simpleMessage("Rows per page"),
         "showFilterMenuTooltip": MessageLookupByLibrary.simpleMessage("Filter"),
         "totalElementsText": m2

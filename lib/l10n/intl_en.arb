@@ -4,6 +4,8 @@
     "applyFilterButtonText": "Apply",
     "cancelFilteringButtonText": "Cancel",
     "removeAllFiltersButtonText": "Remove",
+    "editableColumnSaveChangesButtonText": "Save changes",
+    "editableColumnCancelButtonText": "Cancel",
     "removeFilterButtonText": "Remove this filter",
     "refreshText": "Refresh",
     "refreshedAtText": "Last refreshed at {time}",
@@ -12,7 +14,7 @@
             "time": {}
         }
     },
-    "rowsPagePageText": "Rows per page",
+    "rowsPerPageText": "Rows per page",
     "pageIndicatorText": "Page {currentPage}",
     "@pageIndicatorText": {
         "placeholders": {

@@ -428,6 +428,7 @@ final class _EditableTextFieldOverlayState extends State<_EditableTextFieldOverl
 
   @override
   Widget build(BuildContext context) {
+    final localizations = PagedDataTableLocalization.of(context);
     return SafeArea(
       child: Stack(
         children: [
@@ -462,7 +463,7 @@ final class _EditableTextFieldOverlayState extends State<_EditableTextFieldOverl
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            child: const Text("Cancel"),
+                            child: Text(localizations.editableColumnCancelButtonText),
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -474,7 +475,7 @@ final class _EditableTextFieldOverlayState extends State<_EditableTextFieldOverl
                                 Navigator.pop(context, textController.text);
                               }
                             },
-                            child: const Text("Save changes"),
+                            child: Text(localizations.editableColumnSaveChangesButtonText),
                           )
                         ],
                       )
@@ -528,6 +529,7 @@ final class _EditableTextFieldBottomSheetState extends State<_EditableTextFieldB
 
   @override
   Widget build(BuildContext context) {
+    final localizations = PagedDataTableLocalization.of(context);
     return SafeArea(
       child: Padding(
           padding: const EdgeInsets.all(20),
@@ -553,7 +555,7 @@ final class _EditableTextFieldBottomSheetState extends State<_EditableTextFieldB
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      child: const Text("Cancel"),
+                      child: Text(localizations.editableColumnCancelButtonText),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -565,7 +567,7 @@ final class _EditableTextFieldBottomSheetState extends State<_EditableTextFieldB
                           Navigator.pop(context, textController.text);
                         }
                       },
-                      child: const Text("Save changes"),
+                      child: Text(localizations.editableColumnSaveChangesButtonText),
                     )
                   ],
                 )
