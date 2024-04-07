@@ -7,10 +7,11 @@ typedef Fetcher<K extends Comparable<K>, T>
 typedef RowChangeListener<K extends Comparable<K>, T> = void Function(
     int index, T item);
 
-/// [TableController] represents the state of a [PagedDataTable] of type [T], using pagination keys of type [K].
+/// [PagedDataTableController] represents the state of a [PagedDataTable] of type [T], using pagination keys of type [K].
 ///
 /// Is recommended that [T] specifies a custom hashCode and equals method for comparison reasons.
-final class TableController<K extends Comparable<K>, T> extends ChangeNotifier {
+final class PagedDataTableController<K extends Comparable<K>, T>
+    extends ChangeNotifier {
   final List<T> _currentDataset =
       []; // the current dataset that is being displayed
   final Map<String, FilterState> _filtersState =

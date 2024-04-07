@@ -49,7 +49,7 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  final tableController = TableController<String, Post>();
+  final tableController = PagedDataTableController<String, Post>();
 
   @override
   Widget build(BuildContext context) {

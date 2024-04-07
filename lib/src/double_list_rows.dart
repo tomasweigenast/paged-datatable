@@ -5,7 +5,7 @@ class _DoubleListRows<K extends Comparable<K>, T> extends StatefulWidget {
   final List<ReadOnlyTableColumn> columns;
   final ScrollController horizontalController;
   final int fixedColumnCount;
-  final TableController<K, T> controller;
+  final PagedDataTableController<K, T> controller;
   final PagedDataTableConfiguration configuration;
   final List<double> sizes;
 

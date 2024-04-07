@@ -167,7 +167,7 @@ class _FilterBarState<K extends Comparable<K>, T>
 
 class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
   final RelativeRect? rect;
-  final TableController<K, T> tableController;
+  final PagedDataTableController<K, T> tableController;
   final double availableWidth;
 
   const _FiltersDialog(

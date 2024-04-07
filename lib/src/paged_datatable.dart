@@ -29,8 +29,8 @@ part 'column.dart';
 /// The type of element to be displayed in the table is [T] and [K] is the type of key
 /// used to paginate the table.
 final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
-  /// An specific [TableController] to be use in this [PagedDataTable].
-  final TableController<K, T>? controller;
+  /// An specific [PagedDataTableController] to be use in this [PagedDataTable].
+  final PagedDataTableController<K, T>? controller;
 
   /// The list of columns to draw in the table.
   final List<ReadOnlyTableColumn<K, T>> columns;
@@ -91,7 +91,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
   final linkedControllers = LinkedScrollControllerGroup();
   late final headerHorizontalController = linkedControllers.addAndGet();
   late final horizontalController = linkedControllers.addAndGet();
-  late final TableController<K, T> tableController;
+  late final PagedDataTableController<K, T> tableController;
   // late FixedTableSpanExtent rowSpanExtent, headerRowSpanExtent;
   late PagedDataTableThemeData theme;
   bool selfConstructedController = false;
@@ -107,7 +107,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
 
     if (widget.controller == null) {
       selfConstructedController = true;
-      tableController = TableController();
+      tableController = PagedDataTableController();
     } else {
       tableController = widget.controller!;
     }

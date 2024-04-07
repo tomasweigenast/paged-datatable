@@ -9,7 +9,7 @@ abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _RowBuilderState<K, T>();
 
   List<Widget> buildColumns(BuildContext context, int index,
-      TableController<K, T> controller, PagedDataTableThemeData theme);
+      PagedDataTableController<K, T> controller, PagedDataTableThemeData theme);
 }
 
 class _RowBuilderState<K extends Comparable<K>, T>
@@ -77,8 +77,11 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   });
 
   @override
-  List<Widget> buildColumns(BuildContext context, int index,
-      TableController<K, T> controller, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(
+      BuildContext context,
+      int index,
+      PagedDataTableController<K, T> controller,
+      PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
@@ -106,8 +109,11 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   });
 
   @override
-  List<Widget> buildColumns(BuildContext context, int index,
-      TableController<K, T> controller, PagedDataTableThemeData theme) {
+  List<Widget> buildColumns(
+      BuildContext context,
+      int index,
+      PagedDataTableController<K, T> controller,
+      PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 

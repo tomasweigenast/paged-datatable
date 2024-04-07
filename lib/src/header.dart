@@ -1,7 +1,7 @@
 part of 'paged_datatable.dart';
 
 final class _Header<K extends Comparable<K>, T> extends StatefulWidget {
-  final TableController<K, T> controller;
+  final PagedDataTableController<K, T> controller;
   final int fixedColumnCount;
   final List<ReadOnlyTableColumn> columns;
   final ScrollController horizontalController;
