@@ -244,6 +244,8 @@ If you want to control the table programatically, provide your own `PagedDataTab
 
 ## Internationalization
 
+Update your `MaterialApp` or `CupertinoApp` widget with the following:
+
 ```dart
 localizationsDelegates:  const  [
   PagedDataTableLocalization.delegate
@@ -252,6 +254,14 @@ localizationsDelegates:  const  [
 ```
 
 And you're done.
+
+At the moment of writing this, the supported locales are:
+
+- **es**: Spanish
+- **en**: English
+- **de**: Deutsch
+
+If you want more languages, you can [contribute](#contribute).
 
 ## Screenshots
 
