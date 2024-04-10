@@ -1,6 +1,7 @@
 # PagedDataTable
 
 [![pub package](https://img.shields.io/pub/v/paged_datatable?label=pub.dev&labelColor=333940&logo=dart)](https://pub.dev/packages/paged_datatable)
+
 Completely customisable data table which supports cursor and offset pagination, filters and horizontal scrolling out-of-the-box. It's written from scratch, no dependency from Flutter's `DataTable` nor `Table`.
 Designed to follow Google's Material You style.
 
