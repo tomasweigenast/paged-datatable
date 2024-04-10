@@ -6,25 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
-import 'package:paged_datatable/src/footer.dart';
 import 'package:paged_datatable/src/linked_scroll_controller.dart';
 import 'package:paged_datatable/src/table_controller_notifier.dart';
 
+part 'column.dart';
 part 'column_widgets.dart';
-
 part 'controller.dart';
 part 'double_list_rows.dart';
+part 'filter.dart';
+part 'filter_bar.dart';
+part 'filter_model.dart';
+part 'filter_state.dart';
+part 'filter_widgets.dart';
 part 'footer_widgets.dart';
 part 'header.dart';
 part 'row.dart';
-part 'table_view_rows.dart';
-part 'filter_model.dart';
 part 'sort_model.dart';
-part 'filter_state.dart';
-part 'filter_bar.dart';
-part 'filter.dart';
-part 'filter_widgets.dart';
-part 'column.dart';
+part 'table_view_rows.dart';
 
 /// [PagedDataTable] renders a table of items that is paginable.
 ///

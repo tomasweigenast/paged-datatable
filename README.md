@@ -23,6 +23,9 @@ Designed to follow Google's Material You style.
 
 - [Setup](#setup)
   - [Fetcher](#fetcher)
+  - [Header](#header)
+  - [Footer](#footer)
+    - [Custom footer](#custom-footer)
   - [Columns](#columns)
     - [TableColumn](#tablecolumnk-t)
     - [EditableTableColumn](#editabletablecolumnk-t-v)
@@ -78,6 +81,26 @@ PagedDataTable<String, Post>(
   ),
 )
 ```
+
+### Header
+
+The header renders the column names, but also the FilterBar exists, which is an additional header that renders the filter picker and, optionally, you can display additional widgets aligned at the right of the bar.
+
+Just pass your widget to the `filterBarChild` property. Naturally you would want to display a `PopupMenuButton` that will act as a menu.
+
+### Footer
+
+Using the `footer` property you can render anything. If you don't pass it, it will render the `DefaultFooter` widget,
+which again, if not specified, will display, aligned to the right, the following widgets:
+
+- **Refresh button**: A button that can be used to refresh the current dataset.
+- **Page size selector**: A dropdown that can be used to select the current page size to use, based on the `pageSizes` property.
+- **Current page display**: Displays the current page number.
+- **Navigation buttons**: will display the previous and next buttons as `IconButton`s.
+
+#### Custom footer
+
+If you want your own footer widget but reuse some of the already existing widgets, they are named: `RefreshButton`, `PageSizeSelector`, `CurrentPage` and `NavigationButtons`.
 
 ### Columns
 
