@@ -1,240 +1,268 @@
-# Paged Data Table
+# PagedDataTable
 
 [![pub package](https://img.shields.io/pub/v/paged_datatable?label=pub.dev&labelColor=333940&logo=dart)](https://pub.dev/packages/paged_datatable)
 
-Completely customisable data table which supports cursor and offset pagination out-of-the-box. It's written from scratch, no dependency from Flutter's `DataTable` nor `Table`.
+Completely customisable data table which supports cursor and offset pagination, filters and horizontal scrolling out-of-the-box. It's written from scratch, no dependency from Flutter's `DataTable` nor `Table`.
 Designed to follow Google's Material You style.
 
 ## Online demo
 
-<a href="https://tomasweigenast.github.io/pageddatatable/#/.com" target="_blank">Check it out here</a>
+<a  href="https://tomasweigenast.github.io/pageddatatable/#/.com"  target="_blank">Check it out here</a>
 
 ## Features
 
+- **Horizontal scrolling**, allowing you to define columns wider than the viewport width.
+- **Fixed columns**, to scroll horizontally only a set of columns.
 - **Row updating on demand**, preventing you to create other views for updating fields of a class. Now you can update an object from the table directly.
 - **Cursor and offset pagination**, you decide how to paginate your data.
 - **Filtering** by date, text, number, whatever you want!
 - **Sorting** by predefined columns
+- **Page modification** using controller, to add or remove items to the current page without reloading the entire table.
+- **Themeable**, allowing you to change colors, fonts, text styles, and more!
 
-## Getting started
+## Table Of Contents
 
 - [Setup](#setup)
-  - [Setup widget](#setup-widget)
-  - [Configure columns](#configure-columns)
+  - [Fetcher](#fetcher)
+  - [Header](#header)
+  - [Footer](#footer)
+    - [Custom footer](#custom-footer)
+  - [Columns](#columns)
+    - [TableColumn](#tablecolumnk-t)
+    - [EditableTableColumn](#editabletablecolumnk-t-v)
+    - [Custom columns](#custom-columns)
   - [Filters](#filters)
-  - [Menu](#menu)
-  - [Selecting rows](#selecting-rows)
-  - [Other customizations](#other-customizations)
+    - [Custom filters](#custom-filters)
   - [Controller](#controller)
-- [Customization](#customization)
-  - [Custom column](#custom-column)
-  - [Custom filter](#custom-filter)
 - [Internationalization](#internationalization)
 - [Screenshots](#screenshots)
-- [Contribute](#contribute)
+- [Contributing](#contribute)
 
 ## Setup
 
-Everything you need is a **PagedDataTable\<TKey, TValue>** widget, which accepts two generic arguments, **TKey** and **TValue**, the type of object you will use as paging key and the type of object you will be showing in the table.
+Everything you need is a **PagedDataTable<K, T>** widget, which accepts two generic arguments, **K** and **T**, the type of object you will use as paging key and the type of object you will be showing in the table.
 
-### Setup widget
+> Keep in mind that `K` must extends `Comparable`.
 
-Create a new `PagedDataTable<TKey, TResultId, TResult>` and fill the required parameters
-
-- `TKey` represents the type of key you use as page indicator. For example, if you use cursor pagination, it will be a `String`.
-- `TResultId` is the type of the property your `TResult` has as primary key.
-- `TResult` is the type of object you are showing.
-
-> Both `TKey` and `TResultId` must extends `Comparable`.
+There are only two required parameters: `columns` and `fetcher`.
 
 ```dart
-PagedDataTable<String, String, User>(
-    fetchPage: (pageToken, pageSize, sortBy, filtering) async {
-        return MyRepository.getUsers(
-            pageToken: pageToken,
-            limit: pageSize,
-            sortByFieldName: sortBy?.columnId,
-            byName: filtering.valueOrNullAs<String>("userName"),
-            byGender: filtering.valueOrNullAs<Gender>("gender")
-        );
-    },
-    idGetter: (user) => user.id,
-    initialPage: "",
-    columns: [],
+PagedDataTable<String, Post>(
+  fetcher: (int pageSize, SortModel? sortModel, FilterModel filterModel, String? pageToken) => ...,
+  columns: [...],
 )
 ```
 
-### Configure columns
+### Fetcher
 
-Every column inherits the base class `BaseTableColumn<T>`, being `T` the same as `TValue` when creating the widget. The most basic column you can create is `TableColumn<T>`, suitable for most cases if you only want to display data.
+The fetcher is a function that gets called every time a page is requested. It gives you the current page size, sort and filter models and the page token that is requested. It must return
+a `FutureOr<(List<T>, K?)>`, so you can convert it to a Future and do `async`-like requests or simply return the data.
+
+It expects a tuple, where the first value is the list of items and the second the next page token:
 
 ```dart
-TableColumn(
-    title: "User Name",
-    cellBuilder: (item) => Text(item.userName)
+PagedDataTable<String, Post>(
+  fetcher: (int pageSize, SortModel? sortModel, FilterModel filterModel, String? pageToken) {
+    final result = await FetchService.listPosts();
+    return (result.data, result.nextPageToken);
+  },
+  columns: [...],
 )
 ```
 
-##### Column size
+By default, `PagedDataTable` does not copy the returned list, so, if it is a shared list, you or the table may modify the items. If you want, `PagedDataTable` can copy the list
+if you specify it in the `configuration` property:
 
-What if you want to specify a different size for the column? No problem! Every `BaseTableColumn<T>` comes with a double property called `sizeFactor`, which you can use to modify its width. It defaults to `.1`, so, if you dont configure any of them, all your columns will take 10% of the available width. If you explicitly set it to `null`, the table will distribute the left width between all columns with `sizeFactor: null`.
-
-> NOTE: when specifying `sizeFactor`, keep in mind that the sum of all you column's `sizeFactor` cannot exceed 1, because it would take more space that its allowed to.
-
-##### Numeric column
-
-If you will display a number of a column, be sure to set `isNumberic` to `true`, so it will be displayed aligned to the right.
-
-##### Sortable column
-
-If you want your users to be able to sort the resultset based on a column, set `sortable` to `true` and specify an `id` for the table. That is the `id` you will be receiving in the `sortBy` argument in the `fetchPage` callback.
-
-##### Other types of columns
-
-- `DropdownTableColumn<TType, TValue>` renders a dropdown in the cell, useful for updating enum fields. `TType` is the same as `TValue` when creating the `PagedDataTable` and `TValue` is the type of items the dropdown will be displaying.
-- `TextTableColumn<TType>` display text like `TableColumn`, but when you double-click it, a text field will be displayed, allowing you to edit its content and save on enter.
-- `LargeTextTableColumn<TType>` acts like `TextTableColumn`, but when you double-click it, an overlay is shown with a multiline text field.
-  > If you need more, you always can [create your own column](#custom-column).
-
-### Filters
-
-Filters allows your users to, well, filter your dataset. It's rendered like a dialog. To get started, define them in the `PagedDataTable` widget:
+> Note that `PagedDataTable` **DOES NOT** cache pages.
 
 ```dart
-PagedDataTable<String, String, User>(
-    ...
-    filters: [
-        TextTableFilter(
-            id: "userName",
-            title: "User's name",
-            chipFormatter: (text) => "By $text"
-        )
-    ]
+PagedDataTable<String, Post>(
+  configuration: PagedDataTableConfiguration(
+    copyItems: true,
+  ),
 )
 ```
 
-Every filter type requires an `id`, a `title` and a `chipFormatter`. You will use the `id` in the `fetchPage` callback, from the `filtering` parameter. `title` is the label of the field when displaying the filter popup, and `chipFormatter` is how it will be shown in the filter bar after applying it.
+### Header
 
-##### Built-in filters
+The header renders the column names, but also the FilterBar exists, which is an additional header that renders the filter picker and, optionally, you can display additional widgets aligned at the right of the bar.
 
-- `TextTableFilter` allows to filter by raw text, it renders a TextField.
-- `DropdownTableFilter<TValue>` allows selecting the filter value in a Dropdown, being `TValue` the type of items the Dropdown will be holding.
-- `DatePickerTableFilter` renders a TextField that opens a `DateTimePicker` when clicked.
-- `DateRangePickerTableFilter` works the same as `DatePickerTableFilter` but for `DateTimeRange`.
-  > If you need more, you always can [create your own filter](#custom-filter)
+Just pass your widget to the `filterBarChild` property. Naturally you would want to display a `PopupMenuButton` that will act as a menu.
 
-### Menu
+### Footer
 
-You can display a popup menu at the top right corner:
+Using the `footer` property you can render anything. If you don't pass it, it will render the `DefaultFooter` widget,
+which again, if not specified, will display, aligned to the right, the following widgets:
+
+- **Refresh button**: A button that can be used to refresh the current dataset.
+- **Page size selector**: A dropdown that can be used to select the current page size to use, based on the `pageSizes` property.
+- **Current page display**: Displays the current page number.
+- **Navigation buttons**: will display the previous and next buttons as `IconButton`s.
+
+#### Custom footer
+
+If you want your own footer widget but reuse some of the already existing widgets, they are named: `RefreshButton`, `PageSizeSelector`, `CurrentPage` and `NavigationButtons`.
+
+### Columns
+
+There are two types of columns in `PagedDataTable`:
+
+- **ReadOnlyTableColumn<K, T>**: renders a simple widget that does not allow edition.
+- **EditableTableColumn<K, T, V>**: renders a simple widget too, but this can be modified in place and modify the dataset.
+
+> `K` and `T` are the same parameters defined in the `PagedDataTable` widget.
+
+Every column type has:
+
+- **title**: the column's title. It is a widget but commonly it's a `Text` widget displaying the name.
+- **size**: configures the column's size. By default, it is a `FractionalColumnSize(.1)`, which means it will take 10% of the available width. You can use `FixedColumnSize`, `FractionalColumnSize`, `RemainingColumnSize` and `MaxColumnSize`.
+- **format**: applies a transformation to the cell's widget. You have `NumericColumnFormat`, which aligns content to the right and `AlignColumnFormat` which aligns cell's content to the `alignment` property and you can implement your own implemeting the `ColumnFormat` interface.
+- **sort** and **id**: both properties are used to indicate that a column can be used for sorting. The `id` is what you get in the Fetcher's `SortModel`. To sort, you click the column's header.
+- There are other properties that you can use to play around and modify your columns. Check out the `ReadOnlyTableColumn`'s documentation.
+
+> If you want to fix columns at the left, you can specify the amount of columns to fix using the `fixedColumnCount` property.
+
+#### TableColumn<K, T>
+
+Is the default `ReadOnlyTableColumn` that renders a cell using the `cellBuilder` property.
 
 ```dart
-PagedDataTable<String, String, User>(
-    ...
-    menu: PagedDataTableFilterBarMenu(
-        items: [
-            FilterMenuItem(
-                title: Text("Print hello world"),
-                onTap: () => print("hello world")
-            ),
-            FilterMenuDivider(),
-            FilterMenuItemBuilder(
-                builder: (context) => ListTile(title: Text("My custom item"))
-            )
-        ]
-    )
+PagedDataTable<String, Post>(
+  columns: [
+    TableColumn(
+      title: const Text("Author"),
+      cellBuilder: (context, item, index) => Text(item.author),
+    ),
+  ],
 )
 ```
 
-### Selecting rows
+#### EditableTableColumn<K, T, V>
 
-If you want your users to be able to select rows:
+This abstract class provides two more properties, `getter` and `setter`. The first one is used to provide the value **V** to render and the second one
+is the function used to set the new value. It must return a boolean indicating if the operation succeeded or not. If is true, the cell will update its
+value, otherwise will keep the old one.
 
-```dart
-PagedDataTable<String, String, User>(
-    ...
-    rowsSelectable: true
-)
-```
+There are three built in editable columns, which are `DropdownTableColumn` which renders a dropdown; `TextTableColumn` which renders a `Text` until double-clicked, then it renders a `TextField` used to edit the cell's content; `LargeTextTableColumn`, which is the same as `TextTableColumn` but when
+double-clicked, it opens an overlay, designed to edit large text cells.
 
-This will display a checkbox in every row that allows the user to select the row.
+You can [create your own column](#custom-columns).
 
-### Other customizations
+#### Custom columns
 
-You can render custom widgets in the space left in the table's header and footer. Also, you can configure aspects of the table with the `configuration` field.
+To create your own columns, simply extend `ReadOnlyTableColumn` or `EditableTableColumn` depending on your needs.
 
-```dart
-PagedDataTable<String, String, User>(
-    ...
-    footer: TextButton(),
-    header: Row(),
-    configuration: PagedDataTableConfigurationData()
-)
-```
-
-> The `PagedDataTableConfigurationData` is well documented, so you can check it out while working.
-
-### Controller
-
-By using a `PagedDataTableController<TKey, TResultId, TResult>` (being `TKey`, `TResultId` and `TResult` the same as the `PagedDataTable` widget) you can control the data table programatically. It allows you to:
-
-- `refresh()` the entire table, clearing the cache and fetching from source.
-- `setFilter(String id, dynamic value)` apply a filter
-- `removeFilter(String id)` remove a filter
-- `removeFilters()` remove all filters
-- `getSelectedRows()` returns a `List<TResult>` with the selected rows.
-- `unselectAllRows()` unselects all selected rows.
-- `selectAllRows()` selects all the rows.
-- `unselectRow(TResultId itemId)` unselects the row whose id is `itemId`.
-- `selectRow(TResultId itemId)` selects the row whose id is `itemId`.
-- `modifyRowValue(TResultId itemId, void Function(TResult item) update)` allows to modify a row's value by applying `update` to the cached value.
-- `refreshRow(TResultId itemId)` refresh a row to reflect the changes made to the object its displaying (if it's not a deep copy.)
-
-## Customization
-
-### Theming
-
-You can configure every `PagedDataTable` widget by providing a `PagedDataTableTheme` to your
-widget tree, or configure individual widgets by setting the `theme` property to the `PagedDataTable` you want to configure.
-
-Every property in the `PagedDataTableThemeData` is well documented.
-
-### Custom column
-
-If you want to make a custom column, that is not editable, extend the `BaseTableColumn<TType>` class and render you widget in the `buildCell` method. It gives you the `item` that is going to be displayed and the `index` of the row.
-In the other hand, if you want your new column to be editable, extend the `EditableTableColumn<TType, TValue>` class. `TType` is the type of item you are displaying, and `TValue` the value type that is going to be modified. It gives you the same `buildCell` method but when creating editable columns, a `setter` and a `getter` methods are needed. The `getter` only retrieves the value to edit, and `setter` is responsible of updating that value. It can be a `Future` if you need to perform any network operation, and **must** return a boolean indicating the status of the operation. Returning `true` will update the cell's value, otherwise, it will remain the same, as it's interpreted that the operation failed.
-
-### Custom filter
-
-To create your own filter, extend the `TableFilter<TValue>` class, with `TValue` being the type the filter will handle. Again, it gives you a method called `buildPicker(BuildContext, TableFilterState>`, used to build the picker field in the popup dialog. `TableFilterState` is used to report changes in the field, for example, take a look at the `TextTableFilter`'s source:
+For example:
 
 ```dart
-@override
-Widget buildPicker(BuildContext context, TableFilterState state) {
-    return TextFormField(
-      decoration: decoration ?? InputDecoration(
-        labelText: title
-      ),
-      initialValue: state.value,
-      onSaved: (newValue) {
-        if(newValue != null && newValue.isNotEmpty) {
-          state.value = newValue; // here we are notifying about a new value in the filter
-        }
-      },
-    );
+class MyColumnType<K, T> extends ReadOnlyTableColumn<K, T> {
+  @override
+  Widget build(BuildContext context, T item, int index) {
+    return MyCellWidget();
+  }
 }
 ```
 
-## Internationalization
+> If you want more examples, check out the implementation of the already existing column types.
 
-At the moment of writing this, two locales are supported, `en` for english, and `es` for spanish. To localize the table, make sure to add the following to your `localizationsDelegates` list:
+## Filters
+
+`PagedDataTable` allows you to define a set of filters that you can use to interactively select them using a
+popup overlay or a bottom sheet if you are in a small device.
+
+To define filters, use the `filters` property:
 
 ```dart
-localizationsDelegates: const [
-    PagedDataTableLocalization.delegate
+PagedDataTable<String, Post>(
+  ...,
+  filters: [
+    TextTableFilter(
+      id: "content",
+      chipFormatter: (value) => 'Content has "$value"',
+      name: "Content",
+    ),
+    DropdownTableFilter<Gender>(
+      items: Gender.values
+          .map((e) =>
+              DropdownMenuItem(value: e, child: Text(e.name)))
+          .toList(growable: false),
+      chipFormatter: (value) =>
+          'Author is ${value.name.toLowerCase()}',
+      id: "authorGender",
+      name: "Author's Gender",
+    ),
   ],
+)
+```
+
+There are five built-in filter types:
+
+- `TextTableFilter`: renders a `TextField` to filter by raw text.
+- `DropdownTableFilter`: renders a `DropdownButton` with a set of options.
+- `DateTimePickerTableFilter`: renders a `TextField` that, when tapped, opens the `DateTime` picker dialog.
+- `DateRangePickerTableFilter`: the same as `DateTimePickerTableFilter` but selects a `DateTimeRange`.
+- `ProgrammingTextFilter`: a filter that does not render nothing in the filter dialog but can be set using the controller.
+
+Every filter type must define, at least, the `id`, the `name` and the `chipFormatter` properties. The first one is the identifier of the filter, used in the fetcher's `FilterMode` property. The name is the label displayed in the filter picker and the `chipFormatter` is a function that maps the actual selected value to a more user-friendly string that is displayed in the selected filter's chip.
+
+### Custom filters
+
+To create your own filter, extend the `TableFilter<T>` abstract class, where `T` is the type of value the filter will handle. Then, implement the `buildPicker` function, which renders the actual filter picker.
+
+The implementation of the `TextTableFilter` as an example:
+
+```dart
+final class TextTableFilter extends TableFilter<String> {
+  final InputDecoration? decoration;
+
+  const TextTableFilter({
+    this.decoration,
+    required super.chipFormatter,
+    required super.id,
+    required super.name,
+    super.initialValue,
+    super.enabled = true,
+  });
+
+  @override
+  Widget buildPicker(BuildContext context, FilterState<String> state) {
+    return TextFormField(
+      decoration: decoration ?? InputDecoration(labelText: name),
+      initialValue: state.value,
+      onSaved: (newValue) {
+        if (newValue != null && newValue.isNotEmpty) {
+          state.value = newValue;
+        }
+      },
+    );
+  }
+}
+```
+
+## Controller
+
+If you want to control the table programatically, provide your own `PagedDataTableController<K, V>` instance passing it to the `controller` property. It provides methods to interact with rows (selecting, unselecting, removing, inserting, updating), filters, sorting, pagination, and more.
+
+## Internationalization
+
+Update your `MaterialApp` or `CupertinoApp` widget with the following:
+
+```dart
+localizationsDelegates:  const  [
+  PagedDataTableLocalization.delegate
+],
+
 ```
 
 And you're done.
+
+At the moment of writing this, the supported locales are:
+
+- **es**: Spanish
+- **en**: English
+- **de**: Deutsch
+
+If you want more languages, you can [contribute](#contribute).
 
 ## Screenshots
 

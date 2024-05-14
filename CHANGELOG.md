@@ -1,3 +1,48 @@
+## 2.0.0
+
+> First public release of paged-datatable v2
+
+- `intl` was updated to version 0.19.0
+
+## 2.0.0-dev.4
+
+- Update documentation
+- Add more controller examples
+- Fix several issues
+
+> The next version will be a complete release. This version can be used in production. I'm waiting for feedback to publish
+> a release.
+
+## 2.0.0-dev.3
+
+- Add localizations again.
+- Add TextField-like editable columns.
+- Add `ProgrammaticTableFilter`.
+- Add `DateTimePickerTableFilter` and `DateRangePickerTableFilter`.
+
+> Keep in mind this is an uncomplete release. Probably the next version will be a complete release.
+
+## 2.0.0-dev.2
+
+- Add filter bar and filters.
+- Add controller methods to manage filters.
+- Removed PagedDataTableMenu. Now to display a menu, use the `filterBarChild` and a `PopupMenuButton`.
+- Improved the calculation of column widths.
+
+> Keep in mind this is an uncomplete release. I will continue working on this package actively.
+
+## 2.0.0-dev.1
+
+**First prerelease of PagedDataTable v2!**
+
+- Adds Horizontal scrolling.
+- Fixes row selection.
+- Adds a better `TableController`.
+- Better column sorting.
+
+> Keep in mind this is an uncomplete release. Filters, intl and cell edition features are disabled. I will continue working on this package
+> actively.
+
 ## 1.4.4
 
 - Add support for 'de' locale

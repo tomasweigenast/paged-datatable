@@ -1,193 +1,223 @@
 import 'dart:async';
+import 'dart:collection';
 
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:intl/intl.dart' hide TextDirection;
-import 'package:paged_datatable/l10n/generated/l10n.dart';
-import 'package:provider/provider.dart';
-import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
+import 'package:paged_datatable/paged_datatable.dart';
+import 'package:paged_datatable/src/linked_scroll_controller.dart';
+import 'package:paged_datatable/src/table_controller_notifier.dart';
 
-part 'controls.dart';
-part 'errors.dart';
-part 'paged_datatable_column.dart';
-part 'paged_datatable_column_header.dart';
-part 'paged_datatable_controller.dart';
-part 'paged_datatable_filter.dart';
-part 'paged_datatable_filter_bar.dart';
-part 'paged_datatable_filter_bar_menu.dart';
-part 'paged_datatable_footer.dart';
-part 'paged_datatable_menu.dart';
-part 'paged_datatable_row_state.dart';
-part 'paged_datatable_rows.dart';
-part 'paged_datatable_state.dart';
-part 'paged_datatable_theme.dart';
-part 'pagination_result.dart';
-part 'types.dart';
+part 'column.dart';
+part 'column_widgets.dart';
+part 'controller.dart';
+part 'double_list_rows.dart';
+part 'filter.dart';
+part 'filter_bar.dart';
+part 'filter_model.dart';
+part 'filter_state.dart';
+part 'filter_widgets.dart';
+part 'footer_widgets.dart';
+part 'header.dart';
+part 'row.dart';
+part 'sort_model.dart';
+part 'table_view_rows.dart';
 
-/// A paginated DataTable that allows page caching and filtering
-/// [TKey] is the type of the page token
-/// [TResult] is the type of data the data table will show.
-class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
-    TResult extends Object> extends StatelessWidget {
-  /// The callback that gets executed when a page is fetched.
-  final FetchCallback<TKey, TResult> fetchPage;
+/// [PagedDataTable] renders a table of items that is paginable.
+///
+/// The type of element to be displayed in the table is [T] and [K] is the type of key
+/// used to paginate the table.
+final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
+  /// An specific [PagedDataTableController] to be use in this [PagedDataTable].
+  final PagedDataTableController<K, T>? controller;
 
-  /// The initial page to fetch.
-  final TKey initialPage;
+  /// The list of columns to draw in the table.
+  final List<ReadOnlyTableColumn<K, T>> columns;
 
-  /// The list of filters to show.
-  final List<TableFilter>? filters;
-
-  /// A custom controller used to programatically control the table.
-  final PagedDataTableController<TKey, TResultId, TResult>? controller;
-
-  /// The list of columns to display.
-  final List<BaseTableColumn<TResult>> columns;
-
-  /// A custom menu tooltip to show in the filter bar.
-  final PagedDataTableFilterBarMenu? menu;
-
-  /// A custom widget to build in the footer, aligned to the left.
+  /// The initial page size of the table.
   ///
-  /// Navigation widgets remain untouched.
+  /// If [pageSizes] is not null, this value must match any of the its values.
+  final int initialPageSize;
+
+  /// The initial page query.
+  final K? initialPage;
+
+  /// The list of page sizes availables to be selected in the footer.
+  final List<int>? pageSizes;
+
+  /// The callback used to fetch new items.
+  final Fetcher<K, T> fetcher;
+
+  /// The amount of columns to fix, starting from the left.
+  final int fixedColumnCount;
+
+  /// The configuration of this [PagedDataTable].
+  final PagedDataTableConfiguration configuration;
+
+  /// The widget to display at the footer of the table.
+  ///
+  /// If null, the default footer will be displayed.
   final Widget? footer;
 
-  /// A custom widget to build in the footer, aligned to the left.
-  ///
-  /// Filter widgets remain untouched.
-  final Widget? header;
+  /// Additional widget to add at the right of the filter bar.
+  final Widget? filterBarChild;
 
-  /// A custom builder that display any error.
-  final ErrorBuilder? errorBuilder;
+  /// The list of filters to use.
+  final List<TableFilter> filters;
 
-  /// A custom builder that builds when no item is found.
-  final WidgetBuilder? noItemsFoundBuilder;
+  const PagedDataTable({
+    required this.columns,
+    required this.fetcher,
+    this.initialPage,
+    this.initialPageSize = 50,
+    this.pageSizes = const [10, 50, 100],
+    this.controller,
+    this.fixedColumnCount = 0,
+    this.configuration = const PagedDataTableConfiguration(),
+    this.footer,
+    this.filterBarChild,
+    this.filters = const <TableFilter>[],
+    super.key,
+  });
 
-  /// A custom theme to apply only to this DataTable instance.
-  final PagedDataTableThemeData? theme;
+  @override
+  State<StatefulWidget> createState() => _PagedDataTableState<K, T>();
+}
 
-  /// Indicates if the table allows the user to select rows.
-  final bool rowsSelectable;
+final class _PagedDataTableState<K extends Comparable<K>, T>
+    extends State<PagedDataTable<K, T>> {
+  final verticalController = ScrollController();
+  final linkedControllers = LinkedScrollControllerGroup();
+  late final headerHorizontalController = linkedControllers.addAndGet();
+  late final horizontalController = linkedControllers.addAndGet();
+  late final PagedDataTableController<K, T> tableController;
+  // late FixedTableSpanExtent rowSpanExtent, headerRowSpanExtent;
+  late PagedDataTableThemeData theme;
+  bool selfConstructedController = false;
 
-  /// A custom builder that builds a row.
-  final CustomRowBuilder<TResult>? customRowBuilder;
+  @override
+  void initState() {
+    super.initState();
+    assert(
+        widget.pageSizes != null
+            ? widget.pageSizes!.contains(widget.initialPageSize)
+            : true,
+        "initialPageSize must be inside pageSizes. To disable this restriction, set pageSizes to null.");
 
-  /// A stream to listen and refresh the table when any update is received.
-  final Stream? refreshListener;
+    if (widget.controller == null) {
+      selfConstructedController = true;
+      tableController = PagedDataTableController();
+    } else {
+      tableController = widget.controller!;
+    }
+    tableController._init(
+      columns: widget.columns,
+      pageSizes: widget.pageSizes,
+      initialPageSize: widget.initialPageSize,
+      fetcher: widget.fetcher,
+      config: widget.configuration,
+      filters: widget.filters,
+    );
+  }
 
-  /// A function that returns the id of an item.
-  final ModelIdGetter<TResultId, TResult> idGetter;
+  @override
+  void didUpdateWidget(covariant PagedDataTable<K, T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
-  const PagedDataTable(
-      {required this.fetchPage,
-      required this.initialPage,
-      required this.columns,
-      required this.idGetter,
-      this.filters,
-      this.menu,
-      this.controller,
-      this.footer,
-      this.header,
-      this.theme,
-      this.errorBuilder,
-      this.noItemsFoundBuilder,
-      this.rowsSelectable = false,
-      this.customRowBuilder,
-      this.refreshListener,
-      super.key});
+    if (oldWidget.columns.length !=
+        widget.columns
+            .length /*!listEquals(oldWidget.columns, widget.columns)*/) {
+      tableController._reset(columns: widget.columns);
+      debugPrint("PagedDataTable<$T> changed and rebuilt.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final localTheme = PagedDataTableTheme.maybeOf(context) ??
-        theme ??
-        _kDefaultPagedDataTableTheme;
-    return ChangeNotifierProvider<
-        _PagedDataTableState<TKey, TResultId, TResult>>(
-      create: (context) => _PagedDataTableState(
-          columns: columns,
-          rowsSelectable: rowsSelectable,
-          filters: filters,
-          idGetter: idGetter,
-          controller: controller,
-          fetchCallback: fetchPage,
-          initialPage: initialPage,
-          pageSize: localTheme.configuration.initialPageSize,
-          refreshListener: refreshListener),
-      builder: (context, widget) {
-        var state =
-            context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
+    theme = PagedDataTableTheme.of(context);
 
-        Widget child = Material(
-          color: localTheme.backgroundColor,
-          elevation: 0,
-          textStyle: localTheme.textStyle,
-          shape: theme?.border,
-          child: LayoutBuilder(builder: (context, constraints) {
-            var width = constraints.maxWidth -
-                (columns.length * 32) -
-                (rowsSelectable ? 32 : 0);
-            state.availableWidth = width;
+    return Card(
+      color: theme.backgroundColor,
+      elevation: theme.elevation,
+      shape: RoundedRectangleBorder(borderRadius: theme.borderRadius),
+      margin: EdgeInsets.zero,
+      child: TableControllerProvider(
+        controller: tableController,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final sizes = _calculateColumnWidth(constraints.maxWidth);
+
             return Column(
               children: [
-                /* FILTER TAB */
-                if (header != null ||
-                    menu != null ||
-                    state.filters.isNotEmpty) ...[
-                  _PagedDataTableFilterTab<TKey, TResultId, TResult>(
-                      menu, header),
-                  Divider(height: 0, color: localTheme.dividerColor),
-                ],
+                _FilterBar<K, T>(child: widget.filterBarChild),
 
-                /* HEADER ROW */
-                _PagedDataTableHeaderRow<TKey, TResultId, TResult>(
-                    rowsSelectable, width),
-                Divider(height: 0, color: localTheme.dividerColor),
+                _Header(
+                  controller: tableController,
+                  configuration: widget.configuration,
+                  columns: widget.columns,
+                  sizes: sizes,
+                  fixedColumnCount: widget.fixedColumnCount,
+                  horizontalController: headerHorizontalController,
+                ),
+                const Divider(height: 0, color: Color(0xFFD6D6D6)),
 
-                /* ITEMS */
                 Expanded(
-                  child: _PagedDataTableRows<TKey, TResultId, TResult>(
-                      rowsSelectable,
-                      customRowBuilder ??
-                          CustomRowBuilder<TResult>(
-                              builder: (context, item) =>
-                                  throw UnimplementedError(
-                                      "This does not build nothing"),
-                              shouldUse: (context, item) => false),
-                      noItemsFoundBuilder,
-                      errorBuilder,
-                      width),
+                  child: _DoubleListRows(
+                    fixedColumnCount: widget.fixedColumnCount,
+                    columns: widget.columns,
+                    horizontalController: horizontalController,
+                    controller: tableController,
+                    configuration: widget.configuration,
+                    sizes: sizes,
+                  ),
                 ),
 
-                /* FOOTER */
-                if (localTheme.configuration.footer.footerVisible) ...[
-                  Divider(height: 0, color: localTheme.dividerColor),
-                  _PagedDataTableFooter<TKey, TResultId, TResult>(footer)
-                ]
+                // Expanded(
+                //   child: _TableViewRows<T>(
+                //     columns: widget.columns,
+                //     controller: tableController,
+                //     fixedColumnCount: widget.fixedColumnCount,
+                //     horizontalController: horizontalController,
+                //     verticalController: verticalController,
+                //   ),
+                // ),
+                const Divider(height: 0, color: Color(0xFFD6D6D6)),
+                SizedBox(
+                  height: theme.footerHeight,
+                  child: widget.footer ?? DefaultFooter<K, T>(),
+                ),
               ],
             );
-          }),
-        );
-
-        // apply configuration to this widget only
-        if (theme != null) {
-          child = PagedDataTableTheme(data: theme!, child: child);
-          assert(
-              theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
-              "rowColors must contain exactly two colors");
-        } else {
-          assert(
-              localTheme.rowColors != null
-                  ? localTheme.rowColors!.length == 2
-                  : true,
-              "rowColors must contain exactly two colors");
-        }
-
-        return child;
-      },
+          },
+        ),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    verticalController.dispose();
+    horizontalController.dispose();
+    headerHorizontalController.dispose();
+
+    if (selfConstructedController) {
+      tableController.dispose();
+    }
+  }
+
+  List<double> _calculateColumnWidth(double maxWidth) {
+    final sizes =
+        List.generate(widget.columns.length, (index) => 0.0, growable: false);
+    double availableWidth = maxWidth;
+    for (int i = 0; i < widget.columns.length; i++) {
+      final column = widget.columns[i];
+      final columnSize = column.size.calculateConstraints(availableWidth);
+      availableWidth -= columnSize;
+      sizes[i] = columnSize;
+    }
+
+    return sizes;
   }
 }
