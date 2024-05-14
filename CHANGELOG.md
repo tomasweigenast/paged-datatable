@@ -1,3 +1,9 @@
+## 2.0.0
+
+> First public release of paged-datatable v2
+
+- `intl` was updated to version 0.19.0
+
 ## 2.0.0-dev.4
 
 - Update documentation
