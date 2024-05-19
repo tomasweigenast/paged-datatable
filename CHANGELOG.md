@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Fix a bug in controller that does not reload dataset when applying a sort filter
+
 ## 2.0.0
 
 > First public release of paged-datatable v2
