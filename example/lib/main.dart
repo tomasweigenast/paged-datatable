@@ -79,12 +79,14 @@ class _MainViewState extends State<MainView> {
                   rowColor: (index) => index.isEven ? Colors.purple[50] : null,
                 ),
                 child: LayoutBuilder(
-                  builder: (ccontext, constraints) => PagedDataTable<String, Post>(
+                  builder: (ccontext, constraints) =>
+                      PagedDataTable<String, Post>(
                     controller: tableController,
                     initialPageSize: 100,
                     configuration: const PagedDataTableConfiguration(),
                     pageSizes: const [10, 20, 50, 100],
-                    fetcher: (pageSize, sortModel, filterModel, pageToken) async {
+                    fetcher:
+                        (pageSize, sortModel, filterModel, pageToken) async {
                       final data = await PostsRepository.getPosts(
                         pageSize: pageSize,
                         pageToken: pageToken,
@@ -102,8 +104,12 @@ class _MainViewState extends State<MainView> {
                         name: "Content",
                       ),
                       DropdownTableFilter<Gender>(
-                        items: Gender.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(growable: false),
-                        chipFormatter: (value) => 'Author is ${value.name.toLowerCase()}',
+                        items: Gender.values
+                            .map((e) =>
+                                DropdownMenuItem(value: e, child: Text(e.name)))
+                            .toList(growable: false),
+                        chipFormatter: (value) =>
+                            'Author is ${value.name.toLowerCase()}',
                         id: "authorGender",
                         name: "Author's Gender",
                       ),
@@ -115,13 +121,15 @@ class _MainViewState extends State<MainView> {
                           child: const Text("Print selected rows"),
                           onTap: () {
                             debugPrint(tableController.selectedRows.toString());
-                            debugPrint(tableController.selectedItems.toString());
+                            debugPrint(
+                                tableController.selectedItems.toString());
                           },
                         ),
                         PopupMenuItem(
                           child: const Text("Select random row"),
                           onTap: () {
-                            final index = Random().nextInt(tableController.totalItems);
+                            final index =
+                                Random().nextInt(tableController.totalItems);
                             tableController.selectRow(index);
                           },
                         ),
@@ -147,13 +155,15 @@ class _MainViewState extends State<MainView> {
                         PopupMenuItem(
                           child: const Text("Remove last row"),
                           onTap: () {
-                            tableController.removeRowAt(tableController.totalItems - 1);
+                            tableController
+                                .removeRowAt(tableController.totalItems - 1);
                           },
                         ),
                         PopupMenuItem(
                           child: const Text("Remove random row"),
                           onTap: () {
-                            final index = Random().nextInt(tableController.totalItems);
+                            final index =
+                                Random().nextInt(tableController.totalItems);
                             tableController.removeRowAt(index);
                           },
                         ),
@@ -211,7 +221,8 @@ class _MainViewState extends State<MainView> {
                         PopupMenuItem(
                           child: const Text("Set filter"),
                           onTap: () {
-                            tableController.setFilter("authorGender", Gender.male);
+                            tableController.setFilter(
+                                "authorGender", Gender.male);
                           },
                         ),
                         PopupMenuItem(
@@ -233,13 +244,15 @@ class _MainViewState extends State<MainView> {
                       // RowSelectorColumn(),
                       TableColumn(
                         title: const Text("Id"),
-                        cellBuilder: (context, item, index) => Text(item.id.toString()),
+                        cellBuilder: (context, item, index) =>
+                            Text(item.id.toString()),
                         // size: const FractionalColumnSize(.1),
                         size: const FixedColumnSize(80),
                       ),
                       TableColumn(
                         title: const Text("Author"),
-                        cellBuilder: (context, item, index) => Text(item.author),
+                        cellBuilder: (context, item, index) =>
+                            Text(item.author),
                         sortable: true,
                         id: "author",
                         size: const FractionalColumnSize(.1),
@@ -263,7 +276,8 @@ class _MainViewState extends State<MainView> {
                       ),
                       TableColumn(
                         title: const Text("Author Gender"),
-                        cellBuilder: (context, item, index) => Text(item.authorGender.name),
+                        cellBuilder: (context, item, index) =>
+                            Text(item.authorGender.name),
                         sortable: true,
                         id: "authorGender",
                         size: const FractionalColumnSize(.1),
@@ -289,7 +303,9 @@ class _MainViewState extends State<MainView> {
                         // cellBuilder: (context, item, index) => Text(item.number.toString()),
                         // size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
                         getter: (item, index) => item.number.toString(),
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         setter: (item, newValue, index) async {
                           await Future.delayed(const Duration(seconds: 2));
                           item.number = int.parse(newValue);

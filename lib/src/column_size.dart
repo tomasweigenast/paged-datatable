@@ -24,7 +24,8 @@ final class FixedColumnSize extends ColumnSize {
   int get hashCode => size.hashCode;
 
   @override
-  bool operator ==(Object other) => other is FixedColumnSize && other.size == size;
+  bool operator ==(Object other) =>
+      other is FixedColumnSize && other.size == size;
 
   @override
   bool get isFixed => true;
@@ -45,13 +46,15 @@ final class FractionalColumnSize extends ColumnSize {
   int get hashCode => fraction.hashCode;
 
   @override
-  bool operator ==(Object other) => other is FractionalColumnSize && other.fraction == fraction;
+  bool operator ==(Object other) =>
+      other is FractionalColumnSize && other.fraction == fraction;
 
   @override
   double get fraction => _fraction;
 
   @override
-  double calculateConstraints(double availableWidth) => availableWidth * fraction;
+  double calculateConstraints(double availableWidth) =>
+      availableWidth * fraction;
 }
 
 /// Indicates that a column will take the remaining space in the viewport.
@@ -59,7 +62,8 @@ final class RemainingColumnSize extends ColumnSize {
   const RemainingColumnSize();
 
   @override
-  double calculateConstraints(double availableWidth) => math.max(0.0, availableWidth);
+  double calculateConstraints(double availableWidth) =>
+      math.max(0.0, availableWidth);
 }
 
 /// A column size that uses the maximum value of two provided constraints.
@@ -78,9 +82,11 @@ final class MaxColumnSize extends ColumnSize {
   int get hashCode => Object.hash(a.hashCode, b.hashCode);
 
   @override
-  bool operator ==(Object other) => other is MaxColumnSize && other.a == a && other.b == b;
+  bool operator ==(Object other) =>
+      other is MaxColumnSize && other.a == a && other.b == b;
 
   @override
-  double calculateConstraints(double availableWidth) =>
-      math.max(a.calculateConstraints(availableWidth), b.calculateConstraints(availableWidth));
+  double calculateConstraints(double availableWidth) => math.max(
+      a.calculateConstraints(availableWidth),
+      b.calculateConstraints(availableWidth));
 }

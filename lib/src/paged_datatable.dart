@@ -85,7 +85,8 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _PagedDataTableState<K, T>();
 }
 
-final class _PagedDataTableState<K extends Comparable<K>, T> extends State<PagedDataTable<K, T>> {
+final class _PagedDataTableState<K extends Comparable<K>, T>
+    extends State<PagedDataTable<K, T>> {
   final verticalController = ScrollController();
   final linkedControllers = LinkedScrollControllerGroup();
   late final headerHorizontalController = linkedControllers.addAndGet();
@@ -98,7 +99,10 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   @override
   void initState() {
     super.initState();
-    assert(widget.pageSizes != null ? widget.pageSizes!.contains(widget.initialPageSize) : true,
+    assert(
+        widget.pageSizes != null
+            ? widget.pageSizes!.contains(widget.initialPageSize)
+            : true,
         "initialPageSize must be inside pageSizes. To disable this restriction, set pageSizes to null.");
 
     if (widget.controller == null) {
@@ -121,7 +125,9 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   void didUpdateWidget(covariant PagedDataTable<K, T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.columns.length != widget.columns.length /*!listEquals(oldWidget.columns, widget.columns)*/) {
+    if (oldWidget.columns.length !=
+        widget.columns
+            .length /*!listEquals(oldWidget.columns, widget.columns)*/) {
       tableController._reset(columns: widget.columns);
       debugPrint("PagedDataTable<$T> changed and rebuilt.");
     }
@@ -203,8 +209,8 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
   }
 
   List<double> _calculateColumnWidth(double maxWidth) {
-    debugPrint("_calculateColumnWidth: $maxWidth");
-    final sizes = List<double>.filled(widget.columns.length, 0.0, growable: false);
+    final sizes =
+        List<double>.filled(widget.columns.length, 0.0, growable: false);
 
     double totalFixedWidth = 0.0;
     double totalFraction = 0.0;
@@ -228,13 +234,18 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
     }
 
     // Ensure totalFraction is within a valid range to prevent overflow
-    assert(totalFraction <= 1.0, "Total fraction exceeds 1.0, which means the columns will overflow.");
+    assert(totalFraction <= 1.0,
+        "Total fraction exceeds 1.0, which means the columns will overflow.");
 
-    double remainingWidth = maxWidth - totalFixedWidth; // Calculate remaining width after fixed sizes are allocated
-    totalFractionalWidth = remainingWidth * totalFraction; // Re-calculate total fractional width
+    double remainingWidth = maxWidth -
+        totalFixedWidth; // Calculate remaining width after fixed sizes are allocated
+    totalFractionalWidth =
+        remainingWidth * totalFraction; // Re-calculate total fractional width
     remainingWidth -=
         totalFractionalWidth; // Adjust remaining width to exclude fractional columns' widths for RemainingColumnSize
-    final remainingColumnWidth = remainingColumnCount > 0.0 ? remainingWidth / remainingColumnCount : 0.0;
+    final remainingColumnWidth = remainingColumnCount > 0.0
+        ? remainingWidth / remainingColumnCount
+        : 0.0;
 
     // Now calculate and assign column sizes
     for (int i = 0; i < widget.columns.length; i++) {
@@ -248,8 +259,6 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
         sizes[i] = totalFractionalWidth * column.size.fraction / totalFraction;
       }
     }
-
-    debugPrint("Sizes: $sizes");
 
     return sizes;
   }
