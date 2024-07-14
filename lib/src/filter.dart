@@ -86,7 +86,8 @@ final class ProgrammingTextFilter<T extends Object> extends TableFilter<T> {
   }) : super(enabled: true, visible: false, name: "");
 
   @override
-  Widget buildPicker(BuildContext context, FilterState<T> state) => const SizedBox.shrink();
+  Widget buildPicker(BuildContext context, FilterState<T> state) =>
+      const SizedBox.shrink();
 }
 
 /// A [TableFilter] that renders a [DropdownButtonFormField].
@@ -144,7 +145,8 @@ final class DateTimePickerTableFilter extends TableFilter<DateTime> {
   });
 
   @override
-  Widget buildPicker(BuildContext context, FilterState<DateTime> state) => _DateTimePicker(
+  Widget buildPicker(BuildContext context, FilterState<DateTime> state) =>
+      _DateTimePicker(
         firstDate: firstDate,
         initialDate: initialDate,
         initialDatePickerMode: initialDatePickerMode,
@@ -183,7 +185,8 @@ final class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
   });
 
   @override
-  Widget buildPicker(BuildContext context, FilterState<DateTimeRange> state) => _DateRangePicker(
+  Widget buildPicker(BuildContext context, FilterState<DateTimeRange> state) =>
+      _DateRangePicker(
         firstDate: firstDate,
         formatter: formatter,
         initialDateRange: initialDateRange,
