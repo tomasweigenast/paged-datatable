@@ -85,8 +85,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _PagedDataTableState<K, T>();
 }
 
-final class _PagedDataTableState<K extends Comparable<K>, T>
-    extends State<PagedDataTable<K, T>> {
+final class _PagedDataTableState<K extends Comparable<K>, T> extends State<PagedDataTable<K, T>> {
   final verticalController = ScrollController();
   final linkedControllers = LinkedScrollControllerGroup();
   late final headerHorizontalController = linkedControllers.addAndGet();
@@ -99,10 +98,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
   @override
   void initState() {
     super.initState();
-    assert(
-        widget.pageSizes != null
-            ? widget.pageSizes!.contains(widget.initialPageSize)
-            : true,
+    assert(widget.pageSizes != null ? widget.pageSizes!.contains(widget.initialPageSize) : true,
         "initialPageSize must be inside pageSizes. To disable this restriction, set pageSizes to null.");
 
     if (widget.controller == null) {
@@ -125,9 +121,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
   void didUpdateWidget(covariant PagedDataTable<K, T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.columns.length !=
-        widget.columns
-            .length /*!listEquals(oldWidget.columns, widget.columns)*/) {
+    if (oldWidget.columns.length != widget.columns.length /*!listEquals(oldWidget.columns, widget.columns)*/) {
       tableController._reset(columns: widget.columns);
       debugPrint("PagedDataTable<$T> changed and rebuilt.");
     }
@@ -146,6 +140,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
         controller: tableController,
         child: LayoutBuilder(
           builder: (context, constraints) {
+            debugPrint("Constraints: $constraints");
             final sizes = _calculateColumnWidth(constraints.maxWidth);
 
             return Column(
@@ -208,15 +203,63 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
   }
 
   List<double> _calculateColumnWidth(double maxWidth) {
-    final sizes =
-        List.generate(widget.columns.length, (index) => 0.0, growable: false);
-    double availableWidth = maxWidth;
+    debugPrint("_calculateColumnWidth: $maxWidth");
+    final sizes = List<double>.filled(widget.columns.length, 0.0, growable: false);
+
+    double totalFixedWidth = 0.0;
+    double totalFraction = 0.0;
+    int remainingColumnCount = 0;
+    double totalFractionalWidth = 0.0;
+
+    // Single pass to calculate total fixed width, total fraction, and count remaining columns
     for (int i = 0; i < widget.columns.length; i++) {
       final column = widget.columns[i];
-      final columnSize = column.size.calculateConstraints(availableWidth);
-      availableWidth -= columnSize;
-      sizes[i] = columnSize;
+      if (column.size.isFixed) {
+        final columnSize = column.size.calculateConstraints(maxWidth);
+        sizes[i] = columnSize;
+        totalFixedWidth += columnSize;
+      } else {
+        totalFraction += column.size.getFraction(maxWidth);
+
+        // handle this special case
+        if (column.size is RemainingColumnSize) {
+          remainingColumnCount++;
+        }
+      }
     }
+
+    // Ensure totalFraction is within a valid range to prevent overflow
+    assert(totalFraction <= 1.0, "Total fraction exceeds 1.0, which means the columns will overflow.");
+
+    // Calculate remaining width after fixed sizes are allocated
+    double remainingWidth = maxWidth - totalFixedWidth;
+
+    // Calculate total fractional width
+    totalFractionalWidth = remainingWidth * totalFraction;
+
+    // Adjust remaining width to exclude fractional columns' widths
+    remainingWidth -= totalFractionalWidth;
+
+    // Single pass to calculate sizes for each column
+    for (int i = 0; i < widget.columns.length; i++) {
+      final column = widget.columns[i];
+      if (!column.size.isFixed) {
+        sizes[i] = totalFractionalWidth * column.size.getFraction(maxWidth) / totalFraction;
+      }
+    }
+
+    // Distribute remaining width among columns with RemainingColumnSize
+    if (remainingColumnCount > 0) {
+      double remainingColumnWidth = remainingWidth / remainingColumnCount;
+      for (int i = 0; i < widget.columns.length; i++) {
+        final column = widget.columns[i];
+        if (column.size is RemainingColumnSize) {
+          sizes[i] = remainingColumnWidth;
+        }
+      }
+    }
+
+    debugPrint("Sizes: $sizes");
 
     return sizes;
   }
