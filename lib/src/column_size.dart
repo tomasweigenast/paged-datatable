@@ -4,6 +4,12 @@ import 'dart:math' as math;
 sealed class ColumnSize {
   const ColumnSize();
 
+  /// A flag that indicates if the column defines a fixed, constant size.
+  bool get isFixed => false;
+
+  /// Returns the size of the column as fractional units.
+  double get fraction => 0.0;
+
   /// The function used to calculate the constraints for the column given the [availableWidth].
   double calculateConstraints(double availableWidth);
 }
@@ -22,15 +28,19 @@ final class FixedColumnSize extends ColumnSize {
       other is FixedColumnSize && other.size == size;
 
   @override
+  bool get isFixed => true;
+
+  @override
   double calculateConstraints(double availableWidth) => size;
 }
 
 /// Indicates a fraction size of a column. That is, a column that takes a fraction of the available viewport.
 final class FractionalColumnSize extends ColumnSize {
-  final double fraction;
+  final double _fraction;
 
-  const FractionalColumnSize(this.fraction)
-      : assert(fraction > 0, "Fraction cannot be less than or equal to zero.");
+  const FractionalColumnSize(double fraction)
+      : _fraction = fraction,
+        assert(fraction > 0, "Fraction cannot be less than or equal to zero.");
 
   @override
   int get hashCode => fraction.hashCode;
@@ -38,6 +48,9 @@ final class FractionalColumnSize extends ColumnSize {
   @override
   bool operator ==(Object other) =>
       other is FractionalColumnSize && other.fraction == fraction;
+
+  @override
+  double get fraction => _fraction;
 
   @override
   double calculateConstraints(double availableWidth) =>
@@ -58,6 +71,19 @@ final class MaxColumnSize extends ColumnSize {
   final ColumnSize a, b;
 
   const MaxColumnSize(this.a, this.b);
+
+  @override
+  bool get isFixed => a.isFixed && b.isFixed;
+
+  @override
+  double get fraction => math.max(a.fraction, b.fraction);
+
+  @override
+  int get hashCode => Object.hash(a.hashCode, b.hashCode);
+
+  @override
+  bool operator ==(Object other) =>
+      other is MaxColumnSize && other.a == a && other.b == b;
 
   @override
   double calculateConstraints(double availableWidth) => math.max(

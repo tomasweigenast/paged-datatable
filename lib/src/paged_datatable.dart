@@ -146,6 +146,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
         controller: tableController,
         child: LayoutBuilder(
           builder: (context, constraints) {
+            debugPrint("Constraints: $constraints");
             final sizes = _calculateColumnWidth(constraints.maxWidth);
 
             return Column(
@@ -209,13 +210,54 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
 
   List<double> _calculateColumnWidth(double maxWidth) {
     final sizes =
-        List.generate(widget.columns.length, (index) => 0.0, growable: false);
-    double availableWidth = maxWidth;
+        List<double>.filled(widget.columns.length, 0.0, growable: false);
+
+    double totalFixedWidth = 0.0;
+    double totalFraction = 0.0;
+    int remainingColumnCount = 0;
+    double totalFractionalWidth = 0.0;
+
+    // First pass to determine widths and types of columns
     for (int i = 0; i < widget.columns.length; i++) {
       final column = widget.columns[i];
-      final columnSize = column.size.calculateConstraints(availableWidth);
-      availableWidth -= columnSize;
-      sizes[i] = columnSize;
+      if (column.size.isFixed) {
+        final columnSize = column.size.calculateConstraints(maxWidth);
+        totalFixedWidth += columnSize;
+      } else {
+        totalFraction += column.size.fraction;
+
+        // Handle this special case
+        if (column.size is RemainingColumnSize) {
+          remainingColumnCount++;
+        }
+      }
+    }
+
+    // Ensure totalFraction is within a valid range to prevent overflow
+    assert(totalFraction <= 1.0,
+        "Total fraction exceeds 1.0, which means the columns will overflow.");
+
+    double remainingWidth = maxWidth -
+        totalFixedWidth; // Calculate remaining width after fixed sizes are allocated
+    totalFractionalWidth =
+        remainingWidth * totalFraction; // Re-calculate total fractional width
+    remainingWidth -=
+        totalFractionalWidth; // Adjust remaining width to exclude fractional columns' widths for RemainingColumnSize
+    final remainingColumnWidth = remainingColumnCount > 0.0
+        ? remainingWidth / remainingColumnCount
+        : 0.0;
+
+    // Now calculate and assign column sizes
+    for (int i = 0; i < widget.columns.length; i++) {
+      final column = widget.columns[i];
+      if (column.size.isFixed) {
+        // Pass totalFixedWidth but the ColumnSize should don't care about it because its a fixed size.
+        sizes[i] = column.size.calculateConstraints(totalFixedWidth);
+      } else if (column.size is RemainingColumnSize) {
+        sizes[i] = remainingColumnWidth;
+      } else {
+        sizes[i] = totalFractionalWidth * column.size.fraction / totalFraction;
+      }
     }
 
     return sizes;
