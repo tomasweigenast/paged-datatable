@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         Locale("de"),
         Locale("it"),
       ],
-      locale: const Locale("it"),
+      locale: const Locale("en"),
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -101,10 +102,34 @@ class _MainViewState extends State<MainView> {
                       name: "Content",
                     ),
                     DropdownTableFilter<Gender>(
-                      items: Gender.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(growable: false),
-                      chipFormatter: (value) => 'Author is ${value.name.toLowerCase()}',
+                      items: Gender.values
+                          .map((e) =>
+                              DropdownMenuItem(value: e, child: Text(e.name)))
+                          .toList(growable: false),
+                      chipFormatter: (value) =>
+                          'Author is ${value.name.toLowerCase()}',
                       id: "authorGender",
                       name: "Author's Gender",
+                    ),
+                    DateTimePickerTableFilter(
+                      id: "1",
+                      name: "Date picker",
+                      chipFormatter: (date) => "Date is $date",
+                      initialValue: DateTime.now(),
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDate: DateTime.now(),
+                      dateFormat: DateFormat.yMd(),
+                    ),
+                    DateRangePickerTableFilter(
+                      id: "2",
+                      name: "DateRange picker",
+                      chipFormatter: (date) => "Date is $date",
+                      initialValue: null,
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDate: DateTime.now(),
+                      formatter: (range) => "${range.start} - ${range.end}",
                     ),
                   ],
                   filterBarChild: PopupMenuButton(
@@ -120,7 +145,8 @@ class _MainViewState extends State<MainView> {
                       PopupMenuItem(
                         child: const Text("Select random row"),
                         onTap: () {
-                          final index = Random().nextInt(tableController.totalItems);
+                          final index =
+                              Random().nextInt(tableController.totalItems);
                           tableController.selectRow(index);
                         },
                       ),
@@ -146,83 +172,16 @@ class _MainViewState extends State<MainView> {
                       PopupMenuItem(
                         child: const Text("Remove last row"),
                         onTap: () {
-                          tableController.removeRowAt(tableController.totalItems - 1);
+                          tableController
+                              .removeRowAt(tableController.totalItems - 1);
                         },
                       ),
                       PopupMenuItem(
                         child: const Text("Remove random row"),
                         onTap: () {
-                          final index = Random().nextInt(tableController.totalItems);
+                          final index =
+                              Random().nextInt(tableController.totalItems);
                           tableController.removeRowAt(index);
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Text("Replace first"),
-                        onTap: () {
-                          tableController.replace(
-                            0,
-                            Post(
-                              id: 999999,
-                              author: "Replaced",
-                              authorGender: Gender.male,
-                              content: "This row was replaced",
-                              createdAt: DateTime.now(),
-                              isEnabled: true,
-                              number: 12151502,
-                            ),
-                          );
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Text("Insert first"),
-                        onTap: () {
-                          tableController.insertAt(
-                            0,
-                            Post(
-                              id: 2121,
-                              author: "Created",
-                              authorGender: Gender.male,
-                              content: "This row was inserted",
-                              createdAt: DateTime.now(),
-                              isEnabled: true,
-                              number: 12151502,
-                            ),
-                          );
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Text("Insert last"),
-                        onTap: () {
-                          tableController.insert(
-                            Post(
-                              id: 999999,
-                              author: "Created",
-                              authorGender: Gender.male,
-                              content: "This row was inserted last",
-                              createdAt: DateTime.now(),
-                              isEnabled: true,
-                              number: 12151502,
-                            ),
-                          );
-                        },
-                      ),
-                      const PopupMenuDivider(),
-                      PopupMenuItem(
-                        child: const Text("Set filter"),
-                        onTap: () {
-                          tableController.setFilter("authorGender", Gender.male);
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Text("Remove filter"),
-                        onTap: () {
-                          tableController.removeFilter("authorGender");
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Text("Clear filters"),
-                        onTap: () {
-                          tableController.removeFilters();
                         },
                       ),
                     ],
@@ -232,7 +191,8 @@ class _MainViewState extends State<MainView> {
                     RowSelectorColumn(),
                     TableColumn(
                       title: const Text("Id"),
-                      cellBuilder: (context, item, index) => Text(item.id.toString()),
+                      cellBuilder: (context, item, index) =>
+                          Text(item.id.toString()),
                       size: const FixedColumnSize(100),
                     ),
                     TableColumn(
@@ -259,10 +219,12 @@ class _MainViewState extends State<MainView> {
                     ),
                     TableColumn(
                       title: const Text("Author Gender"),
-                      cellBuilder: (context, item, index) => Text(item.authorGender.name),
+                      cellBuilder: (context, item, index) =>
+                          Text(item.authorGender.name),
                       sortable: true,
                       id: "authorGender",
-                      size: const MaxColumnSize(FractionalColumnSize(.2), FixedColumnSize(100)),
+                      size: const MaxColumnSize(
+                          FractionalColumnSize(.2), FixedColumnSize(100)),
                     ),
                     LargeTextTableColumn(
                       title: const Text("Content"),
@@ -279,7 +241,8 @@ class _MainViewState extends State<MainView> {
                       title: const Text("Number"),
                       format: const NumericColumnFormat(),
                       // cellBuilder: (context, item, index) => Text(item.number.toString()),
-                      size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
+                      size: const MaxColumnSize(
+                          FixedColumnSize(100), FractionalColumnSize(.1)),
                       getter: (item, index) => item.number.toString(),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       setter: (item, newValue, index) async {
