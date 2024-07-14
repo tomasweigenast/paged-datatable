@@ -211,17 +211,16 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
     int remainingColumnCount = 0;
     double totalFractionalWidth = 0.0;
 
-    // Single pass to calculate total fixed width, total fraction, and count remaining columns
+    // First pass to determine widths and types of columns
     for (int i = 0; i < widget.columns.length; i++) {
       final column = widget.columns[i];
       if (column.size.isFixed) {
         final columnSize = column.size.calculateConstraints(maxWidth);
-        sizes[i] = columnSize;
         totalFixedWidth += columnSize;
       } else {
-        totalFraction += column.size.getFraction(maxWidth);
+        totalFraction += column.size.fraction;
 
-        // handle this special case
+        // Handle this special case
         if (column.size is RemainingColumnSize) {
           remainingColumnCount++;
         }
@@ -231,31 +230,22 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
     // Ensure totalFraction is within a valid range to prevent overflow
     assert(totalFraction <= 1.0, "Total fraction exceeds 1.0, which means the columns will overflow.");
 
-    // Calculate remaining width after fixed sizes are allocated
-    double remainingWidth = maxWidth - totalFixedWidth;
+    double remainingWidth = maxWidth - totalFixedWidth; // Calculate remaining width after fixed sizes are allocated
+    totalFractionalWidth = remainingWidth * totalFraction; // Re-calculate total fractional width
+    remainingWidth -=
+        totalFractionalWidth; // Adjust remaining width to exclude fractional columns' widths for RemainingColumnSize
+    final remainingColumnWidth = remainingColumnCount > 0.0 ? remainingWidth / remainingColumnCount : 0.0;
 
-    // Calculate total fractional width
-    totalFractionalWidth = remainingWidth * totalFraction;
-
-    // Adjust remaining width to exclude fractional columns' widths
-    remainingWidth -= totalFractionalWidth;
-
-    // Single pass to calculate sizes for each column
+    // Now calculate and assign column sizes
     for (int i = 0; i < widget.columns.length; i++) {
       final column = widget.columns[i];
-      if (!column.size.isFixed) {
-        sizes[i] = totalFractionalWidth * column.size.getFraction(maxWidth) / totalFraction;
-      }
-    }
-
-    // Distribute remaining width among columns with RemainingColumnSize
-    if (remainingColumnCount > 0) {
-      double remainingColumnWidth = remainingWidth / remainingColumnCount;
-      for (int i = 0; i < widget.columns.length; i++) {
-        final column = widget.columns[i];
-        if (column.size is RemainingColumnSize) {
-          sizes[i] = remainingColumnWidth;
-        }
+      if (column.size.isFixed) {
+        // Pass totalFixedWidth but the ColumnSize should don't care about it because its a fixed size.
+        sizes[i] = column.size.calculateConstraints(totalFixedWidth);
+      } else if (column.size is RemainingColumnSize) {
+        sizes[i] = remainingColumnWidth;
+      } else {
+        sizes[i] = totalFractionalWidth * column.size.fraction / totalFraction;
       }
     }
 

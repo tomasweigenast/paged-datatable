@@ -4,9 +4,11 @@ import 'dart:math' as math;
 sealed class ColumnSize {
   const ColumnSize();
 
+  /// A flag that indicates if the column defines a fixed, constant size.
   bool get isFixed => false;
 
-  double getFraction(double availableWidth);
+  /// Returns the size of the column as fractional units.
+  double get fraction => 0.0;
 
   /// The function used to calculate the constraints for the column given the [availableWidth].
   double calculateConstraints(double availableWidth);
@@ -22,23 +24,22 @@ final class FixedColumnSize extends ColumnSize {
   int get hashCode => size.hashCode;
 
   @override
-  bool get isFixed => true;
-
-  @override
   bool operator ==(Object other) => other is FixedColumnSize && other.size == size;
 
   @override
-  double calculateConstraints(double availableWidth) => size;
+  bool get isFixed => true;
 
   @override
-  double getFraction(double availableWidth) => 0.0;
+  double calculateConstraints(double availableWidth) => size;
 }
 
 /// Indicates a fraction size of a column. That is, a column that takes a fraction of the available viewport.
 final class FractionalColumnSize extends ColumnSize {
-  final double fraction;
+  final double _fraction;
 
-  const FractionalColumnSize(this.fraction) : assert(fraction > 0, "Fraction cannot be less than or equal to zero.");
+  const FractionalColumnSize(double fraction)
+      : _fraction = fraction,
+        assert(fraction > 0, "Fraction cannot be less than or equal to zero.");
 
   @override
   int get hashCode => fraction.hashCode;
@@ -47,10 +48,10 @@ final class FractionalColumnSize extends ColumnSize {
   bool operator ==(Object other) => other is FractionalColumnSize && other.fraction == fraction;
 
   @override
-  double calculateConstraints(double availableWidth) => availableWidth * fraction;
+  double get fraction => _fraction;
 
   @override
-  double getFraction(double availableWidth) => fraction;
+  double calculateConstraints(double availableWidth) => availableWidth * fraction;
 }
 
 /// Indicates that a column will take the remaining space in the viewport.
@@ -59,9 +60,6 @@ final class RemainingColumnSize extends ColumnSize {
 
   @override
   double calculateConstraints(double availableWidth) => math.max(0.0, availableWidth);
-
-  @override
-  double getFraction(double availableWidth) => 0.0;
 }
 
 /// A column size that uses the maximum value of two provided constraints.
@@ -71,12 +69,18 @@ final class MaxColumnSize extends ColumnSize {
   const MaxColumnSize(this.a, this.b);
 
   @override
-  double calculateConstraints(double availableWidth) =>
-      math.max(a.calculateConstraints(availableWidth), b.calculateConstraints(availableWidth));
-
-  @override
   bool get isFixed => a.isFixed && b.isFixed;
 
   @override
-  double getFraction(double availableWidth) => math.max(a.getFraction(availableWidth), b.getFraction(availableWidth));
+  double get fraction => math.max(a.fraction, b.fraction);
+
+  @override
+  int get hashCode => Object.hash(a.hashCode, b.hashCode);
+
+  @override
+  bool operator ==(Object other) => other is MaxColumnSize && other.a == a && other.b == b;
+
+  @override
+  double calculateConstraints(double availableWidth) =>
+      math.max(a.calculateConstraints(availableWidth), b.calculateConstraints(availableWidth));
 }
