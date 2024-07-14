@@ -9,6 +9,8 @@ class _DateTimePicker extends StatefulWidget {
   final DateFormat dateFormat;
   final DateTime? value;
   final void Function(DateTime) onChanged;
+  final InputDecoration inputDecoration;
+  final String name;
 
   const _DateTimePicker({
     required this.firstDate,
@@ -20,6 +22,8 @@ class _DateTimePicker extends StatefulWidget {
     required this.dateFormat,
     required this.value,
     required this.onChanged,
+    required this.inputDecoration,
+    required this.name,
   });
 
   @override
@@ -44,6 +48,9 @@ class _DateTimePickerState extends State<_DateTimePicker> {
     return TextFormField(
       readOnly: true,
       controller: textController,
+      decoration: widget.inputDecoration.copyWith(
+        labelText: widget.name,
+      ),
       onTap: () async {
         final DateTime? result = await showDatePicker(
           context: context,
@@ -79,6 +86,9 @@ class _DateRangePicker extends StatefulWidget {
   final String Function(DateTimeRange) formatter;
   final DateTimeRange? value;
   final void Function(DateTimeRange) onChanged;
+  final String name;
+  final InputDecoration inputDecoration;
+  final TransitionBuilder? dialogBuilder;
 
   const _DateRangePicker({
     required this.firstDate,
@@ -89,6 +99,9 @@ class _DateRangePicker extends StatefulWidget {
     required this.initialEntryMode,
     required this.formatter,
     required this.onChanged,
+    required this.name,
+    required this.inputDecoration,
+    required this.dialogBuilder,
   });
 
   @override
@@ -111,6 +124,9 @@ class _DateRangePickerState extends State<_DateRangePicker> {
     return TextFormField(
       readOnly: true,
       controller: textController,
+      decoration: widget.inputDecoration.copyWith(
+        labelText: widget.name,
+      ),
       onTap: () async {
         final DateTimeRange? result = await showDateRangePicker(
           context: context,
@@ -119,6 +135,7 @@ class _DateRangePickerState extends State<_DateRangePicker> {
           currentDate: widget.value?.start,
           initialEntryMode: widget.initialEntryMode,
           initialDateRange: widget.initialDateRange,
+          builder: widget.dialogBuilder,
         );
 
         if (result != null) {
