@@ -128,6 +128,7 @@ final class DateTimePickerTableFilter extends TableFilter<DateTime> {
   final DatePickerEntryMode initialEntryMode;
   final bool Function(DateTime)? selectableDayPredicate;
   final DateFormat dateFormat;
+  final InputDecoration inputDecoration;
 
   DateTimePickerTableFilter({
     required super.id,
@@ -142,6 +143,7 @@ final class DateTimePickerTableFilter extends TableFilter<DateTime> {
     this.initialDatePickerMode = DatePickerMode.day,
     this.initialEntryMode = DatePickerEntryMode.calendar,
     this.selectableDayPredicate,
+    this.inputDecoration = const InputDecoration(),
   });
 
   @override
@@ -155,6 +157,8 @@ final class DateTimePickerTableFilter extends TableFilter<DateTime> {
         selectableDayPredicate: selectableDayPredicate,
         dateFormat: dateFormat,
         value: state.value,
+        inputDecoration: inputDecoration,
+        name: name,
         onChanged: (newValue) {
           state.value = newValue;
         },
@@ -162,6 +166,7 @@ final class DateTimePickerTableFilter extends TableFilter<DateTime> {
 }
 
 /// A [TableFilter] that renders a [TextField] that, when selected, opens a [DateTimeRange] picker.
+
 final class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
   final DateTime firstDate;
   final DateTime lastDate;
@@ -169,6 +174,8 @@ final class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
   final DatePickerMode initialDatePickerMode;
   final DatePickerEntryMode initialEntryMode;
   final String Function(DateTimeRange) formatter;
+  final InputDecoration inputDecoration;
+  final TransitionBuilder? dialogBuilder;
 
   DateRangePickerTableFilter({
     required super.id,
@@ -182,6 +189,8 @@ final class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
     this.initialDateRange,
     this.initialDatePickerMode = DatePickerMode.day,
     this.initialEntryMode = DatePickerEntryMode.calendar,
+    this.inputDecoration = const InputDecoration(),
+    this.dialogBuilder,
   });
 
   @override
@@ -194,8 +203,26 @@ final class DateRangePickerTableFilter extends TableFilter<DateTimeRange> {
         initialEntryMode: initialEntryMode,
         lastDate: lastDate,
         value: state.value,
+        inputDecoration: inputDecoration,
+        name: name,
+        dialogBuilder: dialogBuilder,
         onChanged: (newValue) {
           state.value = newValue;
         },
       );
+
+  /// A convenient method to create a [TransitionBuilder] that builds the DateRangePicker dialog with a given size.
+  ///
+  /// This is useful on desktop platforms.
+  static TransitionBuilder sizedDialog(double height, double width) {
+    return (context, child) => Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 400.0,
+              maxHeight: 600.0,
+            ),
+            child: child,
+          ),
+        );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         Locale("de"),
         Locale("it"),
       ],
-      locale: const Locale("it"),
+      locale: const Locale("en"),
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -109,6 +110,26 @@ class _MainViewState extends State<MainView> {
                           'Author is ${value.name.toLowerCase()}',
                       id: "authorGender",
                       name: "Author's Gender",
+                    ),
+                    DateTimePickerTableFilter(
+                      id: "1",
+                      name: "Date picker",
+                      chipFormatter: (date) => "Date is $date",
+                      initialValue: DateTime.now(),
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDate: DateTime.now(),
+                      dateFormat: DateFormat.yMd(),
+                    ),
+                    DateRangePickerTableFilter(
+                      id: "2",
+                      name: "DateRange picker",
+                      chipFormatter: (date) => "Date is $date",
+                      initialValue: null,
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDate: DateTime.now(),
+                      formatter: (range) => "${range.start} - ${range.end}",
                     ),
                   ],
                   filterBarChild: PopupMenuButton(
