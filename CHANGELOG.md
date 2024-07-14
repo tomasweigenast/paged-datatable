@@ -1,3 +1,8 @@
+## 2.1.1
+
+- Fix Date- filters not showing `name` attribute as label in the text field.
+- Fix FractionalColumnSize does not calculate correctly sizes.
+
 ## 2.1.0
 
 - Add Italian locale
