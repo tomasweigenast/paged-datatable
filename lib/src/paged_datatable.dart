@@ -146,7 +146,6 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
         controller: tableController,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            debugPrint("Constraints: $constraints");
             final sizes = _calculateColumnWidth(constraints.maxWidth);
 
             return Column(
