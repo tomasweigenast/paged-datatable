@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         Locale("de"),
         Locale("it"),
         Locale("ru"),
+        Locale("fr"),
       ],
       locale: const Locale("en"),
       title: 'Flutter Demo',
