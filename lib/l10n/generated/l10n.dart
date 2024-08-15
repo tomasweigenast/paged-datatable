@@ -221,8 +221,10 @@ class AppLocalizationDelegate
       Locale.fromSubtags(languageCode: 'en'),
       Locale.fromSubtags(languageCode: 'de'),
       Locale.fromSubtags(languageCode: 'es'),
+      Locale.fromSubtags(languageCode: 'fr'),
       Locale.fromSubtags(languageCode: 'it'),
       Locale.fromSubtags(languageCode: 'zh'),
+      Locale.fromSubtags(languageCode: 'ru'),
     ];
   }
 
