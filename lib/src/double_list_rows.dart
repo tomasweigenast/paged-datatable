@@ -35,9 +35,13 @@ class _DoubleListRowsState<K extends Comparable<K>, T>
     super.initState();
 
     state = widget.controller._state;
-    widget.controller.addListener(() {
-      setState(() {});
-    });
+    widget.controller.addListener(_setState);
+  }
+
+  /// A wrapper around the [setState] method
+  /// that allows us to add it as a listener
+  void _setState() {
+    setState(() {});
   }
 
   @override
@@ -114,9 +118,10 @@ class _DoubleListRowsState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
-
     normalController.dispose();
     fixedController.dispose();
+    widget.controller.removeListener(_setState);
+
+    super.dispose();
   }
 }
