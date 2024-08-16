@@ -8,13 +8,14 @@ abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _RowBuilderState<K, T>();
 
-  List<Widget> buildColumns(
+  List<Widget> buildCells(
     BuildContext context,
     int index,
     PagedDataTableController<K, T> controller,
     PagedDataTableThemeData theme,
-    bool isExpandedRow,
   );
+
+  List<Widget> buildCollapsedCells(BuildContext context, T item, PagedDataTableThemeData theme);
 }
 
 class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, T>> with SingleTickerProviderStateMixin {
@@ -22,7 +23,7 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
   late final theme = PagedDataTableTheme.of(context);
   late AnimationController expandController;
   late Animation<double> animation;
-  late bool isExpansible;
+  List<T>? collapsedRows;
   bool selected = false;
   bool expanded = false;
 
@@ -46,7 +47,7 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
     setState(() {
       selected = controller._selectedRows.contains(widget.index);
       expanded = controller._expandedRows.contains(widget.index);
-      isExpansible = controller._expansibleRows.containsKey(widget.index);
+      collapsedRows = controller._expansibleRows[widget.index];
     });
   }
 
@@ -63,7 +64,7 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
   @override
   Widget build(BuildContext context) {
     Widget child = Row(
-      children: widget.buildColumns(context, widget.index, controller, theme, false),
+      children: widget.buildCells(context, widget.index, controller, theme),
     );
     var color = theme.rowColor?.call(widget.index);
     if (selected && theme.selectedRow != null) {
@@ -81,23 +82,19 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(height: theme.rowHeight, child: child),
-        if (isExpansible)
+        if (collapsedRows != null)
           SizeTransition(
             axisAlignment: 1.0,
             sizeFactor: animation,
             child: SizedBox(
-              height: theme.rowHeight * 2,
+              height: theme.rowHeight * collapsedRows!.length,
               child: Column(
-                children: [
-                  SizedBox(
-                    height: theme.rowHeight,
-                    child: Row(children: widget.buildColumns(context, widget.index, controller, theme, true)),
-                  ),
-                  SizedBox(
-                    height: theme.rowHeight,
-                    child: Row(children: widget.buildColumns(context, widget.index, controller, theme, true)),
-                  ),
-                ],
+                children: collapsedRows!
+                    .map((collapsedRowItem) => SizedBox(
+                          height: theme.rowHeight,
+                          child: Row(children: widget.buildCollapsedCells(context, collapsedRowItem, theme)),
+                        ))
+                    .toList(growable: false),
               ),
             ),
           )
@@ -140,14 +137,27 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   });
 
   @override
-  List<Widget> buildColumns(BuildContext context, int index, PagedDataTableController<K, T> controller,
-      PagedDataTableThemeData theme, bool isExpandedRow) {
+  List<Widget> buildCells(
+      BuildContext context, int index, PagedDataTableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
     for (int i = 0; i < fixedColumnCount; i++) {
       final column = columns[i];
-      final widget = _buildCell(context, index, item, sizes[i], theme, column, isExpandedRow);
+      final widget = _buildCell(context, index, item, sizes[i], theme, column, false);
+      list.add(widget);
+    }
+
+    return list;
+  }
+
+  @override
+  List<Widget> buildCollapsedCells(BuildContext context, T item, PagedDataTableThemeData theme) {
+    final list = <Widget>[];
+
+    for (int i = 0; i < fixedColumnCount; i++) {
+      final column = columns[i];
+      final widget = _buildCell(context, index, item, sizes[i], theme, column, true);
       list.add(widget);
     }
 
@@ -169,14 +179,27 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   });
 
   @override
-  List<Widget> buildColumns(BuildContext context, int index, PagedDataTableController<K, T> controller,
-      PagedDataTableThemeData theme, bool isExpandedRow) {
+  List<Widget> buildCells(
+      BuildContext context, int index, PagedDataTableController<K, T> controller, PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
     for (int i = fixedColumnCount; i < columns.length; i++) {
       final column = columns[i];
-      final widget = _buildCell(context, index, item, sizes[i], theme, column, isExpandedRow);
+      final widget = _buildCell(context, index, item, sizes[i], theme, column, false);
+      list.add(widget);
+    }
+
+    return list;
+  }
+
+  @override
+  List<Widget> buildCollapsedCells(BuildContext context, T item, PagedDataTableThemeData theme) {
+    final list = <Widget>[];
+
+    for (int i = fixedColumnCount; i < columns.length; i++) {
+      final column = columns[i];
+      final widget = _buildCell(context, index, item, sizes[i], theme, column, true);
       list.add(widget);
     }
 

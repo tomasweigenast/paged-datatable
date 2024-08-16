@@ -47,7 +47,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   final List<int>? pageSizes;
 
   /// The callback used to fetch new items.
-  final Fetcher<K, T> fetcher;
+  final dynamic fetcher;
 
   /// The amount of columns to fix, starting from the left.
   final int fixedColumnCount;
@@ -68,7 +68,22 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
 
   const PagedDataTable({
     required this.columns,
-    required this.fetcher,
+    required Fetcher<K, T> this.fetcher,
+    this.initialPage,
+    this.initialPageSize = 50,
+    this.pageSizes = const [10, 50, 100],
+    this.controller,
+    this.fixedColumnCount = 0,
+    this.configuration = const PagedDataTableConfiguration(),
+    this.footer,
+    this.filterBarChild,
+    this.filters = const <TableFilter>[],
+    super.key,
+  });
+
+  const PagedDataTable.expansible({
+    required this.columns,
+    required ExpansibleFetcher<K, T> this.fetcher,
     this.initialPage,
     this.initialPageSize = 50,
     this.pageSizes = const [10, 50, 100],

@@ -38,7 +38,8 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
   final Map<int, List<T>> _expansibleRows = {}; // Links the index of a expansible rows with their (initially) collapsed entries
   final GlobalKey<FormState> _filtersFormKey = GlobalKey();
   late final List<int>? _pageSizes;
-  late final Fetcher<K, T> _fetcher; // The function used to fetch items
+  late final Fetcher<K, T>? _fetcher; // The function used to fetch items
+  late final ExpansibleFetcher<K, T>? _expansibleFetcher; // The function used to fetch items when type is expansible
   final Map<_ListenerType, dynamic> _listeners = {
     // The list of special listeners which all are functions
 
@@ -352,19 +353,28 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
     required List<ReadOnlyTableColumn> columns,
     required List<int>? pageSizes,
     required int initialPageSize,
-    required Fetcher<K, T> fetcher,
     required List<TableFilter> filters,
     required PagedDataTableConfiguration config,
+    dynamic fetcher,
   }) {
-    if (_configuration != null) return;
-
+    assert(fetcher is Fetcher<K, T> || fetcher is ExpansibleFetcher<K, T>,
+        'fetcher must be of type Fetcher<$K, $T> or ExpansibleFetcher<$K, $T>.');
     assert(columns.isNotEmpty, "columns cannot be empty.");
+
+    if (_configuration != null) return;
 
     _currentPageSize = initialPageSize;
     _pageSizes = pageSizes;
     _configuration = config;
-    _fetcher = fetcher;
     _filtersState.addEntries(filters.map((filter) => MapEntry(filter.id, filter.createState())));
+
+    if (fetcher is Fetcher<K, T>) {
+      _fetcher = fetcher;
+      _expansibleFetcher = null;
+    } else {
+      _fetcher = null;
+      _expansibleFetcher = fetcher;
+    }
 
     // Schedule a fetch
     Future.microtask(_fetch);
@@ -386,21 +396,38 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
       final pageToken = _paginationKeys[page];
       final filterModel = FilterModel._(_filtersState.map((key, value) => MapEntry(key, value.value)));
 
-      var (items, nextPageToken) = await _fetcher(_currentPageSize, sortModel, filterModel, pageToken);
+      K? nextPageToken;
+      int totalNewItems;
+      if (_expansibleFetcher == null) {
+        List<T> items;
+        (items, nextPageToken) = await _fetcher!(_currentPageSize, sortModel, filterModel, pageToken);
+
+        totalNewItems = items.length;
+        _currentDataset.clear();
+        _currentDataset.addAll(items);
+      } else {
+        Map<T, List<T>?> items;
+        (items, nextPageToken) = await _expansibleFetcher!(_currentPageSize, sortModel, filterModel, pageToken);
+
+        totalNewItems = items.length;
+        _currentDataset.clear();
+        int index = 0;
+        for (final MapEntry(key: item, value: collapsedEntries) in items.entries) {
+          _currentDataset.add(item);
+          if (collapsedEntries != null) {
+            _expansibleRows[index] = collapsedEntries;
+          }
+          index++;
+        }
+      }
+
       _hasNextPage = nextPageToken != null;
       _currentPageIndex = page;
       if (nextPageToken != null) {
         _paginationKeys[page + 1] = nextPageToken;
       }
 
-      if (_configuration!.copyItems) {
-        items = items.toList();
-      }
-
       /* the following may be more efficient than clearing the list and adding items again */
-
-      _currentDataset.clear();
-      _currentDataset.addAll(items);
       // if no items, clear dataset
       // if (items.isEmpty) {
       //   _currentDataset.clear();
@@ -424,7 +451,7 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
       //   }
       // }
 
-      _totalItems = items.length;
+      _totalItems = totalNewItems;
       _state = _TableState.idle;
       _currentError = null;
       notifyListeners();
