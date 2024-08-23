@@ -84,6 +84,9 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
   /// The list of selected items.
   List<T> get selectedItems => UnmodifiableListView(_selectedRows.map((index) => _currentDataset[index]));
 
+  /// A list with all the rows that can be expanded.
+  List<int> get expansibleRows => UnmodifiableListView(_expansibleRows.keys);
+
   /// Updates the sort model and refreshes the dataset
   set sortModel(SortModel? sortModel) {
     _currentSortModel = sortModel;
@@ -193,6 +196,76 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
 
     _currentDataset[index] = value;
     _notifyOnRowChanged(index);
+  }
+
+  /// Inserts [value] as a collapsed row in the index [rowIndex] of the current dataset, at the specified
+  /// [collapsedRowIndex] collapsed position.
+  void insertCollapsedAt(int rowIndex, int collapsedRowIndex, T value) {
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+    collapsedRows.insert(collapsedRowIndex, value);
+    _expansibleRows[rowIndex] = collapsedRows;
+    _notifyOnRowChanged(rowIndex);
+  }
+
+  /// Inserts [value] as a collapsed row in the index [rowIndex] of the current dataset, at the bottom of
+  /// the collapsed rows.
+  void insertCollapsed(int rowIndex, T value) {
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+    collapsedRows.insert(collapsedRows.length, value);
+    _expansibleRows[rowIndex] = collapsedRows;
+    _notifyOnRowChanged(rowIndex);
+  }
+
+  /// Removes a the collapsed row at [collapsedRowIndex] of the row at [rowIndex].
+  void removeCollapsedAt(int rowIndex, int collapsedRowIndex) {
+    if (rowIndex >= _totalItems) {
+      throw ArgumentError("index cannot be greater than or equals to the total list of items.", "rowIndex");
+    }
+
+    if (rowIndex < 0) {
+      throw ArgumentError("index cannot be less than zero.", "index");
+    }
+
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+
+    if (collapsedRowIndex >= collapsedRows.length) {
+      throw ArgumentError("index cannot be greater than or equals to the total list of collapsed items.", "collapsedRowIndex");
+    }
+
+    if (collapsedRowIndex < 0) {
+      throw ArgumentError("index cannot be less than zero.", "collapsedRowIndex");
+    }
+
+    collapsedRows.removeAt(collapsedRowIndex);
+    if (collapsedRows.isEmpty) {
+      _expansibleRows.remove(rowIndex);
+    }
+
+    _notifyOnRowChanged(rowIndex);
+  }
+
+  /// Removes a the collapsed row with value [value] of the row at [rowIndex].
+  void removeCollapsed(int rowIndex, T value) {
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+    final index = collapsedRows.indexOf(value);
+    return removeCollapsedAt(rowIndex, index);
+  }
+
+  /// Replaces the value of the collapsed row at [collapsedRowIndex] in the row [rowIndex] by the [value] value.
+  void replaceCollapsed(int rowIndex, int collapsedRowIndex, T value) {
+    if (rowIndex >= _totalItems) {
+      throw ArgumentError("Index cannot be greater than or equals to the total size of the current dataset.", "rowIndex");
+    }
+
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+
+    if (collapsedRowIndex >= collapsedRows.length) {
+      throw ArgumentError(
+          "Index cannot be greater than or equals to the total size of the total collapsed rows.", "collapsedRowIndex");
+    }
+
+    collapsedRows[collapsedRowIndex] = value;
+    _notifyOnRowChanged(rowIndex);
   }
 
   /// Marks a row as selected
@@ -414,7 +487,7 @@ final class PagedDataTableController<K extends Comparable<K>, T> extends ChangeN
         int index = 0;
         for (final MapEntry(key: item, value: collapsedEntries) in items.entries) {
           _currentDataset.add(item);
-          if (collapsedEntries != null) {
+          if (collapsedEntries != null && collapsedEntries.isNotEmpty) {
             _expansibleRows[index] = collapsedEntries;
           }
           index++;

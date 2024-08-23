@@ -1,14 +1,13 @@
 import 'dart:math';
 
-import 'package:darq/darq.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable_example/post.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -395,6 +394,29 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
                 tableController.removeRowAt(index);
               },
             ),
+            const PopupMenuDivider(),
+            PopupMenuItem(
+              child: const Text("Add collapsed row in first row"),
+              onTap: () {
+                tableController.insertCollapsed(
+                  3,
+                  Post(
+                      id: 123456789,
+                      author: "Me",
+                      content: "This is the content",
+                      createdAt: DateTime.now(),
+                      isEnabled: true,
+                      number: 9999,
+                      authorGender: Gender.male),
+                );
+              },
+            ),
+            PopupMenuItem(
+              child: const Text("Remove the first collapsed row"),
+              onTap: () {
+                tableController.removeCollapsedAt(tableController.expansibleRows.first, 0);
+              },
+            ),
           ],
         ),
         fixedColumnCount: 2,
@@ -423,6 +445,8 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
             size: const FixedColumnSize(100),
             getter: (item, index) => item.isEnabled,
             setter: (item, newValue, index) async {
+              debugPrint("Item: [${item.id}] NewValue: [$newValue] Index: [$index]");
+
               await Future.delayed(const Duration(seconds: 2));
               item.isEnabled = newValue;
               return true;

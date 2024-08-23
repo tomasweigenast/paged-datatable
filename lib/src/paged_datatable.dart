@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:paged_datatable/paged_datatable.dart';
 import 'package:paged_datatable/src/linked_scroll_controller.dart';
 import 'package:paged_datatable/src/table_controller_notifier.dart';
+import 'package:paged_datatable/src/utils.dart';
 
 part 'column.dart';
 part 'column_widgets.dart';
@@ -171,13 +172,15 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
                 const Divider(height: 0, color: Color(0xFFD6D6D6)),
 
                 Expanded(
-                  child: _DoubleListRows(
-                    fixedColumnCount: widget.fixedColumnCount,
-                    columns: widget.columns,
-                    horizontalController: horizontalController,
-                    controller: tableController,
-                    configuration: widget.configuration,
-                    sizes: sizes,
+                  child: RepaintBoundary(
+                    child: _DoubleListRows(
+                      fixedColumnCount: widget.fixedColumnCount,
+                      columns: widget.columns,
+                      horizontalController: horizontalController,
+                      controller: tableController,
+                      configuration: widget.configuration,
+                      sizes: sizes,
+                    ),
                   ),
                 ),
 

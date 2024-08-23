@@ -15,7 +15,7 @@ abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
     PagedDataTableThemeData theme,
   );
 
-  List<Widget> buildCollapsedCells(BuildContext context, T item, PagedDataTableThemeData theme);
+  List<Widget> buildCollapsedCells(BuildContext context, int index, T item, PagedDataTableThemeData theme);
 }
 
 class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, T>> with SingleTickerProviderStateMixin {
@@ -90,9 +90,9 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
               height: theme.rowHeight * collapsedRows!.length,
               child: Column(
                 children: collapsedRows!
-                    .map((collapsedRowItem) => SizedBox(
+                    .mapIndexed((index, collapsedRowItem) => SizedBox(
                           height: theme.rowHeight,
-                          child: Row(children: widget.buildCollapsedCells(context, collapsedRowItem, theme)),
+                          child: Row(children: widget.buildCollapsedCells(context, index, collapsedRowItem, theme)),
                         ))
                     .toList(growable: false),
               ),
@@ -110,6 +110,7 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
       setState(() {
         selected = controller._selectedRows.contains(index);
         expanded = controller._expandedRows.contains(index);
+        collapsedRows = controller._expansibleRows[widget.index];
       });
     }
   }
@@ -152,7 +153,7 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   }
 
   @override
-  List<Widget> buildCollapsedCells(BuildContext context, T item, PagedDataTableThemeData theme) {
+  List<Widget> buildCollapsedCells(BuildContext context, int index, T item, PagedDataTableThemeData theme) {
     final list = <Widget>[];
 
     for (int i = 0; i < fixedColumnCount; i++) {
@@ -194,7 +195,7 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   }
 
   @override
-  List<Widget> buildCollapsedCells(BuildContext context, T item, PagedDataTableThemeData theme) {
+  List<Widget> buildCollapsedCells(BuildContext context, int index, T item, PagedDataTableThemeData theme) {
     final list = <Widget>[];
 
     for (int i = fixedColumnCount; i < columns.length; i++) {
