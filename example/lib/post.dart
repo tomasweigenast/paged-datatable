@@ -70,7 +70,8 @@ class PostsRepository {
     final random = Random();
     for (final post in _backend) {
       if (random.nextBool()) {
-        _relatedPosts[post] = List.generate(random.nextInt(10), (i) => Post.random(id: post.id + 5000 + i));
+        _relatedPosts[post] = List.generate(
+            random.nextInt(10), (i) => Post.random(id: post.id + 5000 + i));
       }
     }
   }
@@ -98,18 +99,22 @@ class PostsRepository {
       switch (sortBy) {
         case "createdAt":
           query = sortDescending
-              ? query.orderByDescending((element) => element.createdAt.millisecondsSinceEpoch)
-              : query.orderBy((element) => element.createdAt.millisecondsSinceEpoch);
+              ? query.orderByDescending(
+                  (element) => element.createdAt.millisecondsSinceEpoch)
+              : query.orderBy(
+                  (element) => element.createdAt.millisecondsSinceEpoch);
           break;
 
         case "number":
-          query =
-              sortDescending ? query.orderByDescending((element) => element.number) : query.orderBy((element) => element.number);
+          query = sortDescending
+              ? query.orderByDescending((element) => element.number)
+              : query.orderBy((element) => element.number);
           break;
 
         case "author":
-          query =
-              sortDescending ? query.orderByDescending((element) => element.author) : query.orderBy((element) => element.author);
+          query = sortDescending
+              ? query.orderByDescending((element) => element.author)
+              : query.orderBy((element) => element.author);
           break;
 
         case "authorGender":
@@ -130,17 +135,21 @@ class PostsRepository {
     }
 
     if (between != null) {
-      query = query.where((element) => between.start.isBefore(element.createdAt) && between.end.isAfter(element.createdAt));
+      query = query.where((element) =>
+          between.start.isBefore(element.createdAt) &&
+          between.end.isAfter(element.createdAt));
     }
 
     if (authorName != null) {
-      query = query.where((element) => element.author.toLowerCase().contains(authorName.toLowerCase()));
+      query = query.where((element) =>
+          element.author.toLowerCase().contains(authorName.toLowerCase()));
     }
 
     if (searchQuery != null) {
       searchQuery = searchQuery.toLowerCase();
       query = query.where((element) =>
-          element.author.toLowerCase().startsWith(searchQuery!) || element.content.toLowerCase().contains(searchQuery));
+          element.author.toLowerCase().startsWith(searchQuery!) ||
+          element.content.toLowerCase().contains(searchQuery));
     }
 
     var resultSet = query.take(pageSize + 1).toList();

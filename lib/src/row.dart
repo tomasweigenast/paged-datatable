@@ -15,10 +15,12 @@ abstract class _RowBuilder<K extends Comparable<K>, T> extends StatefulWidget {
     PagedDataTableThemeData theme,
   );
 
-  List<Widget> buildCollapsedCells(BuildContext context, int index, T item, PagedDataTableThemeData theme);
+  List<Widget> buildCollapsedCells(
+      BuildContext context, int index, T item, PagedDataTableThemeData theme);
 }
 
-class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, T>> with SingleTickerProviderStateMixin {
+class _RowBuilderState<K extends Comparable<K>, T>
+    extends State<_RowBuilder<K, T>> with SingleTickerProviderStateMixin {
   late final controller = TableControllerProvider.of<K, T>(context);
   late final theme = PagedDataTableTheme.of(context);
   late AnimationController expandController;
@@ -31,7 +33,8 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
   void initState() {
     super.initState();
 
-    expandController = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    expandController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 400));
     final Animation<double> curve = CurvedAnimation(
       parent: expandController,
       curve: Curves.fastOutSlowIn,
@@ -92,7 +95,9 @@ class _RowBuilderState<K extends Comparable<K>, T> extends State<_RowBuilder<K, 
                 children: collapsedRows!
                     .mapIndexed((index, collapsedRowItem) => SizedBox(
                           height: theme.rowHeight,
-                          child: Row(children: widget.buildCollapsedCells(context, index, collapsedRowItem, theme)),
+                          child: Row(
+                              children: widget.buildCollapsedCells(
+                                  context, index, collapsedRowItem, theme)),
                         ))
                     .toList(growable: false),
               ),
@@ -139,13 +144,17 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
 
   @override
   List<Widget> buildCells(
-      BuildContext context, int index, PagedDataTableController<K, T> controller, PagedDataTableThemeData theme) {
+      BuildContext context,
+      int index,
+      PagedDataTableController<K, T> controller,
+      PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
     for (int i = 0; i < fixedColumnCount; i++) {
       final column = columns[i];
-      final widget = _buildCell(context, index, item, sizes[i], theme, column, false);
+      final widget =
+          _buildCell(context, index, item, sizes[i], theme, column, false);
       list.add(widget);
     }
 
@@ -153,12 +162,14 @@ class _FixedPartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   }
 
   @override
-  List<Widget> buildCollapsedCells(BuildContext context, int index, T item, PagedDataTableThemeData theme) {
+  List<Widget> buildCollapsedCells(
+      BuildContext context, int index, T item, PagedDataTableThemeData theme) {
     final list = <Widget>[];
 
     for (int i = 0; i < fixedColumnCount; i++) {
       final column = columns[i];
-      final widget = _buildCell(context, index, item, sizes[i], theme, column, true);
+      final widget =
+          _buildCell(context, index, item, sizes[i], theme, column, true);
       list.add(widget);
     }
 
@@ -181,13 +192,17 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
 
   @override
   List<Widget> buildCells(
-      BuildContext context, int index, PagedDataTableController<K, T> controller, PagedDataTableThemeData theme) {
+      BuildContext context,
+      int index,
+      PagedDataTableController<K, T> controller,
+      PagedDataTableThemeData theme) {
     final item = controller._currentDataset[index];
     final list = <Widget>[];
 
     for (int i = fixedColumnCount; i < columns.length; i++) {
       final column = columns[i];
-      final widget = _buildCell(context, index, item, sizes[i], theme, column, false);
+      final widget =
+          _buildCell(context, index, item, sizes[i], theme, column, false);
       list.add(widget);
     }
 
@@ -195,12 +210,14 @@ class _VariablePartRow<K extends Comparable<K>, T> extends _RowBuilder<K, T> {
   }
 
   @override
-  List<Widget> buildCollapsedCells(BuildContext context, int index, T item, PagedDataTableThemeData theme) {
+  List<Widget> buildCollapsedCells(
+      BuildContext context, int index, T item, PagedDataTableThemeData theme) {
     final list = <Widget>[];
 
     for (int i = fixedColumnCount; i < columns.length; i++) {
       final column = columns[i];
-      final widget = _buildCell(context, index, item, sizes[i], theme, column, true);
+      final widget =
+          _buildCell(context, index, item, sizes[i], theme, column, true);
       list.add(widget);
     }
 

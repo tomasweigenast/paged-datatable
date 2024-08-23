@@ -134,7 +134,9 @@ class _SimplePagedDataTableState extends State<SimplePagedDataTable> {
             name: "Content",
           ),
           DropdownTableFilter<Gender>(
-            items: Gender.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(growable: false),
+            items: Gender.values
+                .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
+                .toList(growable: false),
             chipFormatter: (value) => 'Author is ${value.name.toLowerCase()}',
             id: "authorGender",
             name: "Author's Gender",
@@ -244,7 +246,8 @@ class _SimplePagedDataTableState extends State<SimplePagedDataTable> {
             cellBuilder: (context, item, index) => Text(item.authorGender.name),
             sortable: true,
             id: "authorGender",
-            size: const MaxColumnSize(FractionalColumnSize(.2), FixedColumnSize(100)),
+            size: const MaxColumnSize(
+                FractionalColumnSize(.2), FixedColumnSize(100)),
           ),
           LargeTextTableColumn(
             title: const Text("Content"),
@@ -261,7 +264,8 @@ class _SimplePagedDataTableState extends State<SimplePagedDataTable> {
             title: const Text("Number"),
             format: const NumericColumnFormat(),
             // cellBuilder: (context, item, index) => Text(item.number.toString()),
-            size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
+            size: const MaxColumnSize(
+                FixedColumnSize(100), FractionalColumnSize(.1)),
             getter: (item, index) => item.number.toString(),
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             setter: (item, newValue, index) async {
@@ -280,7 +284,8 @@ class ExpansiblePagedDataTable extends StatefulWidget {
   const ExpansiblePagedDataTable({super.key});
 
   @override
-  State<ExpansiblePagedDataTable> createState() => _ExpansiblePagedDataTableState();
+  State<ExpansiblePagedDataTable> createState() =>
+      _ExpansiblePagedDataTableState();
 }
 
 class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
@@ -321,7 +326,9 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
             name: "Content",
           ),
           DropdownTableFilter<Gender>(
-            items: Gender.values.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(growable: false),
+            items: Gender.values
+                .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
+                .toList(growable: false),
             chipFormatter: (value) => 'Author is ${value.name.toLowerCase()}',
             id: "authorGender",
             name: "Author's Gender",
@@ -414,7 +421,8 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
             PopupMenuItem(
               child: const Text("Remove the first collapsed row"),
               onTap: () {
-                tableController.removeCollapsedAt(tableController.expansibleRows.first, 0);
+                tableController.removeCollapsedAt(
+                    tableController.expansibleRows.first, 0);
               },
             ),
           ],
@@ -445,7 +453,8 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
             size: const FixedColumnSize(100),
             getter: (item, index) => item.isEnabled,
             setter: (item, newValue, index) async {
-              debugPrint("Item: [${item.id}] NewValue: [$newValue] Index: [$index]");
+              debugPrint(
+                  "Item: [${item.id}] NewValue: [$newValue] Index: [$index]");
 
               await Future.delayed(const Duration(seconds: 2));
               item.isEnabled = newValue;
@@ -457,7 +466,8 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
             cellBuilder: (context, item, index) => Text(item.authorGender.name),
             sortable: true,
             id: "authorGender",
-            size: const MaxColumnSize(FractionalColumnSize(.2), FixedColumnSize(100)),
+            size: const MaxColumnSize(
+                FractionalColumnSize(.2), FixedColumnSize(100)),
           ),
           LargeTextTableColumn(
             title: const Text("Content"),
@@ -474,7 +484,8 @@ class _ExpansiblePagedDataTableState extends State<ExpansiblePagedDataTable> {
             title: const Text("Number"),
             format: const NumericColumnFormat(),
             // cellBuilder: (context, item, index) => Text(item.number.toString()),
-            size: const MaxColumnSize(FixedColumnSize(100), FractionalColumnSize(.1)),
+            size: const MaxColumnSize(
+                FixedColumnSize(100), FractionalColumnSize(.1)),
             getter: (item, index) => item.number.toString(),
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             setter: (item, newValue, index) async {
