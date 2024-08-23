@@ -40,7 +40,9 @@ class _DoubleListRowsState<K extends Comparable<K>, T> extends State<_DoubleList
   /// A wrapper around the [setState] method
   /// that allows us to add it as a listener
   void _setState() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

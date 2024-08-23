@@ -85,7 +85,7 @@ final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T> extends Stat
             ? true
             : null;
 
-    if (state != newState) {
+    if (mounted && state != newState) {
       setState(() {
         state = newState;
       });
@@ -357,7 +357,7 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
         }
 
         if (newText != null && newText != textController.text) {
-          if (context.mounted) {
+          if (mounted) {
             setState(() {
               isLoading = true;
             });
@@ -369,7 +369,7 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
             textController.text = previousValue ?? '';
           }
 
-          if (context.mounted) {
+          if (mounted) {
             setState(() {
               isLoading = false;
             });
