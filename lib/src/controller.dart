@@ -96,6 +96,9 @@ final class PagedDataTableController<K extends Comparable<K>, T>
   /// The list of selected row indexes
   List<int> get selectedRows => _selectedRows.toList(growable: false);
 
+  /// The list of expanded row indexes
+  List<int> get expandedRows => _expandedRows.toList(growable: false);
+
   /// The list of selected items.
   List<T> get selectedItems => UnmodifiableListView(
       _selectedRows.map((index) => _currentDataset[index]));
