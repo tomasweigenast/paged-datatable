@@ -157,8 +157,8 @@ final class _HeaderState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     widget.controller.removeListener(_onControllerChanged);
+    super.dispose();
   }
 }
 

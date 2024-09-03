@@ -107,9 +107,9 @@ final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
-
     tableController.removeListener(_onTableControllerChanged);
+
+    super.dispose();
   }
 }
 
@@ -258,8 +258,8 @@ final class _TextFieldCellState<T> extends State<_TextFieldCell<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -424,8 +424,8 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -534,8 +534,8 @@ final class _EditableTextFieldOverlayState
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -624,7 +624,7 @@ final class _EditableTextFieldBottomSheetState
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }

@@ -214,13 +214,13 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     horizontalController.dispose();
     headerHorizontalController.dispose();
 
     if (selfConstructedController) {
       tableController.dispose();
     }
+    super.dispose();
   }
 
   List<double> _calculateColumnWidth(double maxWidth) {

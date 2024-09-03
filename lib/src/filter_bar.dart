@@ -161,9 +161,9 @@ class _FilterBarState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     chipsListController.dispose();
     controller.removeListener(_onChanged);
+    super.dispose();
   }
 }
 
