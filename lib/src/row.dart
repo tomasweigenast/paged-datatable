@@ -80,11 +80,24 @@ class _RowBuilderState<K extends Comparable<K>, T>
       );
     }
 
+    final Function(T)? onRowPressed =
+        PagedDataTable._of<K, T>(context).widget.onRowPressed;
+
     child = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(height: theme.rowHeight, child: child),
+        SizedBox(
+          height: theme.rowHeight,
+          child: InkWell(
+            onTap: onRowPressed != null
+                ? () {
+                    onRowPressed(controller._currentDataset[widget.index]);
+                  }
+                : null,
+            child: child,
+          ),
+        ),
         if (collapsedRows != null)
           SizeTransition(
             axisAlignment: 1.0,
@@ -95,9 +108,21 @@ class _RowBuilderState<K extends Comparable<K>, T>
                 children: collapsedRows!
                     .mapIndexed((index, collapsedRowItem) => SizedBox(
                           height: theme.rowHeight,
-                          child: Row(
+                          child: InkWell(
+                            onTap: onRowPressed != null
+                                ? () {
+                                    onRowPressed(collapsedRowItem);
+                                  }
+                                : null,
+                            child: Row(
                               children: widget.buildCollapsedCells(
-                                  context, index, collapsedRowItem, theme)),
+                                context,
+                                index,
+                                collapsedRowItem,
+                                theme,
+                              ),
+                            ),
+                          ),
                         ))
                     .toList(growable: false),
               ),

@@ -67,6 +67,9 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   /// The list of filters to use.
   final List<TableFilter> filters;
 
+  /// The callback to be called when a row is pressed.
+  final void Function(T)? onRowPressed;
+
   const PagedDataTable({
     required this.columns,
     required Fetcher<K, T> this.fetcher,
@@ -79,6 +82,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.footer,
     this.filterBarChild,
     this.filters = const <TableFilter>[],
+    this.onRowPressed,
     super.key,
   });
 
@@ -94,8 +98,40 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.footer,
     this.filterBarChild,
     this.filters = const <TableFilter>[],
+    this.onRowPressed,
     super.key,
   });
+
+  static _PagedDataTableState<K, T> _of<K extends Comparable<K>, T>(
+    BuildContext context, {
+    bool rootNavigator = false,
+  }) {
+    // Handles the case where the input context is a PagedDataTable element.
+    _PagedDataTableState<K, T>? tableState;
+    if (context is StatefulElement &&
+        context.state is _PagedDataTableState<K, T>) {
+      tableState = context.state as _PagedDataTableState<K, T>;
+    }
+    if (rootNavigator) {
+      tableState =
+          context.findRootAncestorStateOfType<_PagedDataTableState<K, T>>() ??
+              tableState;
+    } else {
+      tableState = tableState ??
+          context.findAncestorStateOfType<_PagedDataTableState<K, T>>();
+    }
+
+    assert(() {
+      if (tableState == null) {
+        throw FlutterError(
+          "PagedDataTable operation requested with a context that"
+          "does not include a PagedDataTable.",
+        );
+      }
+      return true;
+    }());
+    return tableState!;
+  }
 
   @override
   State<StatefulWidget> createState() => _PagedDataTableState<K, T>();
