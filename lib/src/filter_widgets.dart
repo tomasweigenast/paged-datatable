@@ -73,8 +73,8 @@ class _DateTimePickerState extends State<_DateTimePicker> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -148,7 +148,7 @@ class _DateRangePickerState extends State<_DateRangePicker> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
