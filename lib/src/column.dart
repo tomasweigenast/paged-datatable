@@ -271,6 +271,9 @@ final class RowSelectorColumn<K extends Comparable<K>, T>
 }
 
 /// A special [ReadOnlyTableColumn] that renders a button to open collapsed rows
+///
+/// When used on the left side of a table, use
+/// [PagedDataTable.fixedColumnCount] to indent the expanded rows correctly.
 final class CollapsibleRowColumn<K extends Comparable<K>, T>
     extends ReadOnlyTableColumn<K, T> {
   /// The icon that is shown while the row is expanded.
