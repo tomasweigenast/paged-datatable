@@ -526,6 +526,7 @@ final class PagedDataTableController<K extends Comparable<K>, T>
 
         totalNewItems = items.length;
         _currentDataset.clear();
+        _expansibleRows.clear();
         int index = 0;
         for (final MapEntry(key: item, value: collapsedEntries)
             in items.entries) {
@@ -535,6 +536,12 @@ final class PagedDataTableController<K extends Comparable<K>, T>
           }
           index++;
         }
+
+        // Notify all expanded rows as their data might not
+        // be available anymore and they would stay expanded
+        // with old data visible.
+        _notifyRowChangedMany(_expandedRows);
+        _expandedRows.clear();
       }
 
       _hasNextPage = nextPageToken != null;
