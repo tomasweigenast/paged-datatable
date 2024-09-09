@@ -1,3 +1,6 @@
+## 2.1.2
+- Added Dutch locale
+
 ## 2.1.1
 
 - Fix Date- filters not showing `name` attribute as label in the text field.

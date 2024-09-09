@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "Filter",
+    "filterByTitle": "Filter op",
+    "applyFilterButtonText": "Toepassen",
+    "cancelFilteringButtonText": "Annuleren",
+    "removeAllFiltersButtonText": "Alles verwijderen",
+    "editableColumnSaveChangesButtonText": "Wijzigingen opslaan",
+    "editableColumnCancelButtonText": "Annuleren",
+    "removeFilterButtonText": "Verwijder dit filter",
+    "refreshText": "Vernieuwen",
+    "refreshedAtText": "Laatst vernieuwd om {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "Rijen per pagina",
+    "pageIndicatorText": "Pagina {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "{totalElements} elementen",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "Volgende pagina",
+    "previousPageButtonText": "Vorige pagina",
+    "noItemsFoundText": "Geen items gevonden"
+}

@@ -261,6 +261,7 @@ At the moment of writing this, the supported locales are:
 - **es**: Spanish
 - **en**: English
 - **de**: Deutsch
+- **nl**: Dutch
 
 If you want more languages, you can [contribute](#contribute).
 
