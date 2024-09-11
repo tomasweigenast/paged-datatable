@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "过滤",
+    "filterByTitle": "过滤自...",
+    "applyFilterButtonText": "应用",
+    "cancelFilteringButtonText": "取消",
+    "removeAllFiltersButtonText": "删除",
+    "editableColumnSaveChangesButtonText": "保存更改",
+    "editableColumnCancelButtonText": "取消",
+    "removeFilterButtonText": "删除过滤项",
+    "refreshText": "刷新",
+    "refreshedAtText": "最后刷新于 {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "每页行数",
+    "pageIndicatorText": "当前 {currentPage} 页",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "显示 {totalElements} 条",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "下一页",
+    "previousPageButtonText": "上一页",
+    "noItemsFoundText": "未找到项目"
+}

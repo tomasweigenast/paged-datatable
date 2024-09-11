@@ -262,6 +262,7 @@ At the moment of writing this, the supported locales are:
 - **en**: English
 - **de**: Deutsch
 - **nl**: Dutch
+- **tr**: Turkish
 
 If you want more languages, you can [contribute](#contribute).
 

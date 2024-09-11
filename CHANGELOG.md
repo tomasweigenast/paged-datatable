@@ -1,3 +1,7 @@
+## 2.2.0-dev1
+
+- Add expansible rows. Check out documentation to know how you can implement this feature.
+
 ## 2.1.1
 
 - Fix Date- filters not showing `name` attribute as label in the text field.
