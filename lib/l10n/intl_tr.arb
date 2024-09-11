@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "Filtrele",
+    "filterByTitle": "Başlık ile filtrele",
+    "applyFilterButtonText": "Uygula",
+    "cancelFilteringButtonText": "İptal",
+    "removeAllFiltersButtonText": "Temizle",
+    "editableColumnSaveChangesButtonText": "Değişiklikleri Kaydet",
+    "editableColumnCancelButtonText": "Vazgeç",
+    "removeFilterButtonText": "Filtreleri kaldır",
+    "refreshText": "Yenile",
+    "refreshedAtText": "Son yenileme {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "Sayfa başına satır sayısı",
+    "pageIndicatorText": "Sayfa {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "{totalElements} öğe gösteriliyor",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "Sonraki sayfa",
+    "previousPageButtonText": "Önceki Sayfa",
+    "noItemsFoundText": "Kayıt bulunamadı"
+}
