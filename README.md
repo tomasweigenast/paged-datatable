@@ -256,15 +256,19 @@ localizationsDelegates:  const  [
 
 And you're done.
 
-At the moment of writing this, the supported locales are:
+### Supported locales
 
 - **es**: Spanish
 - **en**: English
-- **de**: Deutsch
+- **de**: German
 - **nl**: Dutch
 - **tr**: Turkish
+- **fr**: French
+- **it**: Italian
+- **zh**: Chinese
+- **ru**: Russian
 
-If you want more languages, you can [contribute](#contribute).
+You can [contribute](#contribute) if you want more languages.
 
 ## Screenshots
 
