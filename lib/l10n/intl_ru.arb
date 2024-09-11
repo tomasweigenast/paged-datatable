@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "Фильтр",
+    "filterByTitle": "Фильтр по",
+    "applyFilterButtonText": "Применить",
+    "cancelFilteringButtonText": "Отмена",
+    "removeAllFiltersButtonText": "Удалить",
+    "editableColumnSaveChangesButtonText": "Сохранить изменения",
+    "editableColumnCancelButtonText": "Отмена",
+    "removeFilterButtonText": "Убрать этот фильтр",
+    "refreshText": "Обновить",
+    "refreshedAtText": "Последнее обновление в {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "Строк на странице",
+    "pageIndicatorText": "Страница {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "Показано элементов: {totalElements}",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "Следующая страница",
+    "previousPageButtonText": "Предыдущая страница",
+    "noItemsFoundText": "Объектов не найдено"
+}
