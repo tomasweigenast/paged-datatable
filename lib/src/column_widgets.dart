@@ -1,5 +1,28 @@
 part of 'paged_datatable.dart';
 
+final class _CollapseRowButton<K extends Comparable<K>, T>
+    extends StatelessWidget {
+  final int index;
+
+  const _CollapseRowButton({required this.index, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final tableController = TableControllerProvider.of<K, T>(context);
+
+    if (tableController._expansibleRows.containsKey(index)) {
+      return IconButton(
+        icon: const Icon(Icons.expand_circle_down_outlined),
+        onPressed: () {
+          tableController.toggleRowExpansion(index);
+        },
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+}
+
 final class _SelectRowCheckbox<K extends Comparable<K>, T>
     extends StatelessWidget {
   final int index;
@@ -66,7 +89,7 @@ final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T>
             ? true
             : null;
 
-    if (state != newState) {
+    if (mounted && state != newState) {
       setState(() {
         state = newState;
       });
@@ -340,7 +363,7 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
         }
 
         if (newText != null && newText != textController.text) {
-          if (context.mounted) {
+          if (mounted) {
             setState(() {
               isLoading = true;
             });
@@ -352,7 +375,7 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
             textController.text = previousValue ?? '';
           }
 
-          if (context.mounted) {
+          if (mounted) {
             setState(() {
               isLoading = false;
             });

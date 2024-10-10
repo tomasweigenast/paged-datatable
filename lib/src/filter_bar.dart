@@ -154,7 +154,9 @@ class _FilterBarState<K extends Comparable<K>, T>
   }
 
   void _onChanged() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
