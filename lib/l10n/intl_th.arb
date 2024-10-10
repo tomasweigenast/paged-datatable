@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "กรอง",
+    "filterByTitle": "กรองตาม",
+    "applyFilterButtonText": "ใช้งาน",
+    "cancelFilteringButtonText": "ยกเลิก",
+    "removeAllFiltersButtonText": "ลบ",
+    "editableColumnSaveChangesButtonText": "บันทึกการเปลี่ยนแปลง",
+    "editableColumnCancelButtonText": "ยกเลิก",
+    "removeFilterButtonText": "ลบตัวกรองนี้",
+    "refreshText": "รีเฟรช",
+    "refreshedAtText": "รีเฟรชล่าสุดเมื่อ {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "แถวต่อหน้า",
+    "pageIndicatorText": "หน้า {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "แสดง {totalElements} รายการ",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "หน้าถัดไป",
+    "previousPageButtonText": "หน้าก่อนหน้า",
+    "noItemsFoundText": "ไม่พบรายการ"
+}

@@ -267,6 +267,7 @@ And you're done.
 - **it**: Italian
 - **zh**: Chinese
 - **ru**: Russian
+- **th**: Thai
 
 You can [contribute](#contribute) if you want more languages.
 
