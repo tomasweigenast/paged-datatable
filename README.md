@@ -12,6 +12,7 @@ Designed to follow Google's Material You style.
 ## Features
 
 - **Horizontal scrolling**, allowing you to define columns wider than the viewport width.
+- **Expansible rows**, you can hide or shown them.  
 - **Fixed columns**, to scroll horizontally only a set of columns.
 - **Row updating on demand**, preventing you to create other views for updating fields of a class. Now you can update an object from the table directly.
 - **Cursor and offset pagination**, you decide how to paginate your data.
@@ -22,21 +23,26 @@ Designed to follow Google's Material You style.
 
 ## Table Of Contents
 
-- [Setup](#setup)
-  - [Fetcher](#fetcher)
-  - [Header](#header)
-  - [Footer](#footer)
-    - [Custom footer](#custom-footer)
-  - [Columns](#columns)
-    - [TableColumn](#tablecolumnk-t)
-    - [EditableTableColumn](#editabletablecolumnk-t-v)
-    - [Custom columns](#custom-columns)
+- [PagedDataTable](#pageddatatable)
+  - [Online demo](#online-demo)
+  - [Features](#features)
+  - [Table Of Contents](#table-of-contents)
+  - [Setup](#setup)
+    - [Fetcher](#fetcher)
+    - [Header](#header)
+    - [Footer](#footer)
+      - [Custom footer](#custom-footer)
+    - [Columns](#columns)
+      - [TableColumn\<K, T\>](#tablecolumnk-t)
+      - [EditableTableColumn\<K, T, V\>](#editabletablecolumnk-t-v)
+      - [Custom columns](#custom-columns)
   - [Filters](#filters)
     - [Custom filters](#custom-filters)
   - [Controller](#controller)
-- [Internationalization](#internationalization)
-- [Screenshots](#screenshots)
-- [Contributing](#contribute)
+  - [Internationalization](#internationalization)
+    - [Supported locales](#supported-locales)
+  - [Screenshots](#screenshots)
+  - [Contribute](#contribute)
 
 ## Setup
 
