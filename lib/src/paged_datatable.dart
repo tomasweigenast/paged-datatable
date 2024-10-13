@@ -159,7 +159,7 @@ final class _PagedDataTableState<K extends Comparable<K>, T> extends State<Paged
 
             return Column(
               children: [
-                if (widget.filters.isNotEmpty) _FilterBar<K, T>(child: widget.filterBarChild),
+                if (widget.filters.isNotEmpty || widget.filterBarChild != null) _FilterBar<K, T>(child: widget.filterBarChild),
 
                 _Header(
                   controller: tableController,
