@@ -96,6 +96,9 @@ final class PagedDataTableController<K extends Comparable<K>, T>
   /// The list of selected row indexes
   List<int> get selectedRows => _selectedRows.toList(growable: false);
 
+  /// The list of expanded row indexes
+  List<int> get expandedRows => _expandedRows.toList(growable: false);
+
   /// The list of selected items.
   List<T> get selectedItems => UnmodifiableListView(
       _selectedRows.map((index) => _currentDataset[index]));
@@ -131,10 +134,10 @@ final class PagedDataTableController<K extends Comparable<K>, T>
   }
 
   /// Advances to the next page
-  Future<void> nextPage() => _fetch(_currentPageIndex + 1);
+  Future<void> nextPage() => _fetch(page: _currentPageIndex + 1);
 
   /// Comes back to the previous page
-  Future<void> previousPage() => _fetch(_currentPageIndex - 1);
+  Future<void> previousPage() => _fetch(page: _currentPageIndex - 1);
 
   /// Refreshes the state of the table.
   ///
@@ -146,7 +149,7 @@ final class PagedDataTableController<K extends Comparable<K>, T>
       _totalItems = 0;
       _fetch();
     } else {
-      _fetch(_currentPageIndex);
+      _fetch(page: _currentPageIndex, clearExpandedRows: false);
     }
   }
 
@@ -496,7 +499,17 @@ final class PagedDataTableController<K extends Comparable<K>, T>
     Future.microtask(_fetch);
   }
 
-  Future<void> _fetch([int page = 0]) async {
+  /// If [clearExpandedRows] is true, the [_expandedRows] are cleared before
+  /// notifying all previous elements of [_expandedRows]. This is useful when
+  /// the data could have changed from the last fetch like e.g. if a filter
+  /// is applied.
+  ///
+  /// If [clearExpandedRows] is false, the [_expandedRows] will not be cleared
+  /// but all the expanded rows will still be notified.
+  /// This is useful when the data is definitely the same as before
+  /// (e.g. when using [refresh] with `fromStart = false`) and
+  /// the expanded rows should stay expanded.
+  Future<void> _fetch({int page = 0, bool clearExpandedRows = true}) async {
     _state = _TableState.fetching;
     _selectedRows.clear();
     notifyListeners();
@@ -523,6 +536,7 @@ final class PagedDataTableController<K extends Comparable<K>, T>
 
         totalNewItems = items.length;
         _currentDataset.clear();
+        _expansibleRows.clear();
         int index = 0;
         for (final MapEntry(key: item, value: collapsedEntries)
             in items.entries) {
@@ -532,6 +546,15 @@ final class PagedDataTableController<K extends Comparable<K>, T>
           }
           index++;
         }
+
+        // Notify all expanded rows as their data might not
+        // be available anymore and they would stay expanded
+        // with old data visible.
+        final previousExpandedRows = _expandedRows.toList(growable: false);
+        if (clearExpandedRows) {
+          _expandedRows.clear();
+        }
+        _notifyRowChangedMany(previousExpandedRows);
       }
 
       _hasNextPage = nextPageToken != null;

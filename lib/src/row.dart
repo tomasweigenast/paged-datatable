@@ -122,10 +122,10 @@ class _RowBuilderState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
-
     controller.removeRowChangeListener(widget.index, _onRowChanged);
     expandController.dispose();
+
+    super.dispose();
   }
 }
 

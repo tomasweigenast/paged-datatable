@@ -45,8 +45,8 @@ class _RefreshTableState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     controller.removeListener(_onChanged);
+    super.dispose();
   }
 }
 
@@ -118,8 +118,8 @@ class _PageSizeSelectorState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     controller.removeListener(_onChanged);
+    super.dispose();
   }
 }
 
@@ -164,8 +164,8 @@ class _TotalItemsState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     controller.removeListener(_onChanged);
+    super.dispose();
   }
 }
 
@@ -209,8 +209,8 @@ class _CurrentPageState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     controller.removeListener(_onChanged);
+    super.dispose();
   }
 }
 
@@ -272,7 +272,7 @@ class _NavigationButtonsState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     controller.removeListener(_onChanged);
+    super.dispose();
   }
 }

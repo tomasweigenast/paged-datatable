@@ -271,11 +271,23 @@ final class RowSelectorColumn<K extends Comparable<K>, T>
 }
 
 /// A special [ReadOnlyTableColumn] that renders a button to open collapsed rows
+///
+/// When used on the left side of a table, use
+/// [PagedDataTable.fixedColumnCount] to indent the expanded rows correctly.
 final class CollapsibleRowColumn<K extends Comparable<K>, T>
     extends ReadOnlyTableColumn<K, T> {
+  /// The icon that is shown while the row is expanded.
+  final Widget expandedIcon;
+
+  /// The icon that is shown while the row is collapsed.
+  final Widget collapsedIcon;
+
   /// Creates a new [CollapsibleRowColumn].
-  CollapsibleRowColumn({super.title = const SizedBox.shrink()})
-      : super(
+  CollapsibleRowColumn({
+    super.title = const SizedBox.shrink(),
+    this.expandedIcon = const Icon(Icons.expand_circle_down_outlined),
+    this.collapsedIcon = const Icon(Icons.expand_circle_down_outlined),
+  }) : super(
           format: const AlignColumnFormat(alignment: Alignment.center),
           id: null,
           size: const FixedColumnSize(90),
@@ -286,6 +298,10 @@ final class CollapsibleRowColumn<K extends Comparable<K>, T>
 
   @override
   Widget build(BuildContext context, T item, int index) {
-    return _CollapseRowButton<K, T>(index: index);
+    return _CollapseRowButton<K, T>(
+      index: index,
+      expandedIcon: expandedIcon,
+      collapsedIcon: collapsedIcon,
+    );
   }
 }

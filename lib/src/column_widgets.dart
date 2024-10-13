@@ -4,15 +4,24 @@ final class _CollapseRowButton<K extends Comparable<K>, T>
     extends StatelessWidget {
   final int index;
 
-  const _CollapseRowButton({required this.index, super.key});
+  final Widget expandedIcon;
+  final Widget collapsedIcon;
+
+  const _CollapseRowButton({
+    super.key,
+    required this.index,
+    required this.expandedIcon,
+    required this.collapsedIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
     final tableController = TableControllerProvider.of<K, T>(context);
 
     if (tableController._expansibleRows.containsKey(index)) {
+      final bool isExpanded = tableController._expandedRows.contains(index);
       return IconButton(
-        icon: const Icon(Icons.expand_circle_down_outlined),
+        icon: isExpanded ? expandedIcon : collapsedIcon,
         onPressed: () {
           tableController.toggleRowExpansion(index);
         },
@@ -98,9 +107,9 @@ final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
-
     tableController.removeListener(_onTableControllerChanged);
+
+    super.dispose();
   }
 }
 
@@ -249,8 +258,8 @@ final class _TextFieldCellState<T> extends State<_TextFieldCell<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -415,8 +424,8 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -525,8 +534,8 @@ final class _EditableTextFieldOverlayState
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -615,7 +624,7 @@ final class _EditableTextFieldBottomSheetState
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
