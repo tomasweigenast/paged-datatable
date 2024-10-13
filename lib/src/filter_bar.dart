@@ -10,7 +10,8 @@ class _FilterBar<K extends Comparable<K>, T> extends StatefulWidget {
   State<StatefulWidget> createState() => _FilterBarState<K, T>();
 }
 
-class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>> {
+class _FilterBarState<K extends Comparable<K>, T>
+    extends State<_FilterBar<K, T>> {
   late final theme = PagedDataTableTheme.of(context);
   late final controller = TableControllerProvider.of<K, T>(context);
 
@@ -46,12 +47,15 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
                         child: Tooltip(
                           message: localizations.showFilterMenuTooltip,
                           child: MouseRegion(
-                            cursor:
-                                controller._state == _TableState.fetching ? SystemMouseCursors.basic : SystemMouseCursors.click,
+                            cursor: controller._state == _TableState.fetching
+                                ? SystemMouseCursors.basic
+                                : SystemMouseCursors.click,
                             child: GestureDetector(
-                              onTapDown: controller._state == _TableState.fetching
-                                  ? null
-                                  : (details) => _showFilterOverlay(details, context),
+                              onTapDown:
+                                  controller._state == _TableState.fetching
+                                      ? null
+                                      : (details) =>
+                                          _showFilterOverlay(details, context),
                               child: const Icon(Icons.filter_list_rounded),
                             ),
                           ),
@@ -73,17 +77,20 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
                             .where((element) => element.value != null)
                             .map(
                               (e) => Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
                                 child: Chip(
                                   deleteIcon: const Icon(
                                     Icons.close,
                                     size: 20,
                                   ),
-                                  deleteButtonTooltipMessage: "Remove filter", //localizations.removeFilterButtonText,
+                                  deleteButtonTooltipMessage:
+                                      "Remove filter", //localizations.removeFilterButtonText,
                                   onDeleted: () {
                                     controller.removeFilter(e._filter.id);
                                   },
-                                  label: Text((e._filter as dynamic).chipFormatter(e.value)),
+                                  label: Text((e._filter as dynamic)
+                                      .chipFormatter(e.value)),
                                 ),
                               ),
                             )
@@ -110,13 +117,15 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
     return child;
   }
 
-  Future<void> _showFilterOverlay(TapDownDetails details, BuildContext context) {
+  Future<void> _showFilterOverlay(
+      TapDownDetails details, BuildContext context) {
     final mediaWidth = MediaQuery.of(context).size.width;
     final bool isBottomSheet = mediaWidth < theme.filterDialogBreakpoint;
 
     if (isBottomSheet) {
       return showModalBottomSheet(
-        barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        barrierLabel:
+            MaterialLocalizations.of(context).modalBarrierDismissLabel,
         context: context,
         builder: (context) => _FiltersDialog<K, T>(
           availableWidth: mediaWidth,
@@ -128,7 +137,8 @@ class _FilterBarState<K extends Comparable<K>, T> extends State<_FilterBar<K, T>
 
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
-    final rect = RelativeRect.fromLTRB(offset.dx + 10, offset.dy + renderBox.size.height - 10, 0, 0);
+    final rect = RelativeRect.fromLTRB(
+        offset.dx + 10, offset.dy + renderBox.size.height - 10, 0, 0);
 
     return showDialog(
       context: context,
@@ -162,7 +172,10 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
   final PagedDataTableController<K, T> tableController;
   final double availableWidth;
 
-  const _FiltersDialog({required this.rect, required this.availableWidth, required this.tableController});
+  const _FiltersDialog(
+      {required this.rect,
+      required this.availableWidth,
+      required this.tableController});
 
   @override
   Widget build(BuildContext context) {
@@ -175,12 +188,16 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(localizations.filterByTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(localizations.filterByTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            ...tableController._filtersState.entries.where((element) => element.value._filter.visible).map(
+            ...tableController._filtersState.entries
+                .where((element) => element.value._filter.visible)
+                .map(
                   (entry) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: entry.value._filter.buildPicker(context, entry.value),
+                    child:
+                        entry.value._filter.buildPicker(context, entry.value),
                   ),
                 )
           ],
@@ -195,7 +212,8 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
           TextButton(
             style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
             onPressed: () {
               Navigator.pop(context);
               tableController.removeFilters();
@@ -204,7 +222,9 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
           ),
           const Spacer(),
           TextButton(
-            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
+            style: TextButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -212,7 +232,9 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           FilledButton(
-            style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
+            style: FilledButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
             onPressed: () {
               // to ensure onSaved is called on filters
               tableController._filtersFormKey.currentState!.save();
@@ -230,7 +252,8 @@ class _FiltersDialog<K extends Comparable<K>, T> extends StatelessWidget {
     }
 
     Widget child = Material(
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(28))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(28))),
       elevation: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
