@@ -3,6 +3,7 @@
 - Add expansible rows. Check out documentation to know how you can implement this feature.
 - Add a bunch of new locales. Make sure to check the full list. Thanks community!
 - Fix FilterBar is not hidden when no filter is added. 
+- Rewrite README.md
 
 ## 2.1.1
 
