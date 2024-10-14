@@ -8,8 +8,6 @@
 Explore a live demo of the table in action:  
 <a href="https://tomasweigenast.github.io/pageddatatable/#/.com" target="_blank">Check it out here</a>  
 
----
-
 ## Why Use PagedDataTable?  
 
 The library offers:  
@@ -29,7 +27,6 @@ The library offers:
   - [Why Use PagedDataTable?](#why-use-pageddatatable)
   - [Table of Contents](#table-of-contents)
   - [Quick Start](#quick-start)
-  - [Quick Start](#quick-start-1)
   - [Setup](#setup)
     - [Fetcher](#fetcher)
     - [Header](#header)
@@ -49,7 +46,6 @@ The library offers:
 ---
 
 ## Quick Start
-## Quick Start  
 
 ```dart
 PagedDataTable<int, User>(
@@ -112,7 +108,7 @@ PagedDataTable<String, Post>(
   columns: [...],
 )
 ```  
-By default, the table **does not cache** pages.
+> By default, the table **does not cache** pages.
 
 ### Header  
 
@@ -308,7 +304,6 @@ localizationsDelegates: [
 - **ru**: Russian
 - **th**: Thai
 
----
 
 ## Contribute  
 
