@@ -1,3 +1,7 @@
+## 2.2.0-dev1.1
+
+This does not include any new feature, it just adds the documentation for expansible rows.
+
 ## 2.2.0-dev1
 
 - Add expansible rows. Check out documentation to know how you can implement this feature.

@@ -29,6 +29,7 @@ The library offers:
   - [Quick Start](#quick-start)
   - [Setup](#setup)
     - [Fetcher](#fetcher)
+    - [Expansible Rows](#expansible-rows)
     - [Header](#header)
     - [Footer](#footer)
       - [Custom Footer Example](#custom-footer-example)
@@ -109,6 +110,43 @@ PagedDataTable<String, Post>(
 )
 ```  
 > By default, the table **does not cache** pages.
+
+### Expansible Rows
+To use expandable rows, create a new `PagedDataTable` with the `expansible` constructor. The properties remain the same as in the standard constructor, but the key difference lies in the fetcher function.
+
+Instead of returning a `FutureOr<(List<T>, K?)>`, the fetcher must return a `FutureOr<(Map<T, List<T>?>, K?)>`. In this case:
+
+- The first element of the returned tuple is a Map, where:
+  - The `key` represents the "main" entry.
+  - The `value` is an optional list containing the expandable rows associated with that entry.
+  - If the `value` is **null**, expandable rows will not be enabled for that key.
+- `K` represents the next page token (if available).
+
+To display a column that allows expanding or collapsing rows, include `CollapsibleRowColumn` in the columns property.
+
+```dart
+child: PagedDataTable<String, Post>.expansible(
+  fetcher: (pageSize, sortModel, filterModel, pageToken) async {
+    // This is just an example
+    final data = await PostsRepository.getPosts(
+      pageSize: pageSize,
+      pageToken: pageToken,
+    );
+
+    final resultset = <Post, List<Post>?>{};
+    for (final post in data.items) {
+      // getRelatedPosts will return null if there are no related posts for post
+      resultset[post] = PostsRepository.getRelatedPosts(post);
+    }
+
+    return (resultset, data.nextPageToken);
+  },
+  columns: [
+    CollapsibleRowColumn(),
+    // ...other columns
+  ],
+)
+```
 
 ### Header  
 
@@ -201,11 +239,12 @@ This abstract class introduces two key properties:
 - `getter`: Retrieves the value `V` to be displayed in the cell.
 - `setter`: A function that sets a new value. It must return a boolean indicating if the operation was successful. If true, the cell updates with the new value; otherwise, it retains the original one.
 
-There are three built-in editable columns:
+There are four built-in editable columns:
 
 - `DropdownTableColumn`: Renders a dropdown menu for selecting values.
 - `TextTableColumn`: Initially displays a `Text` widget. Upon double-click, it switches to a `TextField` for in-place editing.
 - `LargeTextTableColumn`: Works like `TextTableColumn` but opens an overlay on double-click, providing a more spacious interface for editing large text content.
+- `RowSelectorColumn`: displays a checkbox used to select/unselect rows.
 
 #### Creating Custom Columns  
 
