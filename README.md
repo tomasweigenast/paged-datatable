@@ -2,7 +2,9 @@
 
 [![pub package](https://img.shields.io/pub/v/paged_datatable?label=pub.dev&labelColor=333940&logo=dart)](https://pub.dev/packages/paged_datatable)
 
-**PagedDataTable** is a fully customizable and powerful data table widget for Flutter, supporting both **cursor-based** and **offset-based pagination**. It’s built entirely from scratch, without dependencies on Flutter’s native `DataTable` or `Table`. It follows Google’s **Material You** design principles. Whether you're building dashboards, admin panels, or any app with complex tabular data, this library makes it easy to display, sort, and filter your data.
+**PagedDataTable** is a fully customizable and powerful data table widget for Flutter, supporting both **cursor-based** and **offset-based pagination**. It’s built entirely from scratch, without dependencies on Flutter’s native `DataTable` or `Table`. It follows Google’s **Material You** design principles.
+
+Whether you're building dashboards, admin panels, or any app with complex tabular data, this library makes it easy to display, sort, and filter your data.
 
 ## Online Demo  
 Explore a live demo of the table in action:  
