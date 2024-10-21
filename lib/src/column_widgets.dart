@@ -1,5 +1,37 @@
 part of 'paged_datatable.dart';
 
+final class _CollapseRowButton<K extends Comparable<K>, T>
+    extends StatelessWidget {
+  final int index;
+
+  final Widget expandedIcon;
+  final Widget collapsedIcon;
+
+  const _CollapseRowButton({
+    super.key,
+    required this.index,
+    required this.expandedIcon,
+    required this.collapsedIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tableController = TableControllerProvider.of<K, T>(context);
+
+    if (tableController._expansibleRows.containsKey(index)) {
+      final bool isExpanded = tableController._expandedRows.contains(index);
+      return IconButton(
+        icon: isExpanded ? expandedIcon : collapsedIcon,
+        onPressed: () {
+          tableController.toggleRowExpansion(index);
+        },
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+}
+
 final class _SelectRowCheckbox<K extends Comparable<K>, T>
     extends StatelessWidget {
   final int index;
@@ -66,7 +98,7 @@ final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T>
             ? true
             : null;
 
-    if (state != newState) {
+    if (mounted && state != newState) {
       setState(() {
         state = newState;
       });
@@ -75,9 +107,9 @@ final class _SelectAllRowsCheckboxState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
-
     tableController.removeListener(_onTableControllerChanged);
+
+    super.dispose();
   }
 }
 
@@ -226,8 +258,8 @@ final class _TextFieldCellState<T> extends State<_TextFieldCell<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -340,7 +372,7 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
         }
 
         if (newText != null && newText != textController.text) {
-          if (context.mounted) {
+          if (mounted) {
             setState(() {
               isLoading = true;
             });
@@ -352,7 +384,7 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
             textController.text = previousValue ?? '';
           }
 
-          if (context.mounted) {
+          if (mounted) {
             setState(() {
               isLoading = false;
             });
@@ -392,8 +424,8 @@ final class _LargeTextFieldCellState<T> extends State<_LargeTextFieldCell<T>> {
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -502,8 +534,8 @@ final class _EditableTextFieldOverlayState
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }
 
@@ -592,7 +624,7 @@ final class _EditableTextFieldBottomSheetState
 
   @override
   void dispose() {
-    super.dispose();
     textController.dispose();
+    super.dispose();
   }
 }

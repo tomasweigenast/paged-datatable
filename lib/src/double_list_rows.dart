@@ -35,9 +35,15 @@ class _DoubleListRowsState<K extends Comparable<K>, T>
     super.initState();
 
     state = widget.controller._state;
-    widget.controller.addListener(() {
+    widget.controller.addListener(_setState);
+  }
+
+  /// A wrapper around the [setState] method
+  /// that allows us to add it as a listener
+  void _setState() {
+    if (mounted) {
       setState(() {});
-    });
+    }
   }
 
   @override
@@ -65,11 +71,14 @@ class _DoubleListRowsState<K extends Comparable<K>, T>
                     itemCount: widget.controller._totalItems,
                     separatorBuilder: (_, __) =>
                         const Divider(height: 0, color: Color(0xFFD6D6D6)),
-                    itemBuilder: (context, index) => _FixedPartRow<K, T>(
-                      index: index,
-                      fixedColumnCount: widget.fixedColumnCount,
-                      sizes: widget.sizes,
-                      columns: widget.columns,
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () {},
+                      child: _FixedPartRow<K, T>(
+                        index: index,
+                        fixedColumnCount: widget.fixedColumnCount,
+                        sizes: widget.sizes,
+                        columns: widget.columns,
+                      ),
                     ),
                   ),
                 ),
@@ -91,12 +100,14 @@ class _DoubleListRowsState<K extends Comparable<K>, T>
                             itemCount: widget.controller._totalItems,
                             separatorBuilder: (_, __) => const Divider(
                                 height: 0, color: Color(0xFFD6D6D6)),
-                            itemBuilder: (context, index) =>
-                                _VariablePartRow<K, T>(
-                              sizes: widget.sizes,
-                              index: index,
-                              fixedColumnCount: widget.fixedColumnCount,
-                              columns: widget.columns,
+                            itemBuilder: (context, index) => InkWell(
+                              onTap: () {},
+                              child: _VariablePartRow<K, T>(
+                                sizes: widget.sizes,
+                                index: index,
+                                fixedColumnCount: widget.fixedColumnCount,
+                                columns: widget.columns,
+                              ),
                             ),
                           ),
                         ),
@@ -114,9 +125,10 @@ class _DoubleListRowsState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
-
     normalController.dispose();
     fixedController.dispose();
+    widget.controller.removeListener(_setState);
+
+    super.dispose();
   }
 }

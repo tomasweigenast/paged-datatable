@@ -1,9 +1,34 @@
 part of 'paged_datatable.dart';
 
+/// A function that gets called when a new page is requested.
+///
+/// The callbacks provides the requested [pageSize], [sortModel] and [filterModel] applied and the [pageToken] or null if its the first page.
+///
+/// The function must return a tuple where the first value is the resultset and the second value is the token of the next page, if any.
+/// Returning null will tell the data table no more rows are present.
+///
+/// If you want to use expansible rows, see [ExpansibleFetcher].
 typedef Fetcher<K extends Comparable<K>, T>
     = FutureOr<(List<T> resultset, K? nextPageToken)> Function(int pageSize,
         SortModel? sortModel, FilterModel filterModel, K? pageToken);
 
+/// A function that gets called when a new page is requested. This allows you to return a dataset with entries that may contain expansible rows.
+///
+/// The callbacks provides the requested [pageSize], [sortModel] and [filterModel] applied and the [pageToken] or null if its the first page.
+///
+/// The function must return a tuple where the first value is a map, where the key is the initial entry to show and the value an optional list that
+/// may have expansible rows for that specific item.
+/// Returning null will tell the data table no more rows are present.
+///
+/// If you want to use the normal fetcher or request expansible rows dynamically, see [Fetcher].
+typedef ExpansibleFetcher<K extends Comparable<K>, T>
+    = FutureOr<(Map<T, List<T>?> resultset, K? nextPageToken)> Function(
+        int pageSize,
+        SortModel? sortModel,
+        FilterModel filterModel,
+        K? pageToken);
+
+/// A callback that fires when a row changes, providing the [index] of the row and the current [item] there.
 typedef RowChangeListener<K extends Comparable<K>, T> = void Function(
     int index, T item);
 
@@ -19,9 +44,14 @@ final class PagedDataTableController<K extends Comparable<K>, T>
   final Map<int, K> _paginationKeys =
       {}; // it's a map because on not found map will return null, list will throw
   final Set<int> _selectedRows = {}; // The list of selected row indexes
+  final Set<int> _expandedRows = {}; // The list of expanded row indexes
+  final Map<int, List<T>> _expansibleRows =
+      {}; // Links the index of a expansible rows with their (initially) collapsed entries
   final GlobalKey<FormState> _filtersFormKey = GlobalKey();
   late final List<int>? _pageSizes;
-  late final Fetcher<K, T> _fetcher; // The function used to fetch items
+  late final Fetcher<K, T>? _fetcher; // The function used to fetch items
+  late final ExpansibleFetcher<K, T>?
+      _expansibleFetcher; // The function used to fetch items when type is expansible
   final Map<_ListenerType, dynamic> _listeners = {
     // The list of special listeners which all are functions
 
@@ -66,9 +96,15 @@ final class PagedDataTableController<K extends Comparable<K>, T>
   /// The list of selected row indexes
   List<int> get selectedRows => _selectedRows.toList(growable: false);
 
+  /// The list of expanded row indexes
+  List<int> get expandedRows => _expandedRows.toList(growable: false);
+
   /// The list of selected items.
   List<T> get selectedItems => UnmodifiableListView(
       _selectedRows.map((index) => _currentDataset[index]));
+
+  /// A list with all the rows that can be expanded.
+  List<int> get expansibleRows => UnmodifiableListView(_expansibleRows.keys);
 
   /// Updates the sort model and refreshes the dataset
   set sortModel(SortModel? sortModel) {
@@ -98,10 +134,10 @@ final class PagedDataTableController<K extends Comparable<K>, T>
   }
 
   /// Advances to the next page
-  Future<void> nextPage() => _fetch(_currentPageIndex + 1);
+  Future<void> nextPage() => _fetch(page: _currentPageIndex + 1);
 
   /// Comes back to the previous page
-  Future<void> previousPage() => _fetch(_currentPageIndex - 1);
+  Future<void> previousPage() => _fetch(page: _currentPageIndex - 1);
 
   /// Refreshes the state of the table.
   ///
@@ -113,7 +149,7 @@ final class PagedDataTableController<K extends Comparable<K>, T>
       _totalItems = 0;
       _fetch();
     } else {
-      _fetch(_currentPageIndex);
+      _fetch(page: _currentPageIndex, clearExpandedRows: false);
     }
   }
 
@@ -186,6 +222,84 @@ final class PagedDataTableController<K extends Comparable<K>, T>
     _notifyOnRowChanged(index);
   }
 
+  /// Inserts [value] as a collapsed row in the index [rowIndex] of the current dataset, at the specified
+  /// [collapsedRowIndex] collapsed position.
+  void insertCollapsedAt(int rowIndex, int collapsedRowIndex, T value) {
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+    collapsedRows.insert(collapsedRowIndex, value);
+    _expansibleRows[rowIndex] = collapsedRows;
+    _notifyOnRowChanged(rowIndex);
+  }
+
+  /// Inserts [value] as a collapsed row in the index [rowIndex] of the current dataset, at the bottom of
+  /// the collapsed rows.
+  void insertCollapsed(int rowIndex, T value) {
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+    collapsedRows.insert(collapsedRows.length, value);
+    _expansibleRows[rowIndex] = collapsedRows;
+    _notifyOnRowChanged(rowIndex);
+  }
+
+  /// Removes a the collapsed row at [collapsedRowIndex] of the row at [rowIndex].
+  void removeCollapsedAt(int rowIndex, int collapsedRowIndex) {
+    if (rowIndex >= _totalItems) {
+      throw ArgumentError(
+          "index cannot be greater than or equals to the total list of items.",
+          "rowIndex");
+    }
+
+    if (rowIndex < 0) {
+      throw ArgumentError("index cannot be less than zero.", "index");
+    }
+
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+
+    if (collapsedRowIndex >= collapsedRows.length) {
+      throw ArgumentError(
+          "index cannot be greater than or equals to the total list of collapsed items.",
+          "collapsedRowIndex");
+    }
+
+    if (collapsedRowIndex < 0) {
+      throw ArgumentError(
+          "index cannot be less than zero.", "collapsedRowIndex");
+    }
+
+    collapsedRows.removeAt(collapsedRowIndex);
+    if (collapsedRows.isEmpty) {
+      _expansibleRows.remove(rowIndex);
+    }
+
+    _notifyOnRowChanged(rowIndex);
+  }
+
+  /// Removes a the collapsed row with value [value] of the row at [rowIndex].
+  void removeCollapsed(int rowIndex, T value) {
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+    final index = collapsedRows.indexOf(value);
+    return removeCollapsedAt(rowIndex, index);
+  }
+
+  /// Replaces the value of the collapsed row at [collapsedRowIndex] in the row [rowIndex] by the [value] value.
+  void replaceCollapsed(int rowIndex, int collapsedRowIndex, T value) {
+    if (rowIndex >= _totalItems) {
+      throw ArgumentError(
+          "Index cannot be greater than or equals to the total size of the current dataset.",
+          "rowIndex");
+    }
+
+    final collapsedRows = _expansibleRows[rowIndex] ?? <T>[];
+
+    if (collapsedRowIndex >= collapsedRows.length) {
+      throw ArgumentError(
+          "Index cannot be greater than or equals to the total size of the total collapsed rows.",
+          "collapsedRowIndex");
+    }
+
+    collapsedRows[collapsedRowIndex] = value;
+    _notifyOnRowChanged(rowIndex);
+  }
+
   /// Marks a row as selected
   void selectRow(int index) {
     _selectedRows.add(index);
@@ -218,6 +332,19 @@ final class PagedDataTableController<K extends Comparable<K>, T>
       _selectedRows.remove(index);
     } else {
       _selectedRows.add(index);
+    }
+    _notifyOnRowChanged(index);
+  }
+
+  /// Expands or collapses a row.
+  ///
+  /// If the expanded rows are already available, this Future completes automatically. Otherwise,
+  /// it will await for the results the notify of rows changes.
+  Future<void> toggleRowExpansion(int index) async {
+    if (_expandedRows.contains(index)) {
+      _expandedRows.remove(index);
+    } else {
+      _expandedRows.add(index);
     }
     _notifyOnRowChanged(index);
   }
@@ -337,20 +464,29 @@ final class PagedDataTableController<K extends Comparable<K>, T>
     required List<ReadOnlyTableColumn> columns,
     required List<int>? pageSizes,
     required int initialPageSize,
-    required Fetcher<K, T> fetcher,
     required List<TableFilter> filters,
     required PagedDataTableConfiguration config,
+    dynamic fetcher,
   }) {
-    if (_configuration != null) return;
-
+    assert(fetcher is Fetcher<K, T> || fetcher is ExpansibleFetcher<K, T>,
+        'fetcher must be of type Fetcher<$K, $T> or ExpansibleFetcher<$K, $T>.');
     assert(columns.isNotEmpty, "columns cannot be empty.");
+
+    if (_configuration != null) return;
 
     _currentPageSize = initialPageSize;
     _pageSizes = pageSizes;
     _configuration = config;
-    _fetcher = fetcher;
     _filtersState.addEntries(
         filters.map((filter) => MapEntry(filter.id, filter.createState())));
+
+    if (fetcher is Fetcher<K, T>) {
+      _fetcher = fetcher;
+      _expansibleFetcher = null;
+    } else {
+      _fetcher = null;
+      _expansibleFetcher = fetcher;
+    }
 
     // Schedule a fetch
     Future.microtask(_fetch);
@@ -363,7 +499,17 @@ final class PagedDataTableController<K extends Comparable<K>, T>
     Future.microtask(_fetch);
   }
 
-  Future<void> _fetch([int page = 0]) async {
+  /// If [clearExpandedRows] is true, the [_expandedRows] are cleared before
+  /// notifying all previous elements of [_expandedRows]. This is useful when
+  /// the data could have changed from the last fetch like e.g. if a filter
+  /// is applied.
+  ///
+  /// If [clearExpandedRows] is false, the [_expandedRows] will not be cleared
+  /// but all the expanded rows will still be notified.
+  /// This is useful when the data is definitely the same as before
+  /// (e.g. when using [refresh] with `fromStart = false`) and
+  /// the expanded rows should stay expanded.
+  Future<void> _fetch({int page = 0, bool clearExpandedRows = true}) async {
     _state = _TableState.fetching;
     _selectedRows.clear();
     notifyListeners();
@@ -373,22 +519,51 @@ final class PagedDataTableController<K extends Comparable<K>, T>
       final filterModel = FilterModel._(
           _filtersState.map((key, value) => MapEntry(key, value.value)));
 
-      var (items, nextPageToken) =
-          await _fetcher(_currentPageSize, sortModel, filterModel, pageToken);
+      K? nextPageToken;
+      int totalNewItems;
+      if (_expansibleFetcher == null) {
+        List<T> items;
+        (items, nextPageToken) = await _fetcher!(
+            _currentPageSize, sortModel, filterModel, pageToken);
+
+        totalNewItems = items.length;
+        _currentDataset.clear();
+        _currentDataset.addAll(items);
+      } else {
+        Map<T, List<T>?> items;
+        (items, nextPageToken) = await _expansibleFetcher!(
+            _currentPageSize, sortModel, filterModel, pageToken);
+
+        totalNewItems = items.length;
+        _currentDataset.clear();
+        _expansibleRows.clear();
+        int index = 0;
+        for (final MapEntry(key: item, value: collapsedEntries)
+            in items.entries) {
+          _currentDataset.add(item);
+          if (collapsedEntries != null && collapsedEntries.isNotEmpty) {
+            _expansibleRows[index] = collapsedEntries;
+          }
+          index++;
+        }
+
+        // Notify all expanded rows as their data might not
+        // be available anymore and they would stay expanded
+        // with old data visible.
+        final previousExpandedRows = _expandedRows.toList(growable: false);
+        if (clearExpandedRows) {
+          _expandedRows.clear();
+        }
+        _notifyRowChangedMany(previousExpandedRows);
+      }
+
       _hasNextPage = nextPageToken != null;
       _currentPageIndex = page;
       if (nextPageToken != null) {
         _paginationKeys[page + 1] = nextPageToken;
       }
 
-      if (_configuration!.copyItems) {
-        items = items.toList();
-      }
-
       /* the following may be more efficient than clearing the list and adding items again */
-
-      _currentDataset.clear();
-      _currentDataset.addAll(items);
       // if no items, clear dataset
       // if (items.isEmpty) {
       //   _currentDataset.clear();
@@ -412,7 +587,7 @@ final class PagedDataTableController<K extends Comparable<K>, T>
       //   }
       // }
 
-      _totalItems = items.length;
+      _totalItems = totalNewItems;
       _state = _TableState.idle;
       _currentError = null;
       notifyListeners();

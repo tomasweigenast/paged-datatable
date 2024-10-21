@@ -1,3 +1,14 @@
+## 2.2.0-dev1.1
+
+This does not include any new feature, it just adds the documentation for expansible rows.
+
+## 2.2.0-dev1
+
+- Add expansible rows. Check out documentation to know how you can implement this feature.
+- Add a bunch of new locales. Make sure to check the full list. Thanks community!
+- Fix FilterBar is not hidden when no filter is added. 
+- Rewrite README.md
+
 ## 2.1.1
 
 - Fix Date- filters not showing `name` attribute as label in the text field.

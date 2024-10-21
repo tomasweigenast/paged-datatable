@@ -146,7 +146,7 @@ final class _HeaderState<K extends Comparable<K>, T>
   }
 
   void _onControllerChanged() {
-    if (widget.controller.sortModel != sortModel ||
+    if (mounted && widget.controller.sortModel != sortModel ||
         widget.controller._state != tableState) {
       setState(() {
         sortModel = widget.controller.sortModel;
@@ -157,8 +157,8 @@ final class _HeaderState<K extends Comparable<K>, T>
 
   @override
   void dispose() {
-    super.dispose();
     widget.controller.removeListener(_onControllerChanged);
+    super.dispose();
   }
 }
 

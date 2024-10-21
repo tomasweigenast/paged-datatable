@@ -25,6 +25,9 @@ abstract class ReadOnlyTableColumn<K extends Comparable<K>, T> {
   /// A flag that indicates if the column can be used as sort model. [id] must not be null.
   final bool sortable;
 
+  /// A flag that indicates if the column should render content on expanded rows.
+  final bool renderExpanded;
+
   const ReadOnlyTableColumn({
     required this.id,
     required this.title,
@@ -32,6 +35,7 @@ abstract class ReadOnlyTableColumn<K extends Comparable<K>, T> {
     required this.format,
     required this.tooltip,
     required this.sortable,
+    required this.renderExpanded,
   }) : assert(sortable ? id != null : true,
             "When column is sortable, id must be set.");
 
@@ -39,7 +43,8 @@ abstract class ReadOnlyTableColumn<K extends Comparable<K>, T> {
   Widget build(BuildContext context, T item, int index);
 
   @override
-  int get hashCode => Object.hash(id, size, title, format);
+  int get hashCode =>
+      Object.hash(id, size, title, format, tooltip, sortable, renderExpanded);
 
   @override
   bool operator ==(Object other) =>
@@ -47,7 +52,10 @@ abstract class ReadOnlyTableColumn<K extends Comparable<K>, T> {
       other.title == title &&
       other.id == id &&
       other.size == size &&
-      other.format == format;
+      other.format == format &&
+      other.renderExpanded == renderExpanded &&
+      other.tooltip == tooltip &&
+      other.sortable == sortable;
 }
 
 /// [EditableTableColumn] represents a basic table column for [T] that display editable content of type [V].
@@ -67,6 +75,7 @@ abstract class EditableTableColumn<K extends Comparable<K>, T, V>
     required super.format,
     required super.tooltip,
     required super.sortable,
+    required super.renderExpanded,
     required this.setter,
     required this.getter,
   });
@@ -85,6 +94,7 @@ final class TableColumn<K extends Comparable<K>, T>
     super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
     super.tooltip,
     super.sortable = false,
+    super.renderExpanded = true,
   });
 
   @override
@@ -120,6 +130,7 @@ final class DropdownTableColumn<K extends Comparable<K>, T, V>
     super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
     super.tooltip,
     super.sortable = false,
+    super.renderExpanded = true,
     required super.setter,
     required super.getter,
     required this.items,
@@ -151,6 +162,7 @@ final class TextTableColumn<K extends Comparable<K>, T>
     super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
     super.tooltip,
     super.sortable = false,
+    super.renderExpanded = true,
     required super.setter,
     required super.getter,
     this.inputDecoration = const InputDecoration(isDense: true),
@@ -203,6 +215,7 @@ final class LargeTextTableColumn<K extends Comparable<K>, T>
     super.format = const AlignColumnFormat(alignment: Alignment.centerLeft),
     super.tooltip,
     super.sortable = false,
+    super.renderExpanded = true,
     required super.setter,
     required super.getter,
     required this.fieldLabel,
@@ -246,6 +259,7 @@ final class RowSelectorColumn<K extends Comparable<K>, T>
           id: null,
           size: const FixedColumnSize(80),
           sortable: false,
+          renderExpanded: false,
           tooltip: "Select rows",
           title: _SelectAllRowsCheckbox<K, T>(),
         );
@@ -253,5 +267,41 @@ final class RowSelectorColumn<K extends Comparable<K>, T>
   @override
   Widget build(BuildContext context, T item, int index) {
     return _SelectRowCheckbox<K, T>(index: index);
+  }
+}
+
+/// A special [ReadOnlyTableColumn] that renders a button to open collapsed rows
+///
+/// When used on the left side of a table, use
+/// [PagedDataTable.fixedColumnCount] to indent the expanded rows correctly.
+final class CollapsibleRowColumn<K extends Comparable<K>, T>
+    extends ReadOnlyTableColumn<K, T> {
+  /// The icon that is shown while the row is expanded.
+  final Widget expandedIcon;
+
+  /// The icon that is shown while the row is collapsed.
+  final Widget collapsedIcon;
+
+  /// Creates a new [CollapsibleRowColumn].
+  CollapsibleRowColumn({
+    super.title = const SizedBox.shrink(),
+    this.expandedIcon = const Icon(Icons.expand_circle_down_outlined),
+    this.collapsedIcon = const Icon(Icons.expand_circle_down_outlined),
+  }) : super(
+          format: const AlignColumnFormat(alignment: Alignment.center),
+          id: null,
+          size: const FixedColumnSize(90),
+          sortable: false,
+          renderExpanded: false,
+          tooltip: "Collapse rows",
+        );
+
+  @override
+  Widget build(BuildContext context, T item, int index) {
+    return _CollapseRowButton<K, T>(
+      index: index,
+      expandedIcon: expandedIcon,
+      collapsedIcon: collapsedIcon,
+    );
   }
 }
