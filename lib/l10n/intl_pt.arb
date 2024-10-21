@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "Filtrar",
+    "filterByTitle": "Filtrar por",
+    "applyFilterButtonText": "Aplicar",
+    "cancelFilteringButtonText": "Cancelar",
+    "removeAllFiltersButtonText": "Remover",
+    "editableColumnSaveChangesButtonText": "Guardar alterações",
+    "editableColumnCancelButtonText": "Cancelar",
+    "removeFilterButtonText": "Remover este filtro",
+    "refreshText": "Atualizar",
+    "refreshedAtText": "Atualizado às {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "Linhas por página",
+    "pageIndicatorText": "Página {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "Mostrando {totalElements} elementos",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "Próxima página",
+    "previousPageButtonText": "Página anterior",
+    "noItemsFoundText": "Nenhum item encontrado"
+}
