@@ -562,6 +562,11 @@ final class PagedDataTableController<K extends Comparable<K>, T>
       if (nextPageToken != null) {
         _paginationKeys[page + 1] = nextPageToken;
       }
+      if (_currentDataset.isEmpty && totalNewItems == 0 && nextPageToken == null) {
+        _state = _TableState.noData;
+        notifyListeners();
+        return;
+      }
 
       /* the following may be more efficient than clearing the list and adding items again */
       // if no items, clear dataset
@@ -607,6 +612,7 @@ enum _TableState {
   idle,
   fetching,
   error,
+  noData
 }
 
 enum _ListenerType {

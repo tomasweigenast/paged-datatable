@@ -275,6 +275,7 @@ class _SimplePagedDataTableState extends State<SimplePagedDataTable> {
             },
           ),
         ],
+        noDataView: Center(child: Image.asset("assets/images/9170826.jpg"))
       ),
     );
   }

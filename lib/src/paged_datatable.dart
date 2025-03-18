@@ -67,6 +67,8 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
   /// The list of filters to use.
   final List<TableFilter> filters;
 
+  final Widget? noDataView;
+
   const PagedDataTable({
     required this.columns,
     required Fetcher<K, T> this.fetcher,
@@ -79,6 +81,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.footer,
     this.filterBarChild,
     this.filters = const <TableFilter>[],
+    this.noDataView,
     super.key,
   });
 
@@ -94,6 +97,7 @@ final class PagedDataTable<K extends Comparable<K>, T> extends StatefulWidget {
     this.footer,
     this.filterBarChild,
     this.filters = const <TableFilter>[],
+    this.noDataView,
     super.key,
   });
 
@@ -178,6 +182,10 @@ final class _PagedDataTableState<K extends Comparable<K>, T>
                 ),
                 const Divider(height: 0, color: Color(0xFFD6D6D6)),
 
+                if (tableController._state == _TableState.noData && tableController._currentDataset.isEmpty) ...[
+                  Expanded(
+                      child: widget.noDataView ?? const SizedBox.shrink()),
+                ],
                 Expanded(
                   child: RepaintBoundary(
                     child: _DoubleListRows(
