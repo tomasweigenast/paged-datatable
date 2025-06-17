@@ -30,7 +30,7 @@ class _FilterBarState<K extends Comparable<K>, T>
 
     Widget child = SizedBox(
       height: theme.filterBarHeight,
-      child: Row(
+      child: !theme.hideFilterBar ? Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
@@ -84,8 +84,8 @@ class _FilterBarState<K extends Comparable<K>, T>
                                     Icons.close,
                                     size: 20,
                                   ),
-                                  deleteButtonTooltipMessage:
-                                      "Remove filter", //localizations.removeFilterButtonText,
+                                  deleteButtonTooltipMessage: "Remove filter",
+                                  //localizations.removeFilterButtonText,
                                   onDeleted: () {
                                     controller.removeFilter(e._filter.id);
                                   },
@@ -104,7 +104,7 @@ class _FilterBarState<K extends Comparable<K>, T>
           ),
           if (widget.child != null) widget.child!,
         ],
-      ),
+      ) : widget.child != null ? widget.child! : const SizedBox(),
     );
 
     if (theme.chipTheme != null) {

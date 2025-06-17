@@ -58,6 +58,9 @@ final class PagedDataTableThemeData {
   /// The [ChipThemeData] to apply to filter chips.
   final ChipThemeData? chipTheme;
 
+  /// The filter bar's visibility.
+  final bool hideFilterBar;
+
   const PagedDataTableThemeData({
     this.cellPadding =
         const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
@@ -83,6 +86,7 @@ final class PagedDataTableThemeData {
     this.filterDialogBreakpoint = 1000.0,
     this.chipTheme,
     this.backgroundColor = Colors.white,
+    this.hideFilterBar = false,
   });
 
   @override
