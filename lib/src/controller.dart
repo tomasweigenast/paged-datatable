@@ -360,7 +360,7 @@ final class PagedDataTableController<K extends Comparable<K>, T>
     assert(columns.isNotEmpty, "columns cannot be empty.");
 
     // Schedule a fetch
-    Future.microtask(_fetch);
+    Future.microtask(() =>_fetch(_currentPageIndex));
   }
 
   Future<void> _fetch([int page = 0]) async {
