@@ -1,0 +1,33 @@
+{
+    "showFilterMenuTooltip": "تصفية",
+    "filterByTitle": "تصفية حسب",
+    "applyFilterButtonText": "تطبيق",
+    "cancelFilteringButtonText": "إلغاء",
+    "removeAllFiltersButtonText": "إزالة",
+    "editableColumnSaveChangesButtonText": "حفظ التغييرات",
+    "editableColumnCancelButtonText": "إلغاء",
+    "removeFilterButtonText": "إزالة هذا الفلتر",
+    "refreshText": "تحديث",
+    "refreshedAtText": "آخر تحديث في {time}",
+    "@refreshedAtText": {
+        "placeholders": {
+            "time": {}
+        }
+    },
+    "rowsPerPageText": "صفوف لكل صفحة",
+    "pageIndicatorText": "صفحة {currentPage}",
+    "@pageIndicatorText": {
+        "placeholders": {
+            "currentPage": {}
+        }
+    },
+    "totalElementsText": "عرض {totalElements} عنصر",
+    "@totalElementsText": {
+        "placeholders": {
+            "totalElements": {}
+        }
+    },
+    "nextPageButtonText": "الصفحة التالية",
+    "previousPageButtonText": "الصفحة السابقة",
+    "noItemsFoundText": "لم يتم العثور على عناصر"
+}

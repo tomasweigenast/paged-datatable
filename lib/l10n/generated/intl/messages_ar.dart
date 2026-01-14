@@ -1,5 +1,5 @@
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
-// This is a library that provides messages for a it locale. All the
+// This is a library that provides messages for a ar locale. All the
 // messages from the main program should be duplicated here with the same
 // function name.
 
@@ -18,48 +18,43 @@ final messages = new MessageLookup();
 typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 
 class MessageLookup extends MessageLookupByLibrary {
-  String get localeName => 'it';
+  String get localeName => 'ar';
 
-  static String m0(currentPage) => "Pagina ${currentPage}";
+  static String m0(currentPage) => "صفحة ${currentPage}";
 
-  static String m1(time) => "Ultimo aggiornamento alle ${time}";
+  static String m1(time) => "آخر تحديث في ${time}";
 
-  static String m2(totalElements) =>
-      "Visualizzazione di ${totalElements} elementi";
+  static String m2(totalElements) => "عرض ${totalElements} عنصر";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-    "applyFilterButtonText": MessageLookupByLibrary.simpleMessage("Applica"),
-    "cancelFilteringButtonText": MessageLookupByLibrary.simpleMessage(
-      "Annulla",
-    ),
+    "applyFilterButtonText": MessageLookupByLibrary.simpleMessage("تطبيق"),
+    "cancelFilteringButtonText": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "editableColumnCancelButtonText": MessageLookupByLibrary.simpleMessage(
-      "Annulla",
+      "إلغاء",
     ),
     "editableColumnSaveChangesButtonText": MessageLookupByLibrary.simpleMessage(
-      "Salva",
+      "حفظ التغييرات",
     ),
-    "filterByTitle": MessageLookupByLibrary.simpleMessage("Filtra per"),
+    "filterByTitle": MessageLookupByLibrary.simpleMessage("تصفية حسب"),
     "nextPageButtonText": MessageLookupByLibrary.simpleMessage(
-      "Pagina successiva",
+      "الصفحة التالية",
     ),
     "noItemsFoundText": MessageLookupByLibrary.simpleMessage(
-      "Nessun elemento trovato",
+      "لم يتم العثور على عناصر",
     ),
     "pageIndicatorText": m0,
     "previousPageButtonText": MessageLookupByLibrary.simpleMessage(
-      "Pagina precedente",
+      "الصفحة السابقة",
     ),
-    "refreshText": MessageLookupByLibrary.simpleMessage("Aggiorna"),
+    "refreshText": MessageLookupByLibrary.simpleMessage("تحديث"),
     "refreshedAtText": m1,
-    "removeAllFiltersButtonText": MessageLookupByLibrary.simpleMessage(
-      "Rimuovi",
-    ),
+    "removeAllFiltersButtonText": MessageLookupByLibrary.simpleMessage("إزالة"),
     "removeFilterButtonText": MessageLookupByLibrary.simpleMessage(
-      "Rimuovi filtro",
+      "إزالة هذا الفلتر",
     ),
-    "rowsPerPageText": MessageLookupByLibrary.simpleMessage("Righe per pagina"),
-    "showFilterMenuTooltip": MessageLookupByLibrary.simpleMessage("Filtro"),
+    "rowsPerPageText": MessageLookupByLibrary.simpleMessage("صفوف لكل صفحة"),
+    "showFilterMenuTooltip": MessageLookupByLibrary.simpleMessage("تصفية"),
     "totalElementsText": m2,
   };
 }
