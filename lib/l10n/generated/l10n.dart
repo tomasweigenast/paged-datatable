@@ -18,17 +18,20 @@ class PagedDataTableLocalization {
   static PagedDataTableLocalization? _current;
 
   static PagedDataTableLocalization get current {
-    assert(_current != null,
-        'No instance of PagedDataTableLocalization was loaded. Try to initialize the PagedDataTableLocalization delegate before accessing PagedDataTableLocalization.current.');
+    assert(
+      _current != null,
+      'No instance of PagedDataTableLocalization was loaded. Try to initialize the PagedDataTableLocalization delegate before accessing PagedDataTableLocalization.current.',
+    );
     return _current!;
   }
 
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<PagedDataTableLocalization> load(Locale locale) {
-    final name = (locale.countryCode?.isEmpty ?? false)
-        ? locale.languageCode
-        : locale.toString();
+    final name =
+        (locale.countryCode?.isEmpty ?? false)
+            ? locale.languageCode
+            : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -41,14 +44,18 @@ class PagedDataTableLocalization {
 
   static PagedDataTableLocalization of(BuildContext context) {
     final instance = PagedDataTableLocalization.maybeOf(context);
-    assert(instance != null,
-        'No instance of PagedDataTableLocalization present in the widget tree. Did you add PagedDataTableLocalization.delegate in localizationsDelegates?');
+    assert(
+      instance != null,
+      'No instance of PagedDataTableLocalization present in the widget tree. Did you add PagedDataTableLocalization.delegate in localizationsDelegates?',
+    );
     return instance!;
   }
 
   static PagedDataTableLocalization? maybeOf(BuildContext context) {
     return Localizations.of<PagedDataTableLocalization>(
-        context, PagedDataTableLocalization);
+      context,
+      PagedDataTableLocalization,
+    );
   }
 
   /// `Filter`
@@ -63,12 +70,7 @@ class PagedDataTableLocalization {
 
   /// `Filter by`
   String get filterByTitle {
-    return Intl.message(
-      'Filter by',
-      name: 'filterByTitle',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Filter by', name: 'filterByTitle', desc: '', args: []);
   }
 
   /// `Apply`
@@ -133,12 +135,7 @@ class PagedDataTableLocalization {
 
   /// `Refresh`
   String get refreshText {
-    return Intl.message(
-      'Refresh',
-      name: 'refreshText',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Refresh', name: 'refreshText', desc: '', args: []);
   }
 
   /// `Last refreshed at {time}`
@@ -219,6 +216,7 @@ class AppLocalizationDelegate
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'en'),
+      Locale.fromSubtags(languageCode: 'ar'),
       Locale.fromSubtags(languageCode: 'de'),
       Locale.fromSubtags(languageCode: 'es'),
       Locale.fromSubtags(languageCode: 'it'),

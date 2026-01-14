@@ -28,29 +28,31 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "applyFilterButtonText": MessageLookupByLibrary.simpleMessage("Apply"),
-        "cancelFilteringButtonText":
-            MessageLookupByLibrary.simpleMessage("Cancel"),
-        "editableColumnCancelButtonText":
-            MessageLookupByLibrary.simpleMessage("Cancel"),
-        "editableColumnSaveChangesButtonText":
-            MessageLookupByLibrary.simpleMessage("Save changes"),
-        "filterByTitle": MessageLookupByLibrary.simpleMessage("Filter by"),
-        "nextPageButtonText": MessageLookupByLibrary.simpleMessage("Next page"),
-        "noItemsFoundText":
-            MessageLookupByLibrary.simpleMessage("No items found"),
-        "pageIndicatorText": m0,
-        "previousPageButtonText":
-            MessageLookupByLibrary.simpleMessage("Previous page"),
-        "refreshText": MessageLookupByLibrary.simpleMessage("Refresh"),
-        "refreshedAtText": m1,
-        "removeAllFiltersButtonText":
-            MessageLookupByLibrary.simpleMessage("Remove"),
-        "removeFilterButtonText":
-            MessageLookupByLibrary.simpleMessage("Remove this filter"),
-        "rowsPerPageText":
-            MessageLookupByLibrary.simpleMessage("Rows per page"),
-        "showFilterMenuTooltip": MessageLookupByLibrary.simpleMessage("Filter"),
-        "totalElementsText": m2
-      };
+    "applyFilterButtonText": MessageLookupByLibrary.simpleMessage("Apply"),
+    "cancelFilteringButtonText": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "editableColumnCancelButtonText": MessageLookupByLibrary.simpleMessage(
+      "Cancel",
+    ),
+    "editableColumnSaveChangesButtonText": MessageLookupByLibrary.simpleMessage(
+      "Save changes",
+    ),
+    "filterByTitle": MessageLookupByLibrary.simpleMessage("Filter by"),
+    "nextPageButtonText": MessageLookupByLibrary.simpleMessage("Next page"),
+    "noItemsFoundText": MessageLookupByLibrary.simpleMessage("No items found"),
+    "pageIndicatorText": m0,
+    "previousPageButtonText": MessageLookupByLibrary.simpleMessage(
+      "Previous page",
+    ),
+    "refreshText": MessageLookupByLibrary.simpleMessage("Refresh"),
+    "refreshedAtText": m1,
+    "removeAllFiltersButtonText": MessageLookupByLibrary.simpleMessage(
+      "Remove",
+    ),
+    "removeFilterButtonText": MessageLookupByLibrary.simpleMessage(
+      "Remove this filter",
+    ),
+    "rowsPerPageText": MessageLookupByLibrary.simpleMessage("Rows per page"),
+    "showFilterMenuTooltip": MessageLookupByLibrary.simpleMessage("Filter"),
+    "totalElementsText": m2,
+  };
 }
