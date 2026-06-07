@@ -58,9 +58,17 @@ final class PagedDataTableThemeData {
   /// The [ChipThemeData] to apply to filter chips.
   final ChipThemeData? chipTheme;
 
+  /// The [BorderRadius] of the filter popup and bottom sheet.
+  final BorderRadius filterDialogBorderRadius;
+
+  /// The [BoxShadow]s to render behind the desktop filter popup.
+  final List<BoxShadow> filterDialogBoxShadow;
+
   const PagedDataTableThemeData({
-    this.cellPadding =
-        const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+    this.cellPadding = const EdgeInsets.symmetric(
+      horizontal: 8.0,
+      vertical: 6.0,
+    ),
     this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
     this.borderRadius = const BorderRadius.all(Radius.circular(4.0)),
     this.elevation = 0.0,
@@ -70,38 +78,49 @@ final class PagedDataTableThemeData {
     this.filterBarHeight = 50.0,
     this.rowHeight = 52.0,
     this.selectedRow,
-    this.cellTextStyle =
-        const TextStyle(color: Colors.black, overflow: TextOverflow.ellipsis),
+    this.cellTextStyle = const TextStyle(
+      color: Colors.black,
+      overflow: TextOverflow.ellipsis,
+    ),
     this.headerTextStyle = const TextStyle(
-        color: Colors.black,
-        fontWeight: FontWeight.bold,
-        overflow: TextOverflow.ellipsis),
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+      overflow: TextOverflow.ellipsis,
+    ),
     this.footerTextStyle = const TextStyle(fontSize: 14, color: Colors.black),
     this.rowColor,
     this.verticalScrollbarVisibility = true,
     this.horizontalScrollbarVisibility = true,
     this.filterDialogBreakpoint = 1000.0,
     this.chipTheme,
+    this.filterDialogBorderRadius = const BorderRadius.all(Radius.circular(28)),
+    this.filterDialogBoxShadow = const [
+      BoxShadow(blurRadius: 3, color: Colors.black54),
+    ],
     this.backgroundColor = Colors.white,
   });
 
   @override
   int get hashCode => Object.hash(
-      cellPadding,
-      padding,
-      borderRadius,
-      elevation,
-      headerHeight,
-      footerHeight,
-      rowHeight,
-      cellBorderSide,
-      cellTextStyle,
-      headerTextStyle,
-      rowColor,
-      verticalScrollbarVisibility,
-      horizontalScrollbarVisibility,
-      chipTheme,
-      backgroundColor);
+        cellPadding,
+        padding,
+        borderRadius,
+        elevation,
+        headerHeight,
+        footerHeight,
+        rowHeight,
+        cellBorderSide,
+        cellTextStyle,
+        headerTextStyle,
+        rowColor,
+        verticalScrollbarVisibility,
+        horizontalScrollbarVisibility,
+        filterDialogBreakpoint,
+        chipTheme,
+        filterDialogBorderRadius,
+        Object.hashAll(filterDialogBoxShadow),
+        backgroundColor,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -122,15 +141,33 @@ final class PagedDataTableThemeData {
           other.verticalScrollbarVisibility == verticalScrollbarVisibility &&
           other.horizontalScrollbarVisibility ==
               horizontalScrollbarVisibility &&
+          other.filterDialogBreakpoint == filterDialogBreakpoint &&
           other.chipTheme == chipTheme &&
+          other.filterDialogBorderRadius == filterDialogBorderRadius &&
+          _boxShadowsEqual(
+            other.filterDialogBoxShadow,
+            filterDialogBoxShadow,
+          ) &&
           other.backgroundColor == backgroundColor);
+}
+
+bool _boxShadowsEqual(List<BoxShadow> a, List<BoxShadow> b) {
+  if (identical(a, b)) return true;
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }
 
 final class PagedDataTableTheme extends InheritedWidget {
   final PagedDataTableThemeData data;
 
-  const PagedDataTableTheme(
-      {required this.data, required super.child, super.key});
+  const PagedDataTableTheme({
+    required this.data,
+    required super.child,
+    super.key,
+  });
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
